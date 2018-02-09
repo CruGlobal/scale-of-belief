@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "6"
+cache:
+  directories:
+    - "node_modules"
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database scale_of_belief_test;' -U postgres
+  - ./node_modules/.bin/sequelize db:migrate
+env:
+  - DB_ENV_POSTGRESQL_DB=scale_of_belief_test
+  - DB_ENV_POSTGRESQL_USER=postgres
