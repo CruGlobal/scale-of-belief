@@ -7,7 +7,6 @@ cache:
 services:
   - postgresql
 before_script:
-  - psql -c 'create database scale_of_belief_test;' -U postgres
-  - ./node_modules/.bin/sequelize db:migrate
+  - ./node_modules/.bin/sequelize --env test db:create db:migrate
 env:
-  - DB_ENV_POSTGRESQL_DB=scale_of_belief_test DB_ENV_POSTGRESQL_USER=postgres
+  - DB_ENV_POSTGRESQL_DB=scale_of_belief DB_ENV_POSTGRESQL_USER=postgres

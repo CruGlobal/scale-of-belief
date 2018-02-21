@@ -1,0 +1,10 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Scale of Belief - Score API
+  description: API to allow scoring content for placement on the scale of belief.
+
+consumes:
+  - application/json
+produces:
+  - application/json

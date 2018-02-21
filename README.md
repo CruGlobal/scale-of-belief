@@ -1,1 +1,1 @@
-# scale-of-belief-placement
+# scale-of-belief-lambda

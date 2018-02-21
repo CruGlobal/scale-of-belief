@@ -1,24 +1,45 @@
 {
-  "name": "scale-of-belief-placement",
+  "name": "scale-of-belief-lambda",
   "version": "1.0.0",
-  "description": "Scale of Belief - Placement (AWS Lambda function)",
+  "description": "Scale of Belief - AWS Lambda functions",
   "main": "handlers/placement.js",
   "scripts": {
-    "test": "./node_modules/.bin/serverless invoke test"
+    "test": "standard && jest --forceExit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "chance": "^1.0.13",
+    "factory-girl": "^5.0.2",
+    "jest": "^22.3.0",
+    "lodash": "^4.17.5",
     "sequelize-cli": "^3.2.0",
     "serverless": "^1.26.0",
-    "serverless-mocha-plugin": "^1.7.0",
+    "serverless-offline": "^3.17.0",
     "standard": "^10.0.3"
   },
   "dependencies": {
     "dotenv": "^5.0.0",
+    "express": "^4.16.2",
+    "glob": "^7.1.2",
     "pg": "^7.4.1",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^4.33.0"
+    "sequelize": "^4.33.0",
+    "serverless-http": "^1.5.3",
+    "swaggerize-express": "^4.0.5"
+  },
+  "standard": {
+    "env": {
+      "node": true,
+      "jest": true
+    }
+  },
+  "jest": {
+    "verbose": true,
+    "testEnvironment": "node",
+    "globalSetup": "./test/global-setup.js",
+    "globalTeardown": "./test/global-teardown.js",
+    "setupTestFrameworkScriptFile": "./test/test-setup.js"
   }
 }

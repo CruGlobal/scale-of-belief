@@ -1,0 +1,195 @@
+'use strict'
+
+const {User, Event, sequelize} = require('./db')
+const {Op} = require('sequelize')
+const {
+  forEach,
+  forIn,
+  includes,
+  intersection,
+  isEmpty,
+  map,
+  reverse,
+  sortBy,
+  sumBy,
+  toPairs,
+  zipObject
+} = require('lodash')
+
+/**
+ * Find all Users that match at least one identity of a given user
+ * @param {User} user
+ * @returns {Promise} Promise representing array of possible matched users
+ */
+const possibleMatches = (user, transaction) => {
+  const orClause = []
+  // Generate OR query skipping id and id_seq columns as well as empty values
+  forIn(user.toJSON(), (value, key) => {
+    if (includes(['id', 'id_seq'], key) || isEmpty(value)) {
+      return
+    }
+    orClause.push({[key]: {[Op.contains]: value}})
+  })
+  return User.findAll({
+    transaction: transaction,
+    lock: transaction.LOCK.UPDATE,
+    where: {
+      [Op.or]: orClause
+    }
+  })
+}
+
+/**
+ * @param {User} user
+ * @param {User[]} matches
+ * @returns {Promise} Promise representing matches ordered by score
+ */
+const orderByScore = (user, matches) => {
+  return Promise.resolve(reverse(sortBy(matches, value => scoreMatch(user, value))))
+}
+
+/**
+ * Reject matches that are not the user (false positives)
+ *
+ * @param {User} user
+ * @param {User[]} matches
+ * @returns {Promise} Promise representing matches with rejected users removed
+ */
+const rejectMatches = (user, matches) => {
+  // TODO: Implement
+  return Promise.resolve(matches)
+}
+
+/**
+ * @param {User} user
+ * @param {User[]} matches
+ * @returns {Promise} Promise representing matches with ambiguous users removed
+ */
+const rejectAmbiguous = (user, matches) => {
+  // TODO: Implement
+  return Promise.resolve(matches)
+}
+
+/**
+ * @param {User} user
+ * @param {User[]} matches
+ * @returns {Promise} Promise representing final saved user
+ */
+const mergeMatches = (user, matches, transaction) => {
+  if (isEmpty(matches)) {
+    // No matches found, save new user
+    return user.save()
+  } else {
+    // Add new user to matches
+    matches = matches.concat(user)
+
+    // Matches are ordered by score, so let first be the winner
+    const winner = matches.shift()
+    const queries = []
+    const loserIds = []
+
+    // Merge losers with winner and destroy them
+    forEach(matches, loser => {
+      winner.merge(loser)
+      if (!loser.isNewRecord) {
+        loserIds.push(loser.id)
+        queries.push(loser.destroy({transaction: transaction}))
+      }
+    })
+
+    return Promise
+      .all(queries) // wait for deletes
+      .then(() => winner.save({transaction: transaction})) // save user
+      .then(identity => {
+        return Event // update Events linked to merged matches
+          .update({user_id: identity.id}, {where: {user_id: {[Op.in]: loserIds}}, transaction: transaction})
+          .then(() => Promise.resolve(identity)) // return final user
+      })
+  }
+}
+
+/**
+ * Performs identity stitching for the given event
+ * @param {Event} event
+ * @returns {Promise<any>}
+ */
+const performIdentityStitching = (event) => {
+  return new Promise((resolve) => {
+    let user = User.fromEvent(event)
+    if (!user.changed()) {
+      throw new UnknownUserError('Event did not contain identity fields')
+    }
+
+    resolve(sequelize.transaction(transaction => {
+      return possibleMatches(user, transaction)
+        .then(matches => orderByScore(user, matches))
+        .then(matches => rejectMatches(user, matches))
+        .then(matches => rejectAmbiguous(user, matches))
+        .then(matches => mergeMatches(user, matches, transaction))
+    }))
+  })
+}
+
+/**
+ * Calculates score by summing weighted intersections of identity values
+ *
+ * @param {User} user
+ * @param {User} match
+ * @returns {integer}
+ */
+const scoreMatch = (user, match) => {
+  return sumBy(toPairs(userIntersection(user, match)), pair => {
+    switch (pair[0]) {
+      case 'gr_master_person_id':
+        return pair[1].length * 4
+      case 'sso_guid':
+        return pair[1].length * 3
+      case 'domain_userid':
+      case 'android_idfa':
+      case 'apple_idfa':
+        return pair[1].length * 2
+      case 'mcid':
+      case 'user_fingerprint':
+      case 'network_userid':
+        return pair[1].length * 1
+      default:
+        return 0
+    }
+  })
+}
+
+/**
+ *
+ * @param user
+ * @param other
+ */
+// const sameUsers = (user, other) => {
+//   const matches = userIntersection(user, other)
+//   if (matches['gr_master_person_id'].length > 0 || matches['sso_guid'].length > 0) {
+//     // gr_master_person_id or sso_guid exist on both and is the same
+//     return true
+//   }
+//
+//   if (user.has_gr_master_person_id && other.has_gr_master_person_id && matches['gr_master_person_id'].length === 0) {
+//     // gr_master_person_id exists on both and is different
+//     return false
+//   }
+// }
+
+/**
+ * The intersection of 2 users keyed by identity field
+ *
+ * @param {User} user
+ * @param {User} other
+ * @returns {Object}
+ */
+const userIntersection = (user, other) => {
+  return zipObject(User.IDENTITY_FIELDS, map(User.IDENTITY_FIELDS, (field) => intersection(user[field], other[field])))
+}
+
+class UnknownUserError extends Error {}
+
+module.exports = {
+  IdentityStitcher: performIdentityStitching,
+  UnknownUserError: UnknownUserError
+}

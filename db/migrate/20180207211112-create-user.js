@@ -8,17 +8,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.BIGINT
       },
-      id_seq: {
-        allowNull: false,
-        autoIncrement: true,
-        type: Sequelize.BIGINT
-      },
       domain_userid: {
         type: Sequelize.ARRAY(Sequelize.STRING),
         defaultValue: []
       },
       network_userid: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
+        type: Sequelize.ARRAY(Sequelize.UUID),
         defaultValue: []
       },
       user_fingerprint: {
@@ -33,7 +28,7 @@ module.exports = {
         type: Sequelize.ARRAY(Sequelize.UUID),
         defaultValue: []
       },
-      marketing_cloud_id: {
+      mcid: {
         type: Sequelize.ARRAY(Sequelize.STRING),
         defaultValue: []
       },

@@ -1,17 +1,15 @@
 'use strict'
 
-const fs = require('fs')
 const path = require('path')
+const glob = require('glob')
 const Sequelize = require('sequelize')
-const basename = path.basename(__filename)
-const config = require(path.resolve('config', 'database.js'))
+const environment = process.env.NODE_ENV === 'test' ? 'test' : 'development'
+const config = require(path.resolve('config', 'database.js'))[environment]
 const db = {}
 const sequelize = new Sequelize(config.database, config.username, config.password, config)
 
-fs.readdirSync(__dirname)
-  .filter(file => {
-    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js')
-  })
+// Import all *.model.js files and wrap them in sequelize
+glob.sync('./*.model.js', {cwd: __dirname})
   .forEach(file => {
     let model = sequelize['import'](path.join(__dirname, file))
     db[model.name] = model

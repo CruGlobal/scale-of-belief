@@ -1,4 +1,8 @@
 service: scale-of-belief
+
+plugins:
+  - serverless-offline
+
 provider:
   name: aws
   runtime: nodejs6.10
@@ -7,13 +11,19 @@ provider:
 
 functions:
   placement:
-    handler: handlers/placement.placement
+    handler: kinesis/placement.handler
     events:
       - stream:
           arn: arn:aws:kinesis:us-east-1:056154071827:stream/snowplow_enrich
           batchSize: 100
           startingPosition: LATEST
           enabled: false
+  api:
+    handler: api/index.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
 
-plugins:
-  - serverless-mocha-plugin
+custom:
+  serverless-offline:
+    port: 4000
