@@ -2,8 +2,9 @@
 
 const {Event, sequelize} = require('../models/db/index')
 const {IdentityStitcher} = require('../models/identity-stitcher')
+const rollbar = require('../config/rollbar')
 
-module.exports.handler = (lambdaEvent, lambdaContext, lambdaCallback) => {
+module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
   const completed = []
   if (typeof lambdaEvent['Records'] !== 'undefined') {
     lambdaEvent['Records'].forEach((record) => {
@@ -35,4 +36,4 @@ module.exports.handler = (lambdaEvent, lambdaContext, lambdaCallback) => {
   } else {
     lambdaCallback(null, 'Nothing processed')
   }
-}
+})
