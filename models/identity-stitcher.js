@@ -3,6 +3,7 @@
 const {User, Event, sequelize} = require('./db')
 const {Op} = require('sequelize')
 const {
+  filter,
   forEach,
   forIn,
   includes,
@@ -56,8 +57,7 @@ const orderByScore = (user, matches) => {
  * @returns {Promise} Promise representing matches with rejected users removed
  */
 const rejectMatches = (user, matches) => {
-  // TODO: Implement
-  return Promise.resolve(matches)
+  return Promise.resolve(filter(matches, (match) => isSameSame(user, match)))
 }
 
 /**
@@ -159,22 +159,30 @@ const scoreMatch = (user, match) => {
 }
 
 /**
- *
- * @param user
- * @param other
+ * Are the two users Same Same? Not identical, but not different.
+ * @param {User} user
+ * @param {User} other
+ * @returns {Boolean}
  */
-// const sameUsers = (user, other) => {
-//   const matches = userIntersection(user, other)
-//   if (matches['gr_master_person_id'].length > 0 || matches['sso_guid'].length > 0) {
-//     // gr_master_person_id or sso_guid exist on both and is the same
-//     return true
-//   }
-//
-//   if (user.has_gr_master_person_id && other.has_gr_master_person_id && matches['gr_master_person_id'].length === 0) {
-//     // gr_master_person_id exists on both and is different
-//     return false
-//   }
-// }
+const isSameSame = (user, other) => {
+  const matches = userIntersection(user, other)
+  // If gr_master_person_id or sso_guid match, then it's the same user
+  if (matches['gr_master_person_id'].length > 0 || matches['sso_guid'].length > 0) {
+    return true
+  }
+
+  // If gr_master_person_id exists on both, and are different, it's not the same
+  if (user.has_gr_master_person_id && other.has_gr_master_person_id && matches['gr_master_person_id'].length === 0) {
+    return false
+  }
+
+  // If sso_guid exists on both, and is different, it's not the same
+  if (user.has_sso_guid && other.has_sso_guid && matches['sso_guid'].length === 0) {
+    return false
+  }
+
+  return true
+}
 
 /**
  * The intersection of 2 users keyed by identity field

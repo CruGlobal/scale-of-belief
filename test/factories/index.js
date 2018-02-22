@@ -7,9 +7,9 @@ const chance = require('chance').Chance()
 factory.define('blank_user', User, {})
 
 factory.extend('blank_user', 'web_user', {
-  mcid: () => [chance.natural()],
+  mcid: () => [chance.natural().toString()],
   network_userid: () => [chance.guid()],
-  user_fingerprint: () => [chance.natural()]
+  user_fingerprint: () => [chance.natural().toString()]
 })
 
 factory.extend('blank_user', 'android_user', {
