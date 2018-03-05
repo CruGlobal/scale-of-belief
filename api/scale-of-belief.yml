@@ -1,10 +1,181 @@
 swagger: "2.0"
 info:
-  version: 1.0.0
-  title: Scale of Belief - Score API
+  title: Scale of Belief - Content Score API
   description: API to allow scoring content for placement on the scale of belief.
+  version: 1.0.0
 
 consumes:
   - application/json
+
 produces:
   - application/json
+
+schemes:
+  - https
+  - http
+
+tags:
+  - name: score
+    description: Content Scoring
+
+paths:
+  /score:
+    get:
+      summary: Get single content score by uri
+      tags:
+        - score
+      parameters:
+        - name: uri
+          description: Content URI
+          in: query
+          required: true
+          type: string
+          format: uri
+      security:
+        - ApiKeyAuth: []
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ContentScore'
+        401:
+          $ref: '#/responses/Unauthorized'
+        404:
+          $ref: '#/responses/NotFound'
+    post:
+      summary: Create or Update a content score
+      tags:
+        - score
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: Set or update scores for a content uri
+          schema:
+            $ref: '#/definitions/ContentScore'
+      security:
+        - ApiKeyAuth: []
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ContentScore'
+        401:
+          $ref: '#/responses/Unauthorized'
+  /scores:
+    get:
+      summary: Get multiple content scores by uri prefix.
+      tags:
+        - score
+      parameters:
+        - name: uri
+          description: Content URI prefix
+          in: query
+          required: true
+          type: string
+          format: uri
+      security:
+        - ApiKeyAuth: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ContentScore'
+        401:
+          $ref: '#/responses/Unauthorized'
+        404:
+          $ref: '#/responses/NotFound'
+  /content:
+    get:
+      summary: List known content URI's missing scores, narrow the list by content URI prefix
+      tags:
+        - content
+      parameters:
+        - name: uri
+          description: Content URI prefix
+          in: query
+          type: string
+          format: uri
+      security:
+        - ApiKeyAuth: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              description: Content URI
+              type: string
+              format: uri
+        401:
+          $ref: '#/responses/Unauthorized'
+
+securityDefinitions:
+  ApiKeyAuth:
+    type: apiKey
+    name: X-API-Key
+    in: header
+
+responses:
+  NotFound:
+    description: The specified resource was not found
+    schema:
+      $ref: '#/definitions/Error'
+  Unauthorized:
+    description: Unauthorized to perform the request
+    schema:
+      $ref: '#/definitions/Error'
+  Conflict:
+    description: The specified resource already exists
+    schema:
+      $ref: '#/definitions/Error'
+
+definitions:
+  ContentScore:
+    type: object
+    properties:
+      uri:
+        type: string
+        format: uri
+      score:
+        $ref: '#/definitions/Score'
+  Score:
+    type: object
+    properties:
+      unaware:
+        type: integer
+        minimum: 1
+        maximum: 5
+      curious:
+        type: integer
+        minimum: 1
+        maximum: 5
+      follower:
+        type: integer
+        minimum: 1
+        maximum: 5
+      guide:
+        type: integer
+        minimum: 1
+        maximum: 5
+      confidence:
+        type: integer
+        format: float
+        minimum: 0
+        maximum: 1
+    required:
+      - unaware
+      - curious
+      - follower
+      - guide
+      - confidence
+  Error:
+    type: object
+    properties:
+      message:
+        type: string
+    required:
+      - error
