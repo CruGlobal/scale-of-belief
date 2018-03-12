@@ -3,6 +3,7 @@
 module.exports = () => {
   require('dotenv').config()
   return {
+    ENVIRONMENT: process.env['ENVIRONMENT'] || 'development',
     DB_ENV_POSTGRESQL_DB: process.env['DB_ENV_POSTGRESQL_DB'] || 'scale_of_belief',
     DB_ENV_POSTGRESQL_USER: process.env['DB_ENV_POSTGRESQL_USER'] || 'scale_of_belief',
     DB_ENV_POSTGRESQL_PASS: process.env['DB_ENV_POSTGRESQL_PASS'] || '',

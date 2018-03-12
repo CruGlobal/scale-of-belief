@@ -10,13 +10,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@cruglobal/serverless-merge-config": "^1.0.0",
     "chance": "^1.0.13",
     "factory-girl": "^5.0.2",
     "jest": "^22.3.0",
     "lodash": "^4.17.5",
     "sequelize-cli": "^3.2.0",
     "serverless": "^1.26.0",
-    "serverless-offline": "^3.17.0",
+    "serverless-offline": "^3.18.0",
+    "serverless-plugin-scripts": "^1.0.2",
     "standard": "^10.0.3"
   },
   "dependencies": {
@@ -28,7 +30,8 @@
     "rollbar": "^2.3.9",
     "sequelize": "^4.33.0",
     "serverless-http": "^1.5.3",
-    "swaggerize-express": "^4.0.5"
+    "swaggerize-express": "^4.0.5",
+    "umzug": "^2.1.0"
   },
   "standard": {
     "env": {

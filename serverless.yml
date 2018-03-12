@@ -1,13 +1,13 @@
 service: scale-of-belief
 
-plugins:
-  - serverless-offline
+custom:
+  scripts:
+    hooks:
+      'aws:deploy:finalize:cleanup': echo Running migrations
 
 provider:
   name: aws
-  runtime: nodejs6.10
-  region: us-east-1
-  environment: ${file(config/environment.js)}
+  $<<: ${file(config/provider.js)}
 
 functions:
   placement:
@@ -18,12 +18,24 @@ functions:
           batchSize: 100
           startingPosition: LATEST
           enabled: false
+    environment: ${file(config/environment.js)}
   api:
     handler: api/index.handler
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
+    environment: ${file(config/environment.js)}
+  migrate:
+    handler: db/migrate.handler
+    environment: ${file(config/environment.js)}
 
-custom:
-  serverless-offline:
-    port: 4000
+package:
+  exclude:
+    - .git/**
+    - test/**
+    - '**/*.test.js'
+
+plugins:
+  - '@cruglobal/serverless-merge-config'
+  - serverless-plugin-scripts
+  - serverless-offline
