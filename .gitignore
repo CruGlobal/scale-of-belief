@@ -64,6 +64,7 @@ typings/
 
 # Serverless directories
 .serverless
+dist
 
 # IntelliJ
 .idea
