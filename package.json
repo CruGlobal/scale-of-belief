@@ -4,7 +4,8 @@
   "description": "Scale of Belief - AWS Lambda functions",
   "main": "handlers/placement.js",
   "scripts": {
-    "test": "standard && jest --forceExit"
+    "lint": "standard",
+    "test": "jest --forceExit --coverage"
   },
   "keywords": [],
   "author": "",

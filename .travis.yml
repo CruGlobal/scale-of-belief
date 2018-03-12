@@ -9,5 +9,8 @@ services:
 before_script:
   - ./node_modules/.bin/sequelize --env test db:create
   - ./node_modules/.bin/sequelize --env test db:migrate
+script:
+  - npm run lint
+  - npm test
 env:
   - DB_ENV_POSTGRESQL_DB=scale_of_belief DB_ENV_POSTGRESQL_USER=postgres
