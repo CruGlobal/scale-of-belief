@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = (sequelize, DataTypes) => {
-  const ApiKey = sequelize.define('Api_Key', {
+  const ApiKey = sequelize.define('ApiKey', {
     system: DataTypes.STRING,
     api_pattern: DataTypes.ARRAY(DataTypes.STRING),
     api_key: DataTypes.UUID,
