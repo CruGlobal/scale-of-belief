@@ -43,5 +43,5 @@ Start a local webserver running at http://localhost:3000
 Scale of Belief using [Standard](https://standardjs.com/) style and [jest](https://facebook.github.io/jest/docs/en/getting-started.html) for testing.
 ```bash
 npm run lint
-rpm test
+npm test
 ```
