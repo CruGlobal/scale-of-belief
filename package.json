@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@cruglobal/serverless-merge-config": "^1.0.0",
+    "@cruglobal/serverless-merge-config": "^1.0.1",
     "chance": "^1.0.13",
     "factory-girl": "^5.0.2",
     "jest": "^22.3.0",
