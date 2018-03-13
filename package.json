@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Scale of Belief - AWS Lambda functions",
   "main": "handlers/placement.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CruGlobal/scale-of-belief-lambda.git"
+  },
   "scripts": {
     "lint": "standard",
     "test": "jest --forceExit --coverage"
@@ -13,6 +17,7 @@
   "devDependencies": {
     "@cruglobal/serverless-merge-config": "^1.0.1",
     "chance": "^1.0.13",
+    "coveralls": "^3.0.0",
     "factory-girl": "^5.0.2",
     "jest": "^22.3.0",
     "lodash": "^4.17.5",

@@ -12,5 +12,7 @@ before_script:
 script:
   - npm run lint
   - npm test
+after_success:
+  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
 env:
   - DB_ENV_POSTGRESQL_DB=scale_of_belief DB_ENV_POSTGRESQL_USER=postgres
