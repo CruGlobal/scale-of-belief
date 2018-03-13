@@ -12,10 +12,10 @@ module.exports = () => {
     }
     return '${file(${env:ECS_CONFIG}/ecs/${env:PROJECT_NAME}/sls-${env:ENVIRONMENT}.yml)}' // eslint-disable-line
   } else {
-    return Promise.resolve({
+    return {
       runtime: 'nodejs6.10',
-      stage: 'staging',
-      region: 'us-west-2'
-    })
+      stage: 'dev',
+      region: 'us-east-1'
+    }
   }
 }
