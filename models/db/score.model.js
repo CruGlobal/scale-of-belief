@@ -15,28 +15,28 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       validate: {
         min: 1,
-        max: 4
+        max: 5
       }
     },
     curious: {
       type: DataTypes.INTEGER,
       validate: {
         min: 1,
-        max: 4
+        max: 5
       }
     },
     follower: {
       type: DataTypes.INTEGER,
       validate: {
         min: 1,
-        max: 4
+        max: 5
       }
     },
     guide: {
       type: DataTypes.INTEGER,
       validate: {
         min: 1,
-        max: 4
+        max: 5
       }
     },
     confidence: {
