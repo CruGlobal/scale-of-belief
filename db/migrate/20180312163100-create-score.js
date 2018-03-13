@@ -47,6 +47,14 @@ module.exports = {
           max: 1,
           isFloat: true
         }
+      },
+      created_at: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE
       }
     })
   },
