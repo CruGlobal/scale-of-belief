@@ -2,7 +2,15 @@
 
 module.exports = (sequelize, DataTypes) => {
   const Score = sequelize.define('Score', {
-    uri: DataTypes.STRING,
+    uri: {
+      type: DataTypes.STRING,
+      get () {
+        return this.getDataValue('uri').toLowerCase()
+      },
+      set (val) {
+        this.setDataValue('uri', val.toLowerCase())
+      }
+    },
     unaware: {
       type: DataTypes.INTEGER,
       validate: {
