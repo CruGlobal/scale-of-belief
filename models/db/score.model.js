@@ -8,7 +8,11 @@ module.exports = (sequelize, DataTypes) => {
         return this.getDataValue('uri').toLowerCase()
       },
       set (val) {
-        this.setDataValue('uri', val.toLowerCase())
+        if (val) {
+          this.setDataValue('uri', val.toLowerCase())
+        } else {
+          this.setDataValue('uri', val)
+        }
       }
     },
     unaware: {
