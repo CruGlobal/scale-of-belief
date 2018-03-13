@@ -9,23 +9,44 @@ module.exports = {
       },
       unaware: {
         type: Sequelize.INTEGER,
-        defaultValue: 1
+        defaultValue: 1,
+        validate: {
+          min: 1,
+          max: 4
+        }
       },
       curious: {
         type: Sequelize.INTEGER,
-        defaultValue: 1
+        defaultValue: 1,
+        validate: {
+          min: 1,
+          max: 4
+        }
       },
       follower: {
         type: Sequelize.INTEGER,
-        defaultValue: 1
+        defaultValue: 1,
+        validate: {
+          min: 1,
+          max: 4
+        }
       },
       guide: {
         type: Sequelize.INTEGER,
-        defaultValue: 1
+        defaultValue: 1,
+        validate: {
+          min: 1,
+          max: 4
+        }
       },
       confidence: {
         type: Sequelize.DOUBLE,
-        defaultValue: 0
+        defaultValue: 0,
+        validate: {
+          min: 0,
+          max: 1,
+          isFloat: true
+        }
       }
     })
   },
