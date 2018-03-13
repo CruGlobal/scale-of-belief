@@ -1,9 +1,7 @@
 'use strict'
 
-const {Context} = require('../context')
-
 module.exports = (sequelize, DataTypes) => {
-  const Api_Key = sequelize.define('Api_Key', {
+  const ApiKey = sequelize.define('Api_Key', {
     system: DataTypes.STRING,
     api_pattern: DataTypes.ARRAY(DataTypes.STRING),
     api_key: DataTypes.UUID,
@@ -12,5 +10,5 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'api_keys'
   })
 
-  return Api_Key
+  return ApiKey
 }

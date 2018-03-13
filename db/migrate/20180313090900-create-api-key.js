@@ -9,7 +9,7 @@ module.exports = {
       },
       system: {
         type: Sequelize.STRING,
-        defaultValue: "unknown"
+        defaultValue: 'unknown'
       },
       api_pattern: {
         type: Sequelize.ARRAY(Sequelize.STRING),

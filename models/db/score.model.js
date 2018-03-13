@@ -1,7 +1,5 @@
 'use strict'
 
-const {Context} = require('../context')
-
 module.exports = (sequelize, DataTypes) => {
   const Score = sequelize.define('Score', {
     uri: DataTypes.STRING,
