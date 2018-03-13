@@ -10,5 +10,9 @@ module.exports = (sequelize, DataTypes) => {
     follower: DataTypes.INTEGER,
     guide: DataTypes.INTEGER,
     confidence: DataTypes.DOUBLE
+  }, {
+    tableName: 'scores'
   })
+
+  return Score
 }
