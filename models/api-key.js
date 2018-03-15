@@ -8,7 +8,8 @@ const ApiKey = sequelize.define('ApiKey', {
   api_key: DataTypes.UUID,
   contact_email: DataTypes.STRING
 }, {
-  tableName: 'api_keys'
+  tableName: 'api_keys',
+  underscored: true
 })
 
 module.exports = ApiKey

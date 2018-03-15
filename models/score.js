@@ -53,7 +53,8 @@ const Score = sequelize.define('Score', {
     }
   }
 }, {
-  tableName: 'scores'
+  tableName: 'scores',
+  underscored: true
 })
 
 module.exports = Score
