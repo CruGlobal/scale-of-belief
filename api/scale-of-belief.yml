@@ -120,6 +120,7 @@ securityDefinitions:
     type: apiKey
     name: X-Api-Key
     in: header
+    x-authorize: 'security/api-key-authorize.js'
 
 responses:
   NotFound:
