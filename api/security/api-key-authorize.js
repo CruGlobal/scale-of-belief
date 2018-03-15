@@ -2,7 +2,17 @@
 
 module.exports = function authorize (request, response, next) {
   validate (request, function (error, availableScopes) {
-    next()
+    if (!error) {
+      if (!availableScopes.length) {
+        error = new Error('You do not have access to this resource')
+        error.status = 401
+        next(error)
+      } else {
+        next()
+      }
+    } else {
+      next(error)
+    }
   })
 }
 
@@ -10,7 +20,9 @@ function validate(request, callback) {
   var auth = request.headers['x-api-key'] // header comes in all lowercase
 
   if (!auth) {
-    callback(null, [])
+    var error = new Error('Unauthorized')
+    error.status = 401
+    callback(error, [])
     return
   }
 
