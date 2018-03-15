@@ -14,7 +14,8 @@ const Score = sequelize.define('Score', {
       } else {
         this.setDataValue('uri', val)
       }
-    }
+    },
+    primaryKey: true
   },
   unaware: {
     type: DataTypes.INTEGER,
