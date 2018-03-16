@@ -165,7 +165,7 @@ definitions:
         minimum: 1
         maximum: 5
       confidence:
-        type: integer
+        type: number
         format: float
         minimum: 0
         maximum: 1
