@@ -9,8 +9,13 @@ module.exports = function authorize (request, response, next) {
       if (!availableScopes || !availableScopes.length) {
         next(buildUnauthorized(error))
       } else {
-        var requestedResource = request.query['uri']
+        var requestedResource;
 
+        if (request.method == 'GET') {
+          requestedResource = request.query['uri']
+        } else {
+          requestedResource = request.body['uri']
+        }
         if (isAuthorized(availableScopes, requestedResource)) {
           next()
         } else {
