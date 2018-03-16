@@ -51,9 +51,7 @@ function validate(request, callback) {
   var auth = request.headers['x-api-key'] // header comes in all lowercase
 
   if (!auth) {
-    var error = new Error('Unauthorized')
-    error.status = 401
-    callback(error, [])
+    callback(buildInvalidApiKey(), [])
     return
   } else {
     determineScopes(auth, callback)
@@ -67,7 +65,20 @@ function determineScopes(auth, callback) {
         api_key: auth
       }
     }).then((dbApiKey) => {
-      var apiPatterns = dbApiKey.api_pattern
-      callback(null, apiPatterns)
+      if (dbApiKey) {
+        var apiPatterns = dbApiKey.api_pattern
+        callback(null, apiPatterns)
+      } else {
+        callback(buildInvalidApiKey(), [])
+      }
+    }).catch(function (error) {
+      console.log(error)
+      callback(buildInvalidApiKey(), [])
     })
+}
+
+function buildInvalidApiKey() {
+  var error = new Error('Unauthorized')
+  error.status = 401
+  return error
 }
