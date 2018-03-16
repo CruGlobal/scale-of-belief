@@ -1,17 +1,44 @@
 'use strict'
 
+const {ApiKey} = require('../../models/db')
+const {forEach} = require('lodash')
+
 module.exports = function authorize (request, response, next) {
   validate (request, function (error, availableScopes) {
     if (!error) {
-      if (!availableScopes.length) {
+      if (!availableScopes || !availableScopes.length) {
         next(buildUnauthorized(error))
       } else {
-        next()
+        var requestedResource = request.query['uri']
+
+        if (isAuthorized(availableScopes, requestedResource)) {
+          next()
+        } else {
+          next(buildUnauthorized(error))
+        }
       }
     } else {
       next(error)
     }
   })
+}
+
+function isAuthorized(availableScopes, requestedResource) {
+  var authorized = false
+
+  if (Array.isArray(availableScopes)) {
+    forEach(availableScopes, (scope) => {
+      if (requestedResource.match(scope)) {
+        authorized = true
+      }
+    })
+  } else {
+    if (requestedResource.match(availableScopes)) {
+      authorized = true
+    }
+  }
+
+  return authorized
 }
 
 function buildUnauthorized(error) {
@@ -28,7 +55,19 @@ function validate(request, callback) {
     error.status = 401
     callback(error, [])
     return
+  } else {
+    determineScopes(auth, callback)
   }
+}
 
-  callback(null, ['somewhere'])
+function determineScopes(auth, callback) {
+  ApiKey.findOne(
+    {
+      where: {
+        api_key: auth
+      }
+    }).then((dbApiKey) => {
+      var apiPatterns = dbApiKey.api_pattern
+      callback(null, apiPatterns)
+    })
 }
