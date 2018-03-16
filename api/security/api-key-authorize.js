@@ -4,9 +4,7 @@ module.exports = function authorize (request, response, next) {
   validate (request, function (error, availableScopes) {
     if (!error) {
       if (!availableScopes.length) {
-        error = new Error('You do not have access to this resource')
-        error.status = 401
-        next(error)
+        next(buildUnauthorized(error))
       } else {
         next()
       }
@@ -14,6 +12,12 @@ module.exports = function authorize (request, response, next) {
       next(error)
     }
   })
+}
+
+function buildUnauthorized(error) {
+  error = new Error('You do not have access to this resource')
+  error.status = 401
+  return error
 }
 
 function validate(request, callback) {
