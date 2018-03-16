@@ -4,14 +4,14 @@ const {ApiKey} = require('../../models/db')
 const {forEach} = require('lodash')
 
 module.exports = function authorize (request, response, next) {
-  validate (request, function (error, availableScopes) {
+  validate(request, function (error, availableScopes) {
     if (!error) {
       if (!availableScopes || !availableScopes.length) {
         next(buildUnauthorized(error))
       } else {
-        var requestedResource;
+        var requestedResource
 
-        if (request.method == 'GET') {
+        if (request.method === 'GET') {
           requestedResource = request.query['uri']
         } else {
           requestedResource = request.body['uri']
@@ -28,7 +28,7 @@ module.exports = function authorize (request, response, next) {
   })
 }
 
-function isAuthorized(availableScopes, requestedResource) {
+function isAuthorized (availableScopes, requestedResource) {
   var authorized = false
 
   if (Array.isArray(availableScopes)) {
@@ -46,24 +46,23 @@ function isAuthorized(availableScopes, requestedResource) {
   return authorized
 }
 
-function buildUnauthorized(error) {
+function buildUnauthorized (error) {
   error = new Error('You do not have access to this resource')
   error.status = 401
   return error
 }
 
-function validate(request, callback) {
+function validate (request, callback) {
   var auth = request.headers['x-api-key'] // header comes in all lowercase
 
   if (!auth) {
     callback(buildInvalidApiKey(), [])
-    return
   } else {
     determineScopes(auth, callback)
   }
 }
 
-function determineScopes(auth, callback) {
+function determineScopes (auth, callback) {
   ApiKey.findOne(
     {
       where: {
@@ -82,7 +81,7 @@ function determineScopes(auth, callback) {
     })
 }
 
-function buildInvalidApiKey() {
+function buildInvalidApiKey () {
   var error = new Error('Unauthorized')
   error.status = 401
   return error
