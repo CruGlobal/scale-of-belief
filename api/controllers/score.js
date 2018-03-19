@@ -1,6 +1,7 @@
 'use strict'
 
 const Score = require('../../models/score')
+const sequelize = require('../../config/sequelize')
 
 module.exports = {
   get: function (request, response) {
@@ -22,16 +23,24 @@ module.exports = {
   },
 
   post: function (request, response) {
-    response.json(
-      {
-        uri: 'string',
-        score: {
-          unaware: 0,
-          curious: 0,
-          follower: 0,
-          guide: 0,
-          confidence: 0
+    sequelize.transaction(function (t) {
+      var requestBody = request.body
+      var requestScore = requestBody.score
+      return Score.upsert(
+        {
+          uri: requestBody.uri,
+          unaware: requestScore.unaware,
+          curious: requestScore.curious,
+          follower: requestScore.follower,
+          guide: requestScore.guide,
+          confidence: requestScore.confidence
+        },
+        {
+          returning: true
         }
-      })
+      )
+    }).then(function (result) {
+      response.json(result[0].dataValues)
+    })
   }
 }
