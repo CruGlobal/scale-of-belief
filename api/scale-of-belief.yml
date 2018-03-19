@@ -63,6 +63,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/ContentScore'
+        400:
+          $ref: '#/responses/BadRequest'
         401:
           $ref: '#/responses/Unauthorized'
   /scores:
@@ -131,8 +133,8 @@ responses:
     description: Unauthorized to perform the request
     schema:
       $ref: '#/definitions/Error'
-  Conflict:
-    description: The specified resource already exists
+  BadRequest:
+    description: The request contained bad data
     schema:
       $ref: '#/definitions/Error'
 
