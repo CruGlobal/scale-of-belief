@@ -94,7 +94,7 @@ paths:
           $ref: '#/responses/NotFound'
   /content:
     get:
-      summary: List known content URI's missing scores, narrow the list by content URI prefix
+      summary: List known content URIs that are missing scores, narrow the list by content URI prefix
       tags:
         - content
       parameters:
