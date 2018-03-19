@@ -3,6 +3,7 @@
 const factory = require('factory-girl').factory
 const User = require('../models/user')
 const Event = require('../models/event')
+const Score = require('../models/score')
 const chance = require('chance').Chance()
 
 factory.define('blank_user', User, {})
@@ -37,5 +38,16 @@ factory.extend('apple_user', 'authenticated_apple_user', {
 })
 
 factory.define('event', Event, {})
+
+factory.define('blank_score', Score, {})
+
+factory.extend('blank_score', 'basic_score', {
+  uri: 'http://some.uri.com',
+  unaware: 1,
+  curious: 1,
+  follower: 1,
+  guide: 1,
+  confidence: 0
+})
 
 module.exports = factory
