@@ -7,7 +7,7 @@ const swaggerizeExpress = require('swaggerize-express')
 const api = express()
 const rollbar = require('../config/rollbar')
 const bodyParser = require('body-parser')
-const unauthorizedErrorHandler = require(path.join(__dirname, 'errors/unauthorized'))
+const jsonErrorHandler = require(path.join(__dirname, 'errors/jsonHandler'))
 
 api.use(bodyParser.json())
 api.use(swaggerizeExpress({
@@ -15,6 +15,6 @@ api.use(swaggerizeExpress({
   docspath: '/api-docs',
   handlers: path.join(__dirname, 'controllers')
 }))
-api.use(unauthorizedErrorHandler)
+api.use(jsonErrorHandler)
 
 module.exports.handler = rollbar.lambdaHandler(serverless(api))
