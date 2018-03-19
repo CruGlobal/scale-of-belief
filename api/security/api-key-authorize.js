@@ -29,6 +29,7 @@ module.exports = function authorize (request, response, next) {
 }
 
 function isAuthorized (availableScopes, requestedResource) {
+  requestedResource = requestedResource.toLowerCase()
   var authorized = false
 
   if (Array.isArray(availableScopes)) {
