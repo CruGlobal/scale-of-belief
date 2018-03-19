@@ -1,7 +1,7 @@
 'use strict'
 
 const {ApiKey} = require('../../models/db')
-const {forEach} = require('lodash')
+const {find} = require('lodash')
 
 module.exports = function authorize (request, response, next) {
   validate(request, function (error, availableScopes) {
@@ -32,10 +32,8 @@ function isAuthorized (availableScopes, requestedResource) {
   var authorized = false
 
   if (Array.isArray(availableScopes)) {
-    forEach(availableScopes, (scope) => {
-      if (requestedResource.match(scope)) {
-        authorized = true
-      }
+    authorized = find(availableScopes, function (scope) {
+      return requestedResource.match(scope)
     })
   } else {
     if (requestedResource.match(availableScopes)) {
