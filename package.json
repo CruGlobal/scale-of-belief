@@ -8,7 +8,8 @@
     "url": "https://github.com/CruGlobal/scale-of-belief-lambda.git"
   },
   "scripts": {
-    "lint": "standard",
+    "lint": "standard || exit 0",
+    "lint:fix": "standard --fix || exit 0",
     "test": "jest --forceExit --coverage",
     "db:migrate": "sequelize db:migrate",
     "db:migrate:test": "sequelize --env test db:migrate",

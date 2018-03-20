@@ -46,7 +46,7 @@ npm run db:migrate:test
 
 # Run lint, optionally auto fix issues
 npm run lint
-npm run lint -- --fix
+npm run lint:fix
 
 # Run tests
 npm test
