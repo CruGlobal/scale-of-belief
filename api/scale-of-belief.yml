@@ -14,6 +14,8 @@ schemes:
   - https
   - http
 
+basePath: /api
+
 tags:
   - name: score
     description: Content Scoring
@@ -116,7 +118,7 @@ paths:
 securityDefinitions:
   ApiKeyAuth:
     type: apiKey
-    name: X-API-Key
+    name: X-Api-Key
     in: header
 
 responses:

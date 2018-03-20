@@ -3,11 +3,18 @@ service: scale-of-belief
 custom:
   scripts:
     hooks:
-      'aws:deploy:finalize:cleanup': echo Running migrations
+      # Upload web app files
+      'aws:deploy:deploy:updateStack': 'aws s3 sync app s3://scale-of-belief-staging-app-public --acl public-read --delete --exclude ".keep"'
+      # Run database migrations
+      'aws:deploy:finalize:cleanup': './node_modules/.bin/serverless --stage $ENVIRONMENT invoke --function migrate'
 
 provider:
   name: aws
-  $<<: ${file(config/provider.js)}
+  runtime: nodejs6.10
+  stage: dev
+  region: us-east-1
+  environment: ${file(serverless/environment.js)}
+  $<<: ${file(serverless/provider.js)}
 
 functions:
   placement:
@@ -18,24 +25,28 @@ functions:
           batchSize: 100
           startingPosition: LATEST
           enabled: false
-    environment: ${file(config/environment.js)}
   api:
     handler: api/index.handler
     events:
-      - http: ANY /
-      - http: 'ANY {proxy+}'
-    environment: ${file(config/environment.js)}
+      - http:
+          path: /api/{any+}
+          method: ANY
   migrate:
     handler: db/migrate.handler
-    environment: ${file(config/environment.js)}
 
 package:
   exclude:
     - .git/**
     - test/**
     - '**/*.test.js'
+    # exclude web app from lambda package - this will be synced to s3 separately
+    - app/**
 
 plugins:
   - '@cruglobal/serverless-merge-config'
+  - serverless-plugin-bind-deployment-id
   - serverless-plugin-scripts
   - serverless-offline
+
+resources:
+  $<<: ${file(serverless/resources.js)}

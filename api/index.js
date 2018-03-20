@@ -13,6 +13,4 @@ api.use(swaggerizeExpress({
   handlers: path.join(__dirname, 'controllers')
 }))
 
-api.use(rollbar.errorHandler())
-
-module.exports.handler = serverless(api)
+module.exports.handler = rollbar.lambdaHandler(serverless(api))
