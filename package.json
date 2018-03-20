@@ -9,7 +9,11 @@
   },
   "scripts": {
     "lint": "standard",
-    "test": "jest --forceExit --coverage"
+    "test": "jest --forceExit --coverage",
+    "db:migrate": "sequelize db:migrate",
+    "db:migrate:test": "sequelize --env test db:migrate",
+    "db:create": "sequelize db:create",
+    "db:create:test": "sequelize --env test db:migrate"
   },
   "keywords": [],
   "author": "",
