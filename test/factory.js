@@ -1,7 +1,8 @@
 'use strict'
 
 const factory = require('factory-girl').factory
-const {User, Event, sequelize, Sequelize} = require('../../models/db/index')
+const User = require('../models/user')
+const Event = require('../models/event')
 const chance = require('chance').Chance()
 
 factory.define('blank_user', User, {})
@@ -37,11 +38,4 @@ factory.extend('apple_user', 'authenticated_apple_user', {
 
 factory.define('event', Event, {})
 
-module.exports = {
-  factory: factory,
-  sequelize: sequelize,
-  Sequelize: Sequelize,
-  User: User,
-  Event: Event,
-  chance: chance
-}
+module.exports = factory

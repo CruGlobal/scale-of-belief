@@ -1,6 +1,8 @@
 'use strict'
 
-const {User, Event, sequelize} = require('./db')
+const sequelize = require('../config/sequelize')
+const User = require('./user')
+const Event = require('./event')
 const {Op} = require('sequelize')
 const {
   filter,

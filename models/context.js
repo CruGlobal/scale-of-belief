@@ -25,4 +25,4 @@ class Context {
   }
 }
 
-module.exports.Context = Context
+module.exports = Context

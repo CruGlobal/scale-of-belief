@@ -4,7 +4,9 @@ const {
   IdentityStitcher,
   UnknownUserError
 } = require('./identity-stitcher')
-const {factory, User, Event} = require('../test/factories')
+const factory = require('../test/factory')
+const User = require('./user')
+const Event = require('./event')
 const {sortBy, uniq} = require('lodash')
 
 describe('IdentityStitcher', () => {

@@ -57,7 +57,6 @@
   "jest": {
     "verbose": true,
     "testEnvironment": "node",
-    "globalSetup": "./test/global-setup.js",
     "globalTeardown": "./test/global-teardown.js",
     "setupTestFrameworkScriptFile": "./test/test-setup.js"
   }
