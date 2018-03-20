@@ -1,6 +1,7 @@
 'use strict'
 
 module.exports = () => {
+  // Use dotenv to load local development overrides
   require('dotenv').config()
   return {
     ENVIRONMENT: process.env['ENVIRONMENT'] || 'development',
@@ -8,6 +9,7 @@ module.exports = () => {
     DB_ENV_POSTGRESQL_USER: process.env['DB_ENV_POSTGRESQL_USER'] || 'scale_of_belief',
     DB_ENV_POSTGRESQL_PASS: process.env['DB_ENV_POSTGRESQL_PASS'] || '',
     DB_PORT_5432_TCP_ADDR: process.env['DB_PORT_5432_TCP_ADDR'] || 'localhost',
-    DB_PORT_5432_TCP_PORT: process.env['DB_PORT_5432_TCP_PORT'] || 5432
+    DB_PORT_5432_TCP_PORT: process.env['DB_PORT_5432_TCP_PORT'] || 5432,
+    ROLLBAR_ACCESS_TOKEN: process.env['ROLLBAR_ACCESS_TOKEN'] || ''
   }
 }

@@ -13,4 +13,5 @@ while read line; do
 done < <(blackbox_cat "$filename")
 
 set -x && \
+    rm -rf dist && \
     ./node_modules/.bin/serverless package --stage $ENVIRONMENT --package dist/$ENVIRONMENT-$BUILD_NUMBER --verbose
