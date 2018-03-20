@@ -43,7 +43,7 @@ describe('Context', () => {
         curious: 1,
         follower: 1,
         guide: 1,
-        unaware: 1,
+        unaware: 1
       })
     })
     it('returns \'undefined\' if schema data does not exist', () => {
