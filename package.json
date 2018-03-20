@@ -40,6 +40,9 @@
     "umzug": "^2.1.0"
   },
   "standard": {
+    "globals": [
+      "__fixturesDir"
+    ],
     "env": {
       "node": true,
       "jest": true
