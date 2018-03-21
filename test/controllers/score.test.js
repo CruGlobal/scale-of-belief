@@ -15,63 +15,50 @@ describe('ScoreController', () => {
   })
 
   describe('has one match', () => {
-    test('should get the score from the database', () => {
-      jest.spyOn(Score, 'findOne').mockImplementation(() => Promise.resolve(score))
-
-      expect.assertions(2)
-      return ScoreController.retrieveScore(score.uri).then(returnedScore => {
-        expect(returnedScore).toBeDefined()
-        expect(returnedScore).toEqual(score)
-      })
-    })
-
-    test('should return the score to the client', () => {
-      var json = {}
-      var status = 200
-
-      var response = {
-        status: (statusToSet) => {
-          status = statusToSet
-        },
-        json: (jsonToSet) => {
-          json = jsonToSet
+    test('should return the score to the client', done => {
+      var request = {
+        query: {
+          uri: score.uri
         }
       }
 
-      ScoreController.handleGetResponse(score, response)
+      var response = {
+        json: (jsonToSet) => {
+          expect(jsonToSet).toBeDefined()
+          expect(jsonToSet).toEqual(Score.toApiScore(score))
+          done()
+        }
+      }
 
-      expect(status).toEqual(200)
-      expect(json).toEqual(Score.toApiScore(score))
+      jest.spyOn(Score, 'retrieve').mockImplementation(() => Promise.resolve(score))
+
+      ScoreController.get(request, response)
     })
   })
 
   describe('has no matches', () => {
-    test('should not get a score from the database', () => {
-      jest.spyOn(Score, 'findOne').mockImplementation(() => Promise.resolve(null))
-
-      expect.assertions(1)
-      return ScoreController.retrieveScore('http://nowhere.com').then(returnedScore => {
-        expect(returnedScore).toBe(null)
-      })
-    })
-
-    test('should return not found to the client', () => {
-      var json = {}
-      var status = 200
-
-      var response = {
-        status: (statusToSet) => {
-          status = statusToSet
-        },
-        json: (jsonToSet) => {
-          json = jsonToSet
+    test('should return not found to the client', done => {
+      var request = {
+        query: {
+          uri: 'http://nowhere.com'
         }
       }
 
-      ScoreController.handleGetResponse(null, response)
+      var response = {
+        status: (statusToSet) => {
+          expect(statusToSet).toBeDefined()
+          expect(statusToSet).toEqual(404)
+        },
+        json: (jsonToSet) => {
+          expect(jsonToSet).toBeDefined()
+          expect(jsonToSet).toEqual({ message: 'Not Found' })
+          done()
+        }
+      }
 
-      expect(status).toEqual(404)
-      expect(json).toEqual({ message: 'Not Found' })
+      jest.spyOn(Score, 'retrieve').mockImplementation(() => Promise.resolve(null))
+
+      ScoreController.get(request, response)
     })
   })
 })

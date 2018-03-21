@@ -5,8 +5,15 @@ const sequelize = require('../../config/sequelize')
 
 const get = (request, response) => {
   var uri = request.query['uri'].toLowerCase()
-  retrieveScore(uri).then((score) => {
-    handleGetResponse(score, response)
+  Score.retrieve(uri).then((score) => {
+    if (score) {
+      response.json(Score.toApiScore(score))
+    } else {
+      response.status(404)
+      response.json({
+        message: 'Not Found'
+      })
+    }
   })
 }
 
@@ -15,25 +22,6 @@ const post = (request, response) => {
   saveScore(requestBody.uri, requestBody.score).then(function (result) {
     response.json(Score.toApiScore(result[0].dataValues))
   })
-}
-
-const retrieveScore = (uri) => {
-  return Score.findOne({
-    where: {
-      uri: uri
-    }
-  })
-}
-
-const handleGetResponse = (score, response) => {
-  if (score) {
-    response.json(Score.toApiScore(score))
-  } else {
-    response.status(404)
-    response.json({
-      message: 'Not Found'
-    })
-  }
 }
 
 const saveScore = (uri, score) => {
@@ -57,7 +45,5 @@ const saveScore = (uri, score) => {
 module.exports = {
   get: get,
   post: post,
-  retrieveScore: retrieveScore,
-  handleGetResponse: handleGetResponse,
   saveScore: saveScore
 }

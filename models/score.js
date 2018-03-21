@@ -70,4 +70,12 @@ Score.toApiScore = (score) => {
   }
 }
 
+Score.retrieve = (uri) => {
+  return Score.findOne({
+    where: {
+      uri: uri
+    }
+  })
+}
+
 module.exports = Score
