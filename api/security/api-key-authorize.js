@@ -1,6 +1,6 @@
 'use strict'
 
-const {ApiKey} = require('../../models/db')
+const ApiKey = require('../../models/api-key')
 const {find} = require('lodash')
 
 module.exports = function authorize (request, response, next) {
