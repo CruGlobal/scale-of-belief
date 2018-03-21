@@ -46,11 +46,10 @@ const Score = sequelize.define('Score', {
     }
   },
   confidence: {
-    type: DataTypes.DOUBLE,
+    type: DataTypes.INTEGER,
     validate: {
       min: 0,
-      max: 1,
-      isFloat: true
+      max: 100
     }
   }
 }, {
