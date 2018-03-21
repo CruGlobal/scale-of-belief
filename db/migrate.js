@@ -1,7 +1,7 @@
 'use strict'
 
 const path = require('path')
-const {sequelize} = require('../models/db/index')
+const sequelize = require('../config/sequelize')
 const Umzug = require('umzug')
 const rollbar = require('../config/rollbar')
 

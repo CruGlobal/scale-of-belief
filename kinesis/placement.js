@@ -1,6 +1,7 @@
 'use strict'
 
-const {Event, sequelize} = require('../models/db/index')
+const sequelize = require('../config/sequelize')
+const Event = require('../models/event')
 const {IdentityStitcher} = require('../models/identity-stitcher')
 const rollbar = require('../config/rollbar')
 

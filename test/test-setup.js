@@ -1,7 +1,7 @@
 'use strict'
 
 const path = require('path')
-const {factory} = require('./factories')
+const factory = require('./factory')
 
 global.__fixturesDir = path.join(__dirname, 'fixtures')
 
