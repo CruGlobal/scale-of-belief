@@ -41,7 +41,7 @@ describe('ScoreController', () => {
       ScoreController.handleGetResponse(score, response)
 
       expect(status).toEqual(200)
-      expect(json).toEqual(score)
+      expect(json).toEqual(Score.toApiScore(score))
     })
   })
 

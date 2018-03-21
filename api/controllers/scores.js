@@ -2,6 +2,7 @@
 
 const Score = require('../../models/score')
 const {Op} = require('sequelize')
+const {forEach} = require('lodash')
 
 module.exports = {
   get: function (request, response) {
@@ -14,7 +15,11 @@ module.exports = {
       }
     }).then((scores) => {
       if (scores && scores.length > 0) {
-        response.json(scores)
+        var transformedScores = []
+        forEach(scores, (score) => {
+          transformedScores.push(Score.toApiScore(score))
+        })
+        response.json(transformedScores)
       } else {
         response.status(404)
         response.json({

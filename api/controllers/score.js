@@ -13,7 +13,7 @@ const get = (request, response) => {
 const post = (request, response) => {
   var requestBody = request.body
   saveScore(requestBody.uri, requestBody.score).then(function (result) {
-    response.json(result[0].dataValues)
+    response.json(Score.toApiScore(result[0].dataValues))
   })
 }
 
@@ -27,7 +27,7 @@ const retrieveScore = (uri) => {
 
 const handleGetResponse = (score, response) => {
   if (score) {
-    response.json(score)
+    response.json(Score.toApiScore(score))
   } else {
     response.status(404)
     response.json({

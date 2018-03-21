@@ -57,4 +57,17 @@ const Score = sequelize.define('Score', {
   underscored: true
 })
 
+Score.toApiScore = (score) => {
+  return {
+    uri: score.uri,
+    score: {
+      unaware: score.unaware,
+      curious: score.curious,
+      follower: score.follower,
+      guide: score.guide,
+      confidence: score.confidence
+    }
+  }
+}
+
 module.exports = Score
