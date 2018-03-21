@@ -59,7 +59,7 @@ User.IDENTITY_FIELDS = [].concat(idFields, eventFields, appFields)
 
 forEach(User.IDENTITY_FIELDS, (field) => {
   User.prototype.__defineGetter__(`has_${field}`, function () {
-    return (this[field] || []).length > 0
+    return (this[field]).length > 0
   })
 })
 
@@ -100,7 +100,7 @@ User.fromEvent = (event) => {
  */
 User.prototype.merge = function (other) {
   forEach(User.IDENTITY_FIELDS, (field) => {
-    this[field] = uniq((this[field] || []).concat(other[field] || []))
+    this[field] = uniq((this[field]).concat(other[field]))
   })
 }
 

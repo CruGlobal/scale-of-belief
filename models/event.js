@@ -149,6 +149,8 @@ const Event = sequelize.define('Event', {
   underscored: true
 })
 
+Event.Fields = Fields
+
 // prototype Fields on Event instances
 forEach(Fields, (index, key) => {
   // Skip event_id and user_id, these are Event columns
@@ -157,7 +159,7 @@ forEach(Fields, (index, key) => {
   }
   Event.prototype.__defineGetter__(key, function () {
     const value = (this.decodedFields || {})[index]
-    // Parse JSON contexts
+    // Parse JSON context
     if (typeof value !== 'undefined' && includes(['contexts', 'derived_contexts'], key)) {
       return new Context(value)
     }

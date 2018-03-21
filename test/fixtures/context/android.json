@@ -1,0 +1,11 @@
+{
+  "schema": "iglu:com.snowplowanalytics.snowplow/contexts/jsonschema/1-0-0",
+  "data": [
+    {
+      "schema": "iglu:com.snowplowanalytics.snowplow/mobile_context/jsonschema/1-0-1",
+      "data": {
+        "androidIdfa": "GnfzTXaSGltsr454irrZ"
+      }
+    }
+  ]
+}
