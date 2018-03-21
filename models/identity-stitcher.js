@@ -5,7 +5,9 @@ const User = require('./user')
 const Event = require('./event')
 const {Op} = require('sequelize')
 const {
+  clone,
   filter,
+  find,
   forEach,
   forIn,
   includes,
@@ -16,6 +18,7 @@ const {
   sortBy,
   sumBy,
   toPairs,
+  without,
   zipObject
 } = require('lodash')
 
@@ -63,13 +66,33 @@ const rejectMatches = (user, matches) => {
 }
 
 /**
+ * Reject matches that would result in an ambiguous identity.
+ * Example: user matches multiple others only on mcid, but if merged with them, gr_master_person_ids differ.
+ * This should create a new user with just mcid
+ *
  * @param {User} user
  * @param {User[]} matches
  * @returns {Promise} Promise representing matches with ambiguous users removed
  */
 const rejectAmbiguous = (user, matches) => {
-  // TODO: Implement
-  return Promise.resolve(matches)
+  // Skip if we have 0 or 1 match
+  if (matches.length <= 1) {
+    return Promise.resolve(matches)
+  }
+  // Test merge with each match and compare with the remaining
+  const rejected = []
+  forEach(matches, (match) => {
+    // Clone use and test merge
+    const dolly = clone(user)
+    dolly.merge(match)
+
+    // Reject match if test merge not samesame as at least 1 remaining match
+    if (find(without(matches, match), (test) => !isSameSame(dolly, test))) {
+      rejected.push(match)
+    }
+  })
+  // Return matches with the rejected removed
+  return Promise.resolve(without(matches, ...rejected))
 }
 
 /**
