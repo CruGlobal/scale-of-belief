@@ -14,7 +14,8 @@ const Score = sequelize.define('Score', {
       } else {
         this.setDataValue('uri', val)
       }
-    }
+    },
+    primaryKey: true
   },
   unaware: {
     type: DataTypes.INTEGER,
@@ -53,7 +54,8 @@ const Score = sequelize.define('Score', {
     }
   }
 }, {
-  tableName: 'scores'
+  tableName: 'scores',
+  underscored: true
 })
 
 module.exports = Score

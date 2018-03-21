@@ -120,6 +120,7 @@ securityDefinitions:
     type: apiKey
     name: X-Api-Key
     in: header
+    x-authorize: 'security/api-key-authorize.js'
 
 responses:
   NotFound:
@@ -164,7 +165,7 @@ definitions:
         minimum: 1
         maximum: 5
       confidence:
-        type: integer
+        type: number
         format: float
         minimum: 0
         maximum: 1
