@@ -24,7 +24,7 @@ module.exports = {
         defaultValue: 1
       },
       confidence: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         defaultValue: 0
       },
       created_at: {
