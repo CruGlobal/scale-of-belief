@@ -11,23 +11,8 @@ const get = (request, response) => {
 }
 
 const post = (request, response) => {
-  sequelize.transaction(function (t) {
-    var requestBody = request.body
-    var requestScore = requestBody.score
-    return Score.upsert(
-      {
-        uri: requestBody.uri,
-        unaware: requestScore.unaware,
-        curious: requestScore.curious,
-        follower: requestScore.follower,
-        guide: requestScore.guide,
-        confidence: requestScore.confidence
-      },
-      {
-        returning: true
-      }
-    )
-  }).then(function (result) {
+  var requestBody = request.body
+  saveScore(requestBody.uri, requestBody.score).then(function (result) {
     response.json(result[0].dataValues)
   })
 }
@@ -51,9 +36,28 @@ const handleGetResponse = (score, response) => {
   }
 }
 
+const saveScore = (uri, score) => {
+  return sequelize.transaction(function (t) {
+    return Score.upsert(
+      {
+        uri: uri,
+        unaware: score.unaware,
+        curious: score.curious,
+        follower: score.follower,
+        guide: score.guide,
+        confidence: score.confidence
+      },
+      {
+        returning: true
+      }
+    )
+  })
+}
+
 module.exports = {
   get: get,
   post: post,
   retrieveScore: retrieveScore,
-  handleGetResponse: handleGetResponse
+  handleGetResponse: handleGetResponse,
+  saveScore: saveScore
 }
