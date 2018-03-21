@@ -2,7 +2,7 @@
 
 const path = require('path')
 const fs = require('fs')
-const fixture = fs.readFileSync(path.join(__fixturesDir, 'context.json'), 'utf-8')
+const fixture = fs.readFileSync(path.join(__fixturesDir, 'context', 'contentscores.json'), 'utf-8')
 const Context = require('./context')
 
 describe('Context', () => {
