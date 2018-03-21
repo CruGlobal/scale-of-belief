@@ -7,7 +7,7 @@ const Score = require('../../models/score')
 describe('ScoreController', () => {
   let score
   beforeEach(() => {
-    return factory.build('basic_score').then(basicScore => { score = basicScore })
+    return factory.build('existing_score').then(existingScore => { score = existingScore })
   })
 
   test('is defined', () => {
@@ -59,6 +59,78 @@ describe('ScoreController', () => {
       jest.spyOn(Score, 'retrieve').mockImplementation(() => Promise.resolve(null))
 
       ScoreController.get(request, response)
+    })
+  })
+
+  describe('saves one score', () => {
+    let createdScore, updatedScore
+    beforeEach(() => {
+      return Promise.all([
+        factory.build('created_score'),
+        factory.build('updated_score')
+      ]).then(scores => {
+        createdScore = scores[0]
+        updatedScore = scores[1]
+      })
+    })
+
+    test('should create a new score', done => {
+      const newUri = 'http://somewhere.com/1'
+      const newScore = {
+        unaware: 1,
+        curious: 5,
+        follower: 3,
+        guide: 1,
+        confidence: 98
+      }
+      const request = {
+        body: {
+          uri: newUri,
+          score: newScore
+        }
+      }
+      const result = [ createdScore, true ]
+
+      const response = {
+        json: (jsonToSet) => {
+          expect(jsonToSet).toBeDefined()
+          expect(jsonToSet).toEqual(request.body)
+          done()
+        }
+      }
+
+      jest.spyOn(Score, 'save').mockImplementation(() => Promise.resolve(result))
+
+      ScoreController.post(request, response)
+    })
+
+    test('should update an existing score', done => {
+      const newScore = {
+        unaware: 2,
+        curious: 2,
+        follower: 2,
+        guide: 2,
+        confidence: 50
+      }
+      const request = {
+        body: {
+          uri: score.uri,
+          score: newScore
+        }
+      }
+      const result = [ updatedScore, true ]
+
+      const response = {
+        json: (jsonToSet) => {
+          expect(jsonToSet).toBeDefined()
+          expect(jsonToSet).toEqual(request.body)
+          done()
+        }
+      }
+
+      jest.spyOn(Score, 'save').mockImplementation(() => Promise.resolve(result))
+
+      ScoreController.post(request, response)
     })
   })
 })

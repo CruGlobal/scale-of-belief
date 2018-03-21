@@ -78,4 +78,22 @@ Score.retrieve = (uri) => {
   })
 }
 
+Score.save = (uri, score) => {
+  return sequelize.transaction(function (t) {
+    return Score.upsert(
+      {
+        uri: uri,
+        unaware: score.unaware,
+        curious: score.curious,
+        follower: score.follower,
+        guide: score.guide,
+        confidence: score.confidence
+      },
+      {
+        returning: true
+      }
+    )
+  })
+}
+
 module.exports = Score
