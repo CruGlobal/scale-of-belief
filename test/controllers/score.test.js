@@ -34,6 +34,27 @@ describe('ScoreController', () => {
 
       ScoreController.get(request, response)
     })
+
+    test('should return score even if the client sends query parameters', done => {
+      var request = {
+        query: {
+          uri: score.uri + '?some=value'
+        }
+      }
+
+      var response = {
+        json: (jsonToSet) => {
+          expect(jsonToSet).toBeDefined()
+          expect(jsonToSet).toEqual(Score.toApiScore(score))
+          done()
+        }
+      }
+
+      jest.spyOn(Score, 'retrieve').mockImplementation(() => Promise.resolve(score))
+
+      ScoreController.get(request, response)
+      expect(Score.retrieve).toHaveBeenCalledWith(score.uri)
+    })
   })
 
   describe('has no matches', () => {
@@ -72,6 +93,10 @@ describe('ScoreController', () => {
         createdScore = scores[0]
         updatedScore = scores[1]
       })
+    })
+
+    afterEach(() => {
+      return Score.destroy({truncate: true})
     })
 
     test('should create a new score', done => {
@@ -131,6 +156,42 @@ describe('ScoreController', () => {
       jest.spyOn(Score, 'save').mockImplementation(() => Promise.resolve(result))
 
       ScoreController.post(request, response)
+    })
+
+    test('should save score without query parameters', done => {
+      const newUri = 'http://somewhere.com/1'
+      const queryParams = '?q1=v1&q2=v2'
+      const newScore = {
+        unaware: 1,
+        curious: 5,
+        follower: 3,
+        guide: 1,
+        confidence: 98
+      }
+      const request = {
+        body: {
+          uri: newUri + queryParams,
+          score: newScore
+        }
+      }
+      const expectedJson = {
+        uri: newUri,
+        score: newScore
+      }
+      const result = [ createdScore, true ]
+
+      const response = {
+        json: (jsonToSet) => {
+          expect(jsonToSet).toBeDefined()
+          expect(jsonToSet).toEqual(expectedJson)
+          done()
+        }
+      }
+
+      jest.spyOn(Score, 'save').mockImplementation(() => Promise.resolve(result))
+
+      ScoreController.post(request, response)
+      expect(Score.save).toHaveBeenCalledWith(newUri, newScore)
     })
   })
 })
