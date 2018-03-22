@@ -175,6 +175,7 @@ const scoreMatch = (user, match) => {
       case 'user_fingerprint':
       case 'network_userid':
         return pair[1].length * 1
+      /* istanbul ignore next */
       default:
         return 0
     }
