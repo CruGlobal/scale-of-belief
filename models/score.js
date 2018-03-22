@@ -57,4 +57,43 @@ const Score = sequelize.define('Score', {
   underscored: true
 })
 
+Score.toApiScore = (score) => {
+  return {
+    uri: score.uri,
+    score: {
+      unaware: score.unaware,
+      curious: score.curious,
+      follower: score.follower,
+      guide: score.guide,
+      confidence: score.confidence
+    }
+  }
+}
+
+Score.retrieve = (uri) => {
+  return Score.findOne({
+    where: {
+      uri: uri
+    }
+  })
+}
+
+Score.save = (uri, score) => {
+  return sequelize.transaction(function (t) {
+    return Score.upsert(
+      {
+        uri: uri,
+        unaware: score.unaware,
+        curious: score.curious,
+        follower: score.follower,
+        guide: score.guide,
+        confidence: score.confidence
+      },
+      {
+        returning: true
+      }
+    )
+  })
+}
+
 module.exports = Score
