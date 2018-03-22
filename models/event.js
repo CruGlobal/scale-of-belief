@@ -143,7 +143,24 @@ const Fields = {
 
 const Event = sequelize.define('Event', {
   event_id: DataTypes.UUID,
-  user_id: DataTypes.BIGINT
+  user_id: DataTypes.BIGINT,
+  uri: {
+    type: DataTypes.STRING,
+    get () {
+      var value = this.getDataValue('uri')
+      if (value) {
+        return value.toLowerCase()
+      }
+      return value
+    },
+    set (val) {
+      if (val) {
+        this.setDataValue('uri', val.toLowerCase())
+      } else {
+        this.setDataValue('uri', val)
+      }
+    }
+  }
 }, {
   tableName: 'events',
   underscored: true
