@@ -1,6 +1,7 @@
 'use strict'
 
 const {
+  clone,
   forEach,
   map,
   toLower,
@@ -97,11 +98,21 @@ User.fromEvent = (event) => {
 /**
  * Merges all identity fields and removes duplicates
  * @param {User} other
+ * @returns {User} self
  */
 User.prototype.merge = function (other) {
   forEach(User.IDENTITY_FIELDS, (field) => {
     this[field] = uniq((this[field]).concat(other[field]))
   })
+  return this
+}
+
+/**
+ * Returns new User with same properties
+ * @returns {User}
+ */
+User.prototype.clone = function () {
+  return new User(clone(this.dataValues))
 }
 
 module.exports = User

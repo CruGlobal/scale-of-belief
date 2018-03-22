@@ -93,7 +93,7 @@ describe('User', () => {
     })
 
     it('should merge all identity fields, removing duplicates', () => {
-      user.merge(other)
+      expect(user.merge(other)).toBe(user)
       expect(user.dataValues).toEqual({
         user_fingerprint: [],
         android_idfa: ['android1'],
@@ -105,6 +105,20 @@ describe('User', () => {
         gr_master_person_id: ['d0bfe465-86a3-49a6-9341-c0cbfdf305f4'],
         sso_guid: ['0d0d8a0b-33f4-462b-89fe-838fce187feb', 'c4f2282f-1c4e-4fdb-ac29-dde5c1c0e913']
       })
+    })
+  })
+
+  describe('prototype.clone()', () => {
+    let user
+    beforeEach(() => {
+      return factory.build('authenticated_web_user').then(webUser => { user = webUser })
+    })
+
+    it('should clone the user', () => {
+      let clone = user.clone()
+      expect(clone).toBeInstanceOf(User)
+      expect(clone.dataValues).toEqual(user.dataValues)
+      expect(clone).not.toBe(user)
     })
   })
 })
