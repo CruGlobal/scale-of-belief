@@ -5,7 +5,6 @@ const User = require('./user')
 const Event = require('./event')
 const {Op} = require('sequelize')
 const {
-  clone,
   filter,
   find,
   forEach,
@@ -82,12 +81,11 @@ const rejectAmbiguous = (user, matches) => {
   // Test merge with each match and compare with the remaining
   const rejected = []
   forEach(matches, (match) => {
-    // Clone use and test merge
-    const dolly = clone(user)
-    dolly.merge(match)
+    // Clone user and test merge
+    const dolly = user.clone().merge(match)
 
     // Reject match if test merge not samesame as at least 1 remaining match
-    if (find(without(matches, match), (test) => !isSameSame(dolly, test))) {
+    if (find(without(matches, match), test => !isSameSame(dolly, test))) {
       rejected.push(match)
     }
   })

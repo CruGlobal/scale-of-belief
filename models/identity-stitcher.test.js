@@ -5,9 +5,10 @@ const {
   UnknownUserError
 } = require('./identity-stitcher')
 const factory = require('../test/factory')
+const chance = require('chance').Chance()
 const User = require('./user')
 const Event = require('./event')
-const {sortBy, uniq} = require('lodash')
+const {sortBy, uniq, map} = require('lodash')
 
 describe('IdentityStitcher', () => {
   let user
@@ -15,16 +16,16 @@ describe('IdentityStitcher', () => {
     return factory.build('authenticated_web_user').then(webUser => { user = webUser })
   })
 
-  test('is defined', () => {
+  it('is defined', () => {
     expect(IdentityStitcher).toBeDefined()
   })
 
-  test('event without user identities should throw UnknownUserError', () => {
+  it('event without user identities should throw UnknownUserError', () => {
     return expect(IdentityStitcher(new Event())).rejects.toThrowError(UnknownUserError)
   })
 
   describe('has no matches', () => {
-    test('should save the user', () => {
+    it('should save the user', () => {
       jest.spyOn(User, 'fromEvent').mockImplementation(() => user)
 
       return IdentityStitcher(new Event()).then(identity => {
@@ -41,7 +42,7 @@ describe('IdentityStitcher', () => {
       return factory.create('web_user', {mcid: user.mcid}).then(webUser => { other = webUser })
     })
 
-    test('should merge user', () => {
+    it('should merge user', () => {
       jest.spyOn(User, 'fromEvent').mockImplementation(() => user)
 
       return IdentityStitcher(new Event()).then(identity => {
@@ -59,7 +60,7 @@ describe('IdentityStitcher', () => {
       return factory.create('authenticated_web_user', {mcid: user.mcid}).then(webUser => { other = webUser })
     })
 
-    test('should create new user and not merge', () => {
+    it('should create new user and not merge', () => {
       jest.spyOn(User, 'fromEvent').mockImplementation(() => user)
 
       return IdentityStitcher(new Event()).then(identity => {
@@ -80,7 +81,7 @@ describe('IdentityStitcher', () => {
       ]).then((users) => { others = users })
     })
 
-    test('should merge users and return best match', () => {
+    it('should merge users and return best match', () => {
       jest.spyOn(User, 'fromEvent').mockImplementation(() => user)
 
       return IdentityStitcher(new Event()).then(identity => {
@@ -101,11 +102,12 @@ describe('IdentityStitcher', () => {
       return Promise.all([
         factory.create('web_user', {gr_master_person_id: user.gr_master_person_id}),
         factory.create('authenticated_web_user', {mcid: user.mcid}), // false positive
-        factory.create('web_user', {sso_guid: user.sso_guid})
+        factory.create('web_user', {sso_guid: user.sso_guid}),
+        factory.create('web_user', {mcid: user.mcid, sso_guid: [chance.guid()]}) // false positive
       ]).then((users) => { others = users })
     })
 
-    test('should merge users and return best match', () => {
+    it('should merge users and return best match', () => {
       jest.spyOn(User, 'fromEvent').mockImplementation(() => user)
 
       return IdentityStitcher(new Event()).then(identity => {
@@ -114,6 +116,31 @@ describe('IdentityStitcher', () => {
         expect(identity.id).toEqual(others[0].id)
         expect(sortBy(identity.mcid)).toEqual(sortBy(mcids))
         expect(identity.gr_master_person_id).not.toEqual(expect.arrayContaining(others[1].gr_master_person_id))
+      })
+    })
+  })
+
+  describe('has multiple matches that are ambiguous', () => {
+    let others
+    beforeEach(() => {
+      return Promise.all([
+        factory.create('authenticated_web_user', {domain_userid: ['1234567890']}),
+        factory.create('authenticated_web_user', {domain_userid: ['1234567890']})
+      ]).then((users) => { others = users })
+    })
+    beforeEach(() => {
+      return factory.build('web_user', {domain_userid: ['1234567890']}).then(webUser => { user = webUser })
+    })
+
+    it('should reject ambiguous and not merge', () => {
+      jest.spyOn(User, 'fromEvent').mockImplementation(() => user)
+
+      return IdentityStitcher(new Event()).then(identity => {
+        const ids = map(others, 'id')
+        expect(identity).toBe(user)
+        expect(identity.id).toBeDefined()
+        expect(identity).toBe(user)
+        expect(ids).not.toEqual(expect.arrayContaining([identity.id]))
       })
     })
   })
