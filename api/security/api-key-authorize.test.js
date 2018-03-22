@@ -11,17 +11,17 @@ describe('Api Key Authorizer', () => {
   })
 
   describe('has valid API key', () => {
-    let apiKey = {
-      api_key: 'some-api-key',
-      api_pattern: [
-        '.*'
-      ]
-    }
-
-    let requestHeaders = {}
-    requestHeaders['x-api-key'] = apiKey.api_key
-
     test('should succeed on GET request', done => {
+      const apiKey = {
+        api_key: 'some-api-key',
+        api_pattern: [
+          '.*'
+        ]
+      }
+
+      const requestHeaders = {}
+      requestHeaders['x-api-key'] = apiKey.api_key
+
       const request = {
         method: 'GET',
         query: {
@@ -40,6 +40,14 @@ describe('Api Key Authorizer', () => {
     })
 
     test('should succeed on POST request', done => {
+      const apiKey = {
+        api_key: 'some-api-key',
+        api_pattern: '.*'
+      }
+
+      const requestHeaders = {}
+      requestHeaders['x-api-key'] = apiKey.api_key
+
       const request = {
         method: 'POST',
         body: {
@@ -105,20 +113,18 @@ describe('Api Key Authorizer', () => {
   })
 
   describe('has API key without access to resource', () => {
-    let apiKey = {
-      api_key: 'some-api-key',
-      api_pattern: [
-        '.*nowhere.*'
-      ]
-    }
-
-    let invalidRequestHeaders = {}
-    invalidRequestHeaders['x-api-key'] = apiKey.api_key
-
     let unauthorizedError = new Error('You do not have access to this resource')
     unauthorizedError.status = 401
 
     test('should return Unauthorized on GET request', done => {
+      const apiKey = {
+        api_key: 'some-api-key',
+        api_pattern: null
+      }
+
+      const invalidRequestHeaders = {}
+      invalidRequestHeaders['x-api-key'] = apiKey.api_key
+
       const request = {
         method: 'GET',
         query: {
@@ -138,6 +144,14 @@ describe('Api Key Authorizer', () => {
     })
 
     test('should return Unauthorized on POST request', done => {
+      const apiKey = {
+        api_key: 'some-api-key',
+        api_pattern: 'http://somewhere_else.com'
+      }
+
+      const invalidRequestHeaders = {}
+      invalidRequestHeaders['x-api-key'] = apiKey.api_key
+
       const request = {
         method: 'POST',
         body: {
