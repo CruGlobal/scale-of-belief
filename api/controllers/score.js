@@ -24,10 +24,7 @@ const post = (request, response) => {
 }
 
 const removeQueryParameters = (uri) => {
-  if (uri.includes('?')) {
-    return uri.substring(0, uri.indexOf('?'))
-  }
-  return uri
+  return uri.split('?')[0].split('#')[0]
 }
 
 module.exports = {
