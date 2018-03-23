@@ -94,6 +94,8 @@ const rejectAmbiguous = (user, matches) => {
 }
 
 /**
+ * Merges resulting matches and updates associated merged events
+ *
  * @param {User} user
  * @param {User[]} matches
  * @returns {Promise} Promise representing final saved user
@@ -133,6 +135,8 @@ const mergeMatches = (user, matches, transaction) => {
 
 /**
  * Performs identity stitching for the given event
+ * Ads the user_id to the event but does not save it.
+ *
  * @param {Event} event
  * @returns {Promise<any>}
  */
@@ -149,6 +153,10 @@ const performIdentityStitching = (event) => {
         .then(matches => rejectMatches(user, matches))
         .then(matches => rejectAmbiguous(user, matches))
         .then(matches => mergeMatches(user, matches, transaction))
+        .then(identity => {
+          event.user_id = identity.id
+          return identity
+        })
     }))
   })
 }
