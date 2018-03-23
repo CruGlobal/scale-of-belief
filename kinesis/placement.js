@@ -4,25 +4,29 @@ const sequelize = require('../config/sequelize')
 const Event = require('../models/event')
 const {IdentityStitcher} = require('../models/identity-stitcher')
 const rollbar = require('../config/rollbar')
+const logger = require('../config/logger')
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
   const completed = []
   if (typeof lambdaEvent['Records'] !== 'undefined') {
     lambdaEvent['Records'].forEach((record) => {
+      logger.debug(record)
       const eventCompleted = new Promise((resolve) => {
-        const event = Event.fromRecord(record)
-        IdentityStitcher(event).then(user => {
-          resolve()
-          // event.user_id = user.id
-          // event.save().then(event => {
-          //   // Calculate placement
-          //   resolve()
-          // }, error => {
-          //   resolve()
-          // })
-        }, error => {
-          resolve(error)
-        })
+        try {
+          const event = Event.fromRecord(record)
+          IdentityStitcher(event).then(user => {
+            event.save().then(event => {
+              resolve()
+            }, error => {
+              resolve(error)
+            })
+          }, error => {
+            resolve(error)
+          })
+        } catch (e) {
+          logger.error(e)
+          resolve(e)
+        }
       })
       completed.push(eventCompleted)
     })

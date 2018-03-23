@@ -2,11 +2,14 @@
 
 const {
   forEach,
-  includes
+  includes,
+  mapValues
 } = require('lodash')
 const Context = require('./context')
 const {DataTypes} = require('sequelize')
 const sequelize = require('../config/sequelize')
+const Url = require('url')
+const logger = require('../config/logger')
 const Fields = {
   app_id: 0,
   platform: 1,
@@ -185,12 +188,57 @@ forEach(Fields, (index, key) => {
 })
 
 Event.fromRecord = (record) => {
-  const data = Buffer.from(record.kinesis.data, 'base64').toString('ascii')
+  let data
+  try {
+    data = Buffer.from(record.kinesis.data, 'base64').toString('ascii')
+  } catch (e) {
+    throw new InvalidEventError('Malformed kinesis event')
+  }
   const decoded = data.split('\t')
+  // Throw an error if we have less fields than we should. Snowplow can add more, but it doesn't remove any existing.
+  if (decoded.length < Object.keys(Fields).length) {
+    throw new InvalidEventError('Kinesis event is missing fields')
+  }
   const event = new Event()
   event.event_id = decoded[Fields.event_id] || null
   event.decodedFields = decoded
+  logger.debug(mapValues(Fields, value => decoded[value]))
+  event.uri = uriFromEvent(event)
   return event
 }
+
+/**
+ * @param {Event} event
+ * @returns {String|NULL}
+ */
+function uriFromEvent (event) {
+  if (event.page_url) {
+    try {
+      const url = Url.parse(event.page_url)
+      return Url.format({
+        protocol: url.protocol,
+        slashes: true,
+        hostname: url.hostname,
+        pathname: url.pathname
+      })
+    } catch (e) {
+      // TypeError - page_url was not a string
+      return null
+    }
+  } else if (event.contexts && event.contexts.hasSchema(Context.SCHEMA_MOBILE)) {
+    // TODO: Build mobile app url
+    return Url.format({
+      protocol: 'mobile',
+      slashes: true,
+      hostname: 'app-name',
+      pathname: 'event/path'
+    })
+  }
+  return null
+}
+
+class InvalidEventError extends Error {}
+
+Event.InvalidEventError = InvalidEventError
 
 module.exports = Event
