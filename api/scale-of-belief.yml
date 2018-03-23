@@ -35,6 +35,7 @@ paths:
           format: uri
       security:
         - ApiKeyAuth: []
+        - JwtAuth: []
       responses:
         200:
           description: OK
@@ -58,6 +59,7 @@ paths:
             $ref: '#/definitions/ContentScore'
       security:
         - ApiKeyAuth: []
+        - JwtAuth: []
       responses:
         200:
           description: OK
@@ -81,6 +83,7 @@ paths:
           format: uri
       security:
         - ApiKeyAuth: []
+        - JwtAuth: []
       responses:
         200:
           description: OK
@@ -105,6 +108,7 @@ paths:
           format: uri
       security:
         - ApiKeyAuth: []
+        - JwtAuth: []
       responses:
         200:
           description: OK
@@ -123,6 +127,11 @@ securityDefinitions:
     name: X-Api-Key
     in: header
     x-authorize: 'security/api-key-authorize.js'
+  JwtAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    x-authorize: 'security/jwt-authorize.js'
 
 responses:
   NotFound:
