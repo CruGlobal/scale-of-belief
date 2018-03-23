@@ -2,6 +2,7 @@
 
 const ApiKey = require('../../models/api-key')
 const {find} = require('lodash')
+const logger = require('../../config/logger')
 
 module.exports = function authorize (request, response, next) {
   validate(request, function (error, availableScopes) {
@@ -75,7 +76,7 @@ function determineScopes (auth, callback) {
         callback(buildInvalidApiKey(), [])
       }
     }).catch(function (error) {
-      console.log(error)
+      logger.error(error)
       callback(buildInvalidApiKey(), [])
     })
 }

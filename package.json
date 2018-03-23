@@ -44,7 +44,8 @@
     "sequelize": "^4.33.0",
     "serverless-http": "^1.5.3",
     "swaggerize-express": "^4.0.5",
-    "umzug": "^2.1.0"
+    "umzug": "^2.1.0",
+    "winston": "^2.4.1"
   },
   "standard": {
     "globals": [
