@@ -42,10 +42,6 @@ describe('Score', () => {
       return factory.create('existing_score').then(existingScore => { score = existingScore })
     })
 
-    afterEach(() => {
-      return Score.destroy({truncate: true})
-    })
-
     it('should return an existing score', done => {
       Score.retrieve(score.uri).then((result) => {
         expect(result).toBeDefined()
