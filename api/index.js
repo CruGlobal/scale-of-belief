@@ -8,7 +8,9 @@ const api = express()
 const rollbar = require('../config/rollbar')
 const bodyParser = require('body-parser')
 const jsonErrorHandler = require(path.join(__dirname, 'errors/jsonHandler'))
+const jwt = require('express-jwt')
 
+api.use(jwt({ secret: process.env.JWT_SECRET }))
 api.use(bodyParser.json())
 api.use(swaggerizeExpress({
   api: path.join(__dirname, 'scale-of-belief.yml'),
