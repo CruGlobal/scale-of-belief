@@ -120,6 +120,25 @@ paths:
               format: uri
         401:
           $ref: '#/responses/Unauthorized'
+  /login:
+    post:
+      summary: Login to the API
+      tags:
+        - login
+      parameters:
+        - name: body
+          in: body
+          description: Login credentials
+          schema:
+            $ref: '#/definitions/Credentials'
+      security:
+      responses:
+        200:
+          description: OK
+          schema:
+            type: string
+        401:
+          $ref: '#/responses/Unauthorized'
 
 securityDefinitions:
   ApiKeyAuth:
@@ -185,6 +204,13 @@ definitions:
       - follower
       - guide
       - confidence
+  Credentials:
+    type: object
+    properties:
+      ticket:
+        type: string
+    required:
+      - ticket
   Error:
     type: object
     properties:
