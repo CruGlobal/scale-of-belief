@@ -65,7 +65,7 @@ describe('Api Key Authorizer', () => {
     let unauthorizedError = new Error('Unauthorized')
     unauthorizedError.status = 401
 
-    test('should should return Unauthorized on GET request', done => {
+    test('should return Unauthorized on GET request', done => {
       const request = {
         method: 'GET',
         query: {
@@ -84,7 +84,7 @@ describe('Api Key Authorizer', () => {
       Authorizer(request, response, next)
     })
 
-    test('should should return Unauthorized on POST request', done => {
+    test('should return Unauthorized on POST request', done => {
       const request = {
         method: 'POST',
         body: {
@@ -118,7 +118,7 @@ describe('Api Key Authorizer', () => {
     let unauthorizedError = new Error('You do not have access to this resource')
     unauthorizedError.status = 401
 
-    test('should should return Unauthorized on GET request', done => {
+    test('should return Unauthorized on GET request', done => {
       const request = {
         method: 'GET',
         query: {
@@ -137,7 +137,7 @@ describe('Api Key Authorizer', () => {
       Authorizer(request, response, next)
     })
 
-    test('should should return Unauthorized on POST request', done => {
+    test('should return Unauthorized on POST request', done => {
       const request = {
         method: 'POST',
         body: {
