@@ -35,10 +35,13 @@
   },
   "dependencies": {
     "body-parser": "^1.18.2",
+    "cas": "0.0.3",
     "dotenv": "^5.0.0",
     "express": "^4.16.2",
     "express-jwt": "^5.3.1",
     "glob": "^7.1.2",
+    "https": "^1.0.0",
+    "jsonwebtoken": "^8.2.0",
     "pg": "^7.4.1",
     "pg-hstore": "^2.3.2",
     "rollbar": "^2.3.9",

@@ -121,6 +121,21 @@ paths:
         401:
           $ref: '#/responses/Unauthorized'
   /login:
+    get:
+      summary: Testing
+      tags:
+        - login
+      parameters:
+        - name: ticket
+          description: Service ticket
+          in: query
+          type: string
+      security:
+      responses:
+        200:
+          description: OK
+          schema:
+            type: string
     post:
       summary: Login to the API
       tags:
