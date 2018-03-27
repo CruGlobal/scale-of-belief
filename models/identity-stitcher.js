@@ -140,7 +140,7 @@ const mergeMatches = (user, matches, transaction) => {
 
 /**
  * Performs identity stitching for the given event
- * Ads the user_id to the event but does not save it.
+ * Adds the user_id to the event but does not save it.
  *
  * @param {Event} event
  * @returns {Promise<any>}
