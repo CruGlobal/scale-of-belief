@@ -41,8 +41,8 @@ const post = (request, response) => {
 
 const validateTicket = (serviceTicket, callback) => {
   var path = '/cas/p3/serviceValidate'
-  var service = 'service=' + process.env.THE_KEY_SERVICE_URL
-  var ticket = 'ticket=' + serviceTicket
+  var service = 'service=' + encodeURIComponent(process.env.THE_KEY_SERVICE_URL)
+  var ticket = 'ticket=' + encodeURIComponent(serviceTicket)
   const format = 'format=JSON'
   const options = {
     hostname: 'thekey.me',
