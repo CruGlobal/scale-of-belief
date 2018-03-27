@@ -90,6 +90,7 @@ Score.save = (uri, score) => {
         confidence: score.confidence
       },
       {
+        transaction: t,
         returning: true
       }
     )
