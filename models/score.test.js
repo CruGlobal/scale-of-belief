@@ -42,18 +42,18 @@ describe('Score', () => {
       return factory.create('existing_score').then(existingScore => { score = existingScore })
     })
 
-    it('should return an existing score', done => {
-      Score.retrieve(score.uri).then((result) => {
+    it('should return an existing score', () => {
+      expect.assertions(2)
+      return Score.retrieve(score.uri).then((result) => {
         expect(result).toBeDefined()
         expect(result.dataValues).toEqual(score.dataValues)
-        done()
       })
     })
 
-    it('should not return an existing score', done => {
-      Score.retrieve('http://random.uri.com').then((result) => {
+    it('should not return an existing score', () => {
+      expect.assertions(1)
+      return Score.retrieve('http://random.uri.com').then((result) => {
         expect(result).toBeNull()
-        done()
       })
     })
   })
