@@ -34,7 +34,7 @@ const post = (request, response) => {
       util.buildUnauthorizedResponse(response)
       return
     }
-    var guid = json.serviceResponse.authenticationSuccess.attributes.theKeyGuid[0].toLowerCase()
+    var guid = json.serviceResponse.authenticationSuccess.attributes.ssoGuid[0].toLowerCase()
     buildJwt(guid, response)
   })
 }

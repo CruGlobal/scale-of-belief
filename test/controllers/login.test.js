@@ -18,7 +18,7 @@ describe('LoginController', () => {
         '"serviceResponse": {' +
           '"authenticationSuccess": {' +
             '"attributes": {' +
-              '"theKeyGuid": ["' + guid + '"] ' +
+              '"ssoGuid": ["' + guid + '"] ' +
             '}' +
           '}' +
         '}' +
@@ -194,7 +194,7 @@ describe('LoginController', () => {
         '"serviceResponse": {' +
           '"authenticationSuccess": {' +
             '"attributes": {' +
-              '"theKeyGuid": ["' + guid + '"] ' +
+              '"ssoGuid": ["' + guid + '"] ' +
             '}' +
           '}' +
         '}' +
