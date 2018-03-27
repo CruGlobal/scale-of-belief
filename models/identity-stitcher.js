@@ -94,6 +94,8 @@ const rejectAmbiguous = (user, matches) => {
 }
 
 /**
+ * Merges resulting matches and updates associated merged events
+ *
  * @param {User} user
  * @param {User[]} matches
  * @returns {Promise} Promise representing final saved user
@@ -101,7 +103,7 @@ const rejectAmbiguous = (user, matches) => {
 const mergeMatches = (user, matches, transaction) => {
   if (isEmpty(matches)) {
     // No matches found, save new user
-    return user.save()
+    return user.save({transaction: transaction})
   } else {
     // Add new user to matches
     matches = matches.concat(user)
@@ -124,15 +126,22 @@ const mergeMatches = (user, matches, transaction) => {
       .all(queries) // wait for deletes
       .then(() => winner.save({transaction: transaction})) // save user
       .then(identity => {
-        return Event // update Events linked to merged matches
-          .update({user_id: identity.id}, {where: {user_id: {[Op.in]: loserIds}}, transaction: transaction})
-          .then(() => Promise.resolve(identity)) // return final user
+        // update Events linked to merged matches (if we merged)
+        if (loserIds.length > 0) {
+          return Event
+            .update({user_id: identity.id}, {where: {user_id: {[Op.in]: loserIds}}, transaction: transaction})
+            .then(() => Promise.resolve(identity)) // return final user
+        } else {
+          return Promise.resolve(identity)
+        }
       })
   }
 }
 
 /**
  * Performs identity stitching for the given event
+ * Adds the user_id to the event but does not save it.
+ *
  * @param {Event} event
  * @returns {Promise<any>}
  */
@@ -149,6 +158,10 @@ const performIdentityStitching = (event) => {
         .then(matches => rejectMatches(user, matches))
         .then(matches => rejectAmbiguous(user, matches))
         .then(matches => mergeMatches(user, matches, transaction))
+        .then(identity => {
+          event.user_id = identity.id
+          return identity
+        })
     }))
   })
 }
