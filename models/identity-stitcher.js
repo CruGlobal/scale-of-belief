@@ -103,7 +103,7 @@ const rejectAmbiguous = (user, matches) => {
 const mergeMatches = (user, matches, transaction) => {
   if (isEmpty(matches)) {
     // No matches found, save new user
-    return user.save()
+    return user.save({transaction: transaction})
   } else {
     // Add new user to matches
     matches = matches.concat(user)
@@ -126,9 +126,14 @@ const mergeMatches = (user, matches, transaction) => {
       .all(queries) // wait for deletes
       .then(() => winner.save({transaction: transaction})) // save user
       .then(identity => {
-        return Event // update Events linked to merged matches
-          .update({user_id: identity.id}, {where: {user_id: {[Op.in]: loserIds}}, transaction: transaction})
-          .then(() => Promise.resolve(identity)) // return final user
+        // update Events linked to merged matches (if we merged)
+        if (loserIds.length > 0) {
+          return Event
+            .update({user_id: identity.id}, {where: {user_id: {[Op.in]: loserIds}}, transaction: transaction})
+            .then(() => Promise.resolve(identity)) // return final user
+        } else {
+          return Promise.resolve(identity)
+        }
       })
   }
 }

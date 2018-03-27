@@ -10,6 +10,7 @@ const {DataTypes} = require('sequelize')
 const sequelize = require('../config/sequelize')
 const Url = require('url')
 const logger = require('../config/logger')
+// See https://github.com/snowplow/snowplow/wiki/canonical-event-model
 const Fields = {
   app_id: 0,
   platform: 1,
@@ -180,7 +181,7 @@ forEach(Fields, (index, key) => {
   Event.prototype.__defineGetter__(key, function () {
     const value = (this.decodedFields || {})[index]
     // Parse JSON context
-    if (typeof value !== 'undefined' && includes(['contexts', 'derived_contexts'], key)) {
+    if (typeof value !== 'undefined' && includes(['contexts', 'derived_contexts', 'unstruct_event'], key)) {
       return new Context(value)
     }
     return value
@@ -202,7 +203,7 @@ Event.fromRecord = (record) => {
   const event = new Event()
   event.event_id = decoded[Fields.event_id] || null
   event.decodedFields = decoded
-  logger.debug(mapValues(Fields, value => decoded[value]))
+  logger.debug(JSON.stringify(mapValues(Fields, value => decoded[value])))
   event.uri = uriFromEvent(event)
   return event
 }
@@ -220,19 +221,25 @@ function uriFromEvent (event) {
         slashes: true,
         hostname: url.hostname,
         pathname: url.pathname
-      })
+      }).toLowerCase()
     } catch (e) {
       // TypeError - page_url was not a string
       return null
     }
-  } else if (event.contexts && event.contexts.hasSchema(Context.SCHEMA_MOBILE)) {
-    // TODO: Build mobile app url
+  } else if (event.platform === 'mob') { // TODO: Might be different on iOS
+    // TODO: GodTools is only app sending events. This will need to get refactored when we have more than screen_views
+    const unstruct = event.unstruct_event
+    let pathname = ''
+    if (unstruct && unstruct.hasSchema(Context.SCHEMA_SCREEN_VIEW)) {
+      const data = unstruct.dataFor(Context.SCHEMA_SCREEN_VIEW)
+      pathname = 'screen_view/' + data.name.replace(/[^a-zA-Z0-9-_]/g, '')
+    }
     return Url.format({
       protocol: 'mobile',
       slashes: true,
-      hostname: 'app-name',
-      pathname: 'event/path'
-    })
+      hostname: event.app_id, // GodTools
+      pathname: pathname
+    }).toLowerCase()
   }
   return null
 }

@@ -11,6 +11,8 @@ class Context {
 
   static get SCHEMA_MOBILE () { return 'iglu:com.snowplowanalytics.snowplow/mobile_context/jsonschema' }
 
+  static get SCHEMA_SCREEN_VIEW () { return 'iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema' }
+
   constructor (context) {
     this.context = typeof context === 'string' ? JSON.parse(context) : context
   }

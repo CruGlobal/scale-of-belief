@@ -13,7 +13,12 @@ const defaults = {
   // Disable operator aliases, we don't use them (also disables deprecation warning).
   operatorsAliases: false,
   // Use logger for logging
-  logging: (msg) => logger.debug(msg)
+  logging: (msg) => logger.debug(msg),
+  pool: {
+    max: 10,
+    idle: 500,
+    acquire: 30000
+  }
 }
 
 module.exports = {
