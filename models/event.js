@@ -3,7 +3,8 @@
 const {
   forEach,
   includes,
-  mapValues
+  mapValues,
+  startsWith
 } = require('lodash')
 const Context = require('./context')
 const {DataTypes} = require('sequelize')
@@ -201,7 +202,7 @@ Event.fromRecord = (record) => {
     throw new InvalidEventError('Kinesis event is missing fields')
   }
   const event = new Event()
-  event.event_id = decoded[Fields.event_id] || null
+  event.event_id = decoded[Fields.event_id]
   event.decodedFields = decoded
   logger.debug(JSON.stringify(mapValues(Fields, value => decoded[value])))
   event.uri = uriFromEvent(event)
@@ -215,21 +216,27 @@ Event.fromRecord = (record) => {
 function uriFromEvent (event) {
   if (event.page_url) {
     try {
-      const url = Url.parse(event.page_url)
-      return Url.format({
-        protocol: url.protocol,
+      const parsed = Url.parse(event.page_url)
+      const url = Url.format({
+        protocol: parsed.protocol,
         slashes: true,
-        hostname: url.hostname,
-        pathname: url.pathname
-      }).toLowerCase()
+        hostname: parsed.hostname,
+        pathname: parsed.pathname
+      })
+      if (startsWith(url, '///')) {
+        return null
+      }
+      return url
     } catch (e) {
-      // TypeError - page_url was not a string
+      // TypeError - page_url was not a string, will probably never hit this since base64 decode always produces strings
+      /* istanbul ignore next */
       return null
     }
   } else if (event.platform === 'mob') { // TODO: Might be different on iOS
     // TODO: GodTools is only app sending events. This will need to get refactored when we have more than screen_views
     const unstruct = event.unstruct_event
     let pathname = ''
+    /* istanbul ignore else */
     if (unstruct && unstruct.hasSchema(Context.SCHEMA_SCREEN_VIEW)) {
       const data = unstruct.dataFor(Context.SCHEMA_SCREEN_VIEW)
       pathname = 'screen_view/' + data.name.replace(/[^a-zA-Z0-9-_]/g, '')
@@ -239,7 +246,7 @@ function uriFromEvent (event) {
       slashes: true,
       hostname: event.app_id, // GodTools
       pathname: pathname
-    }).toLowerCase()
+    })
   }
   return null
 }
