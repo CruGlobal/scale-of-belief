@@ -10,7 +10,12 @@ const bodyParser = require('body-parser')
 const jsonErrorHandler = require(path.join(__dirname, 'errors/jsonHandler'))
 const jwt = require('express-jwt')
 
-api.use(jwt({ secret: process.env.JWT_SECRET }))
+api.use(jwt({ secret: process.env.JWT_SECRET }).unless((request) => {
+  if (request.headers['x-api-key']) {
+    return true
+  }
+}))
+
 api.use(bodyParser.json())
 api.use(swaggerizeExpress({
   api: path.join(__dirname, 'scale-of-belief.yml'),
