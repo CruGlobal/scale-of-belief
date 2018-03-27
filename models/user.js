@@ -68,7 +68,7 @@ User.fromEvent = (event) => {
   const user = new User()
 
   forEach(eventFields, field => {
-    if (typeof event[field] !== 'undefined') {
+    if (typeof event[field] !== 'undefined' && event[field]) {
       user[field] = [event[field]]
     }
   })
@@ -77,15 +77,15 @@ User.fromEvent = (event) => {
   if (context instanceof Context) {
     if (context.hasSchema(Context.SCHEMA_MOBILE)) {
       const data = context.dataFor(Context.SCHEMA_MOBILE)
-      if (typeof data['androidIdfa'] !== 'undefined') { user.android_idfa = [data['androidIdfa']] }
+      if (typeof data['androidIdfa'] !== 'undefined' && data['androidIdfa']) { user.android_idfa = [data['androidIdfa']] }
       // Todo: iOS not sending events yet, this is a guess at the property name
-      if (typeof data['appleIdfa'] !== 'undefined') { user.apple_idfa = [data['appleIdfa']] }
+      if (typeof data['appleIdfa'] !== 'undefined' && data['appleIdfa']) { user.apple_idfa = [data['appleIdfa']] }
     }
 
     if (context.hasSchema(Context.SCHEMA_IDS)) {
       const data = context.dataFor(Context.SCHEMA_IDS)
       forEach(idFields, field => {
-        if (typeof data[field] !== 'undefined') {
+        if (typeof data[field] !== 'undefined' && data[field]) {
           user[field] = [data[field]]
         }
       })
