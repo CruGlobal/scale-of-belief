@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const logger = require('../../config/logger')
 const util = require('../util/util')
 
+/* istanbul ignore next */
 const get = (request, response) => {
   request.body = {
     ticket: request.query['ticket']
