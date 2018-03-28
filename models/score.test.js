@@ -122,5 +122,22 @@ describe('Score', () => {
         done()
       })
     })
+
+    it('should fail if saving with a null URI', done => {
+      const inputScore = {
+        unaware: updatedScore.unaware,
+        curious: updatedScore.curious,
+        follower: updatedScore.follower,
+        guide: updatedScore.guide,
+        confidence: updatedScore.confidence
+      }
+
+      Score.save(null, inputScore).then((result) => {
+        done.fail(new Error('Save should have had an error'))
+      }).catch((error) => {
+        expect(error).toBeDefined()
+        done()
+      })
+    })
   })
 })
