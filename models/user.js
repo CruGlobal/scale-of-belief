@@ -14,7 +14,7 @@ const eventFields = ['domain_userid', 'network_userid', 'user_fingerprint']
 const idFields = ['sso_guid', 'gr_master_person_id', 'mcid']
 const appFields = ['android_idfa', 'apple_idfa']
 
-const User = sequelize.define('User', {
+const User = sequelize().define('User', {
   domain_userid: {
     type: DataTypes.ARRAY(DataTypes.STRING),
     defaultValue: []

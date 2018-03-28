@@ -9,10 +9,10 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
   const umzug = new Umzug({
     storage: 'sequelize',
     storageOptions: {
-      sequelize: sequelize
+      sequelize: sequelize()
     },
     migrations: {
-      params: [sequelize.getQueryInterface(), sequelize.constructor],
+      params: [sequelize().getQueryInterface(), sequelize().constructor],
       // params: [sequelize.getQueryInterface(), sequelize.constructor, function () {
       //   throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.')
       // }],
@@ -21,10 +21,12 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     }
   })
   umzug.up().then(() => {
-    sequelize.close()
-    lambdaCallback(null, 'Migrations successful')
+    sequelize.close().then(() => {
+      lambdaCallback(null, 'Migrations successful')
+    })
   }, (err) => {
-    sequelize.close()
-    lambdaCallback('Error running migrations: ' + err.toString())
+    sequelize.close().then(() => {
+      lambdaCallback('Error running migrations: ' + err.toString())
+    })
   })
 })

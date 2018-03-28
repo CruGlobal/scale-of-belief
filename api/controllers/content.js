@@ -9,7 +9,7 @@ const get = (request, response) => {
     'SELECT events.uri FROM events LEFT JOIN scores USING (uri) WHERE scores.uri IS NULL AND events.uri LIKE(:uri)',
     {
       replacements: { uri: uri + '%' },
-      type: sequelize.QueryTypes.SELECT
+      type: sequelize().QueryTypes.SELECT
     }
   ).then((results) => {
     var uris = []

@@ -2,7 +2,7 @@
 
 const {DataTypes} = require('sequelize')
 const sequelize = require('../config/sequelize')
-const ApiUser = sequelize.define('ApiUser', {
+const ApiUser = sequelize().define('ApiUser', {
   guid: {
     type: DataTypes.UUID,
     primaryKey: true

@@ -146,7 +146,7 @@ const Fields = {
   true_tstamp: 130
 }
 
-const Event = sequelize.define('Event', {
+const Event = sequelize().define('Event', {
   event_id: DataTypes.UUID,
   user_id: DataTypes.BIGINT,
   uri: {
