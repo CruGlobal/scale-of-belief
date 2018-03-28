@@ -43,7 +43,8 @@ describe('Score', () => {
     })
 
     it('should return an existing score', () => {
-      expect.assertions(2)
+      expect.assertions(3)
+      expect(score).toBeDefined()
       return Score.retrieve(score.uri).then((result) => {
         expect(result).toBeDefined()
         expect(result.dataValues).toEqual(score.dataValues)
@@ -70,10 +71,6 @@ describe('Score', () => {
         createdScore = scores[1]
         updatedScore = scores[2]
       })
-    })
-
-    afterEach(() => {
-      return Score.destroy({truncate: true})
     })
 
     it('should create a new score', done => {
@@ -122,6 +119,23 @@ describe('Score', () => {
 
         expect(result[0].dataValues.confidence).toEqual(updatedScore.dataValues.confidence)
         expect(result[0].dataValues.confidence).not.toEqual(existingScore.dataValues.confidence)
+        done()
+      })
+    })
+
+    it('should fail if saving with a null URI', done => {
+      const inputScore = {
+        unaware: updatedScore.unaware,
+        curious: updatedScore.curious,
+        follower: updatedScore.follower,
+        guide: updatedScore.guide,
+        confidence: updatedScore.confidence
+      }
+
+      Score.save(null, inputScore).then((result) => {
+        done.fail(new Error('Save should have had an error'))
+      }).catch((error) => {
+        expect(error).toBeDefined()
         done()
       })
     })

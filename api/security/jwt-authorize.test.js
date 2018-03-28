@@ -62,6 +62,27 @@ describe('JWT Authorizer', () => {
 
       JwtAuthorizer(request, response, next)
     })
+
+    test('should succeed with non-array api_pattern', done => {
+      apiUser.api_pattern = '.*'
+      const request = {
+        method: 'GET',
+        query: {
+          uri: 'http://some.uri.com'
+        },
+        user: {
+          guid: guid
+        }
+      }
+
+      const next = (error) => {
+        expect(error).toBeUndefined()
+        done()
+      }
+      jest.spyOn(ApiUser, 'findOne').mockImplementation(() => Promise.resolve(apiUser))
+
+      JwtAuthorizer(request, response, next)
+    })
   })
 
   // Note: express-jwt should catch the issue with its own handling before our application logic ever gets called
@@ -69,7 +90,7 @@ describe('JWT Authorizer', () => {
     let unauthorizedError = new Error('Unauthorized')
     unauthorizedError.status = 401
 
-    test('should should return Unauthorized on GET request', done => {
+    test('should return Unauthorized on GET request', done => {
       const request = {
         method: 'GET',
         query: {
@@ -87,7 +108,7 @@ describe('JWT Authorizer', () => {
       JwtAuthorizer(request, response, next)
     })
 
-    test('should should return Unauthorized on POST request', done => {
+    test('should return Unauthorized on POST request', done => {
       const request = {
         method: 'POST',
         body: {
@@ -158,6 +179,52 @@ describe('JWT Authorizer', () => {
 
       JwtAuthorizer(request, response, next)
     })
+
+    test('should return Unauthorized when having a null api_pattern', done => {
+      apiUser.api_pattern = null
+
+      const request = {
+        method: 'GET',
+        query: {
+          uri: 'http://some.uri.com'
+        },
+        user: {
+          guid: guid
+        }
+      }
+
+      const next = (error) => {
+        expect(error).toBeDefined()
+        expect(error).toEqual(unauthorizedError)
+        done()
+      }
+      jest.spyOn(ApiUser, 'findOne').mockImplementation(() => Promise.resolve(apiUser))
+
+      JwtAuthorizer(request, response, next)
+    })
+
+    test('should return Unauthorized when having a non-array api_pattern', done => {
+      apiUser.api_pattern = '.*nowhere.*'
+
+      const request = {
+        method: 'GET',
+        query: {
+          uri: 'http://some.uri.com'
+        },
+        user: {
+          guid: guid
+        }
+      }
+
+      const next = (error) => {
+        expect(error).toBeDefined()
+        expect(error).toEqual(unauthorizedError)
+        done()
+      }
+      jest.spyOn(ApiUser, 'findOne').mockImplementation(() => Promise.resolve(apiUser))
+
+      JwtAuthorizer(request, response, next)
+    })
   })
 
   describe('fails database lookup', () => {
@@ -190,7 +257,7 @@ describe('JWT Authorizer', () => {
     let unauthorizedError = new Error('Unauthorized')
     unauthorizedError.status = 401
 
-    test('should should return Unauthorized on GET request', done => {
+    test('should return Unauthorized on GET request', done => {
       const request = {
         method: 'GET',
         query: {
@@ -211,7 +278,7 @@ describe('JWT Authorizer', () => {
       JwtAuthorizer(request, response, next)
     })
 
-    test('should should return Unauthorized on POST request', done => {
+    test('should return Unauthorized on POST request', done => {
       const request = {
         method: 'POST',
         body: {
