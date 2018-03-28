@@ -11,7 +11,7 @@ const jsonErrorHandler = require(path.join(__dirname, 'errors/jsonHandler'))
 const jwt = require('express-jwt')
 
 api.use(jwt({ secret: process.env.JWT_SECRET }).unless((request) => {
-  if (request.headers['x-api-key']) {
+  if (request.headers['x-api-key'] || request.path.endsWith('/login')) {
     return true
   }
 }))
