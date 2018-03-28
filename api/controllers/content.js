@@ -5,7 +5,7 @@ const {forEach} = require('lodash')
 
 const get = (request, response) => {
   var uri = removeQueryParameters(request.query['uri'].toLowerCase())
-  sequelize.query(
+  sequelize().query(
     'SELECT events.uri FROM events LEFT JOIN scores USING (uri) WHERE scores.uri IS NULL AND events.uri LIKE(:uri)',
     {
       replacements: { uri: uri + '%' },
