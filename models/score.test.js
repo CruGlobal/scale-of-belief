@@ -43,7 +43,8 @@ describe('Score', () => {
     })
 
     it('should return an existing score', () => {
-      expect.assertions(2)
+      expect.assertions(3)
+      expect(score).toBeDefined()
       return Score.retrieve(score.uri).then((result) => {
         expect(result).toBeDefined()
         expect(result.dataValues).toEqual(score.dataValues)
@@ -70,10 +71,6 @@ describe('Score', () => {
         createdScore = scores[1]
         updatedScore = scores[2]
       })
-    })
-
-    afterEach(() => {
-      return Score.destroy({truncate: true})
     })
 
     it('should create a new score', done => {
