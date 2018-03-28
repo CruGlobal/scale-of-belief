@@ -3,8 +3,6 @@ service: scale-of-belief
 custom:
   scripts:
     hooks:
-      # Upload web app files
-      'aws:deploy:deploy:updateStack': 'aws s3 sync app s3://scale-of-belief-staging-app-public --acl public-read --delete --exclude ".keep"'
       # Run database migrations
       'aws:deploy:finalize:cleanup': './node_modules/.bin/serverless --stage $ENVIRONMENT invoke --function migrate'
 
@@ -40,8 +38,6 @@ package:
     - .git/**
     - test/**
     - '**/*.test.js'
-    # exclude web app from lambda package - this will be synced to s3 separately
-    - app/**
 
 plugins:
   - '@cruglobal/serverless-merge-config'
