@@ -69,7 +69,7 @@ describe('JWT Authorizer', () => {
     let unauthorizedError = new Error('Unauthorized')
     unauthorizedError.status = 401
 
-    test('should should return Unauthorized on GET request', done => {
+    test('should return Unauthorized on GET request', done => {
       const request = {
         method: 'GET',
         query: {
@@ -87,7 +87,7 @@ describe('JWT Authorizer', () => {
       JwtAuthorizer(request, response, next)
     })
 
-    test('should should return Unauthorized on POST request', done => {
+    test('should return Unauthorized on POST request', done => {
       const request = {
         method: 'POST',
         body: {
@@ -190,7 +190,7 @@ describe('JWT Authorizer', () => {
     let unauthorizedError = new Error('Unauthorized')
     unauthorizedError.status = 401
 
-    test('should should return Unauthorized on GET request', done => {
+    test('should return Unauthorized on GET request', done => {
       const request = {
         method: 'GET',
         query: {
@@ -211,7 +211,7 @@ describe('JWT Authorizer', () => {
       JwtAuthorizer(request, response, next)
     })
 
-    test('should should return Unauthorized on POST request', done => {
+    test('should return Unauthorized on POST request', done => {
       const request = {
         method: 'POST',
         body: {
