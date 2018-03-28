@@ -3,12 +3,13 @@
 const ApiUser = require('../../models/api-user')
 const {find} = require('lodash')
 const logger = require('../../config/logger')
+const util = require('../util/util')
 
 module.exports = function authorize (request, response, next) {
   validate(request, function (error, availableScopes) {
     if (!error) {
       if (!availableScopes || !availableScopes.length) {
-        next(buildUnauthorized(error))
+        next(util.buildUnauthorizedError(error))
       } else {
         var requestedResource
 
@@ -20,7 +21,7 @@ module.exports = function authorize (request, response, next) {
         if (isAuthorized(availableScopes, requestedResource)) {
           next()
         } else {
-          next(buildUnauthorized(error))
+          next(util.buildUnauthorizedError(error))
         }
       }
     } else {
@@ -46,15 +47,9 @@ function isAuthorized (availableScopes, requestedResource) {
   return authorized
 }
 
-function buildUnauthorized (error) {
-  error = new Error('You do not have access to this resource')
-  error.status = 401
-  return error
-}
-
 function validate (request, callback) {
   if (!request.user || !request.user.guid) {
-    callback(buildInvalidApiKey(), [])
+    callback(util.buildInvalidApiKey(), [])
   } else {
     determineScopes(request.user.guid, callback)
   }
@@ -71,16 +66,10 @@ function determineScopes (auth, callback) {
         var apiPatterns = dbApiUser.api_pattern
         callback(null, apiPatterns)
       } else {
-        callback(buildInvalidApiKey(), [])
+        callback(util.buildInvalidApiKey(), [])
       }
     }).catch(function (error) {
       logger.error(error)
-      callback(buildInvalidApiKey(), [])
+      callback(util.buildInvalidApiKey(), [])
     })
-}
-
-function buildInvalidApiKey () {
-  var error = new Error('Unauthorized')
-  error.status = 401
-  return error
 }
