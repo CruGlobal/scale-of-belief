@@ -16,6 +16,21 @@ api.use(jwt({ secret: process.env.JWT_SECRET }).unless((request) => {
   }
 }))
 
+api.use(function (request, response, next) {
+  if (process.env.ENVIRONMENT !== 'production') {
+    let incomingOrigin = request.headers['Origin']
+
+    if (incomingOrigin && (
+        incomingOrigin.startsWith('http://content-scoring-local.cru.org:') ||
+        incomingOrigin === 'https://content-scoring-stage.cru.org')) {
+      response.header('Access-Control-Allow-Origin', incomingOrigin)
+      response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+    }
+  }
+
+  next()
+})
+
 api.use(bodyParser.json())
 api.use(swaggerizeExpress({
   api: path.join(__dirname, 'scale-of-belief.yml'),
