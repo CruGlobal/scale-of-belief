@@ -2,9 +2,10 @@
 
 const sequelize = require('../../config/sequelize')
 const {forEach} = require('lodash')
+const util = require('../util/util')
 
 const get = (request, response) => {
-  var uri = removeQueryParameters(request.query['uri'].toLowerCase())
+  var uri = util.sanitizeUri(request.query['uri'])
   sequelize().query(
     'SELECT events.uri FROM events LEFT JOIN scores USING (uri) WHERE scores.uri IS NULL AND events.uri LIKE(:uri)',
     {
@@ -18,10 +19,6 @@ const get = (request, response) => {
     })
     response.json(uris)
   })
-}
-
-const removeQueryParameters = (uri) => {
-  return uri.split('?')[0].split('#')[0]
 }
 
 module.exports = { get: get }

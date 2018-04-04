@@ -3,10 +3,11 @@
 const Score = require('../../models/score')
 const {Op} = require('sequelize')
 const {forEach} = require('lodash')
+const util = require('../util/util')
 
 module.exports = {
   get: function (request, response) {
-    var uriPrefix = request.query['uri'].toLowerCase()
+    var uriPrefix = util.sanitizeUri(request.query['uri'])
     Score.findAll({
       where: {
         uri: {

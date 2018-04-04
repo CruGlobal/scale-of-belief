@@ -1,9 +1,10 @@
 'use strict'
 
 const Score = require('../../models/score')
+const util = require('../util/util')
 
 const get = (request, response) => {
-  var uri = removeQueryParameters(request.query['uri'].toLowerCase())
+  var uri = util.sanitizeUri(request.query['uri'])
   Score.retrieve(uri).then((score) => {
     if (score) {
       response.json(Score.toApiScore(score))
@@ -18,13 +19,9 @@ const get = (request, response) => {
 
 const post = (request, response) => {
   var requestBody = request.body
-  Score.save(removeQueryParameters(requestBody.uri), requestBody.score).then(function (result) {
+  Score.save(util.sanitizeUri(requestBody.uri), requestBody.score).then(function (result) {
     response.json(Score.toApiScore(result[0].dataValues))
   })
-}
-
-const removeQueryParameters = (uri) => {
-  return uri.split('?')[0].split('#')[0]
 }
 
 module.exports = {

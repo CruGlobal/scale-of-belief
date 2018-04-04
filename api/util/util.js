@@ -26,9 +26,21 @@ const buildInternalErrorResponse = (response) => {
   })
 }
 
+const sanitizeUri = (uri) => {
+  // Remove query parameters
+  uri = uri.split('?')[0].split('#')[0]
+
+  // Remove quotes
+  if (uri.includes('"')) {
+    uri = uri.replace(/"/g, '')
+  }
+  return uri.toLowerCase()
+}
+
 module.exports = {
   buildUnauthorizedResponse: buildUnauthorizedResponse,
   buildUnauthorizedError: buildUnauthorizedError,
   buildInvalidApiKey: buildInvalidApiKey,
-  buildInternalErrorResponse: buildInternalErrorResponse
+  buildInternalErrorResponse: buildInternalErrorResponse,
+  sanitizeUri: sanitizeUri
 }
