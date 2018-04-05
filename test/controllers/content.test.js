@@ -55,7 +55,7 @@ describe('ContentController', () => {
         }
       }
 
-      jest.spyOn(sequelize, 'query').mockImplementation(() => Promise.resolve([event1]))
+      jest.spyOn(sequelize(), 'query').mockImplementation(() => Promise.resolve([event1]))
 
       ContentController.get(request, response)
     })
@@ -77,7 +77,7 @@ describe('ContentController', () => {
         }
       }
 
-      jest.spyOn(sequelize, 'query').mockImplementation(() => Promise.resolve([event1, event2]))
+      jest.spyOn(sequelize(), 'query').mockImplementation(() => Promise.resolve([event1, event2]))
 
       ContentController.get(request, response)
     })
@@ -99,7 +99,7 @@ describe('ContentController', () => {
         }
       }
 
-      jest.spyOn(sequelize, 'query').mockImplementation(() => Promise.resolve([]))
+      jest.spyOn(sequelize(), 'query').mockImplementation(() => Promise.resolve([]))
 
       ContentController.get(request, response)
     })

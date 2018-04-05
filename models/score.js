@@ -2,7 +2,7 @@
 
 const {DataTypes} = require('sequelize')
 const sequelize = require('../config/sequelize')
-const Score = sequelize.define('Score', {
+const Score = sequelize().define('Score', {
   uri: {
     type: DataTypes.STRING,
     get () {
@@ -79,7 +79,7 @@ Score.retrieve = (uri) => {
 }
 
 Score.save = (uri, score) => {
-  return sequelize.transaction(function (t) {
+  return sequelize().transaction(function (t) {
     return Score.upsert(
       {
         uri: uri,

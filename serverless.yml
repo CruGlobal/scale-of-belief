@@ -17,12 +17,13 @@ provider:
 functions:
   placement:
     handler: kinesis/placement.handler
+    timeout: 60
     events:
       - stream:
           arn: arn:aws:kinesis:us-east-1:056154071827:stream/snowplow_enrich
           batchSize: 100
           startingPosition: LATEST
-          enabled: false
+          enabled: true
   api:
     handler: api/index.handler
     events:

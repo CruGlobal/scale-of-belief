@@ -152,7 +152,7 @@ const performIdentityStitching = (event) => {
       throw new UnknownUserError('Event did not contain identity fields')
     }
 
-    resolve(sequelize.transaction(transaction => {
+    resolve(sequelize().transaction(transaction => {
       return possibleMatches(user, transaction)
         .then(matches => orderByScore(user, matches))
         .then(matches => rejectMatches(user, matches))
