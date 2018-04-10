@@ -52,7 +52,7 @@ npm run lint:fix
 npm test
 ```
 
-## Deployment (without travis)
+## Deployment (without jenkins)
 
 `build.sh` and `deploy.sh` are currently hard-coded to deploy to the staging environment. These files can be used to
 deploy to lambda using serverless and are an example of what Jenkins will eventually do when code is merged to the
