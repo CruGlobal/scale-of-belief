@@ -48,6 +48,7 @@
     "jsonwebtoken": "^8.2.0",
     "pg": "^7.4.1",
     "pg-hstore": "^2.3.2",
+    "request": "^2.85.0",
     "rollbar": "^2.3.9",
     "sequelize": "^4.37.7",
     "sequelize-paper-trail": "^2.0.0",

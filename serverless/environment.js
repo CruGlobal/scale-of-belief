@@ -13,6 +13,8 @@ module.exports = () => {
     ROLLBAR_ACCESS_TOKEN: process.env['ROLLBAR_ACCESS_TOKEN'] || '',
     JWT_SECRET: process.env['JWT_SECRET'] || 'secret',
     THE_KEY_SERVICE_URL: process.env['THE_KEY_SERVICE_URL'] || 'http://localhost:3000/api/login',
-    THE_KEY_API_KEY: process.env['THE_KEY_API_KEY']
+    THE_KEY_API_KEY: process.env['THE_KEY_API_KEY'],
+    GLOBAL_REGISTRY_URL: process.env['GLOBAL_REGISTRY_URL'] || 'https://stage-backend.global-registry.org',
+    GLOBAL_REGISTRY_TOKEN: process.env['GLOBAL_REGISTRY_TOKEN'] || 'secret'
   }
 }

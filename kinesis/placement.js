@@ -3,6 +3,8 @@
 const rollbar = require('../config/rollbar')
 const logger = require('../config/logger')
 const {forEach, chunk} = require('lodash')
+const Placement = require('../models/placement')
+const GlobalRegistry = require('../config/global-registry')
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
   const sequelize = require('../config/sequelize')
@@ -12,15 +14,41 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
   // Chunk event into 25 records and log
   forEach(chunk(lambdaEvent['Records'], 25), records => logger.info(JSON.stringify(records)))
 
-  const completed = []
+  // Make sure we have event records
   if (typeof lambdaEvent['Records'] !== 'undefined') {
+    // Keep track of all promises
+    const completed = []
+
+    // Iterate over each record
     lambdaEvent['Records'].forEach((record) => {
       const eventCompleted = new Promise((resolve) => {
         try {
+          // Build an event object from each record, catch any resulting errors (InvalidEventError)
           const event = Event.fromRecord(record)
+
+          // Stitch current event into known identities
           IdentityStitcher(event).then(user => {
+            // IdentityStitcher returns a saved user, but we still need to save the event
             event.save().then(event => {
-              resolve()
+              // If the user has master_person identities, calculate placement
+              if (user.has_gr_master_person_id) {
+                new Placement(user).calculate().then(placement => {
+                  // Update Global Registry
+                  GlobalRegistry.updatePlacement(placement).then(() => {
+                    // Resolve this event
+                    resolve(event)
+                  }, error => {
+                    rollbar.error('GlobalRegistry.updatePlacement(placement) error', error)
+                    resolve(error)
+                  })
+                }, error => {
+                  rollbar.error('Placement(user).calculate() error', error)
+                  resolve(error)
+                })
+              } else {
+                // Resolve this event
+                resolve(event)
+              }
             }, error => {
               rollbar.error('event.save() error', error, {record: record})
               resolve(error)
