@@ -1,10 +1,9 @@
 'use strict'
 
 const ApiUser = require('../../models/api-user')
-const util = require('../util/util')
 
 const get = (request, response) => {
-  const guid = util.sanitizeUri(request.query['guid'])
+  const guid = request.query['guid']
   ApiUser.retrieve(guid).then((user) => {
     if (user) {
       response.json(user)

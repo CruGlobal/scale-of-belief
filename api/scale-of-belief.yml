@@ -118,14 +118,14 @@ paths:
     get:
       summary: Get single API User score by guid
       tags:
-        - score
+        - users
       parameters:
         - name: guid
           description: guid
           in: query
           required: true
           type: string
-          format: guid
+          pattern: '^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$'
       security:
         - ApiKeyAuth: []
         - JwtAuth: []

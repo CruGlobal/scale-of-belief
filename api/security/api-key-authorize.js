@@ -8,6 +8,11 @@ const util = require('../util/util')
 module.exports = function authorize (request, response, next) {
   validate(request, function (error, availableScopes, isSuperAdmin) {
     if (!error) {
+      if (isSuperAdmin) {
+        next()
+        return
+      }
+
       if (!availableScopes || !availableScopes.length) {
         next(util.buildUnauthorizedError(error))
       } else {
@@ -18,7 +23,7 @@ module.exports = function authorize (request, response, next) {
         } else {
           requestedResource = request.body['uri']
         }
-        if (isSuperAdmin || isAuthorized(availableScopes, requestedResource)) {
+        if (isAuthorized(availableScopes, requestedResource)) {
           next()
         } else {
           next(util.buildUnauthorizedError(error))
