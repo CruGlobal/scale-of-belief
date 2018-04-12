@@ -78,11 +78,11 @@ function determineScopesAndType (auth) {
             isSuperAdmin: dbApiKey.type === 'super'
           })
         } else {
-          reject()
+          reject(new Error('User GUID not found'))
         }
-    }).catch(function (error) {
-      logger.error(error)
-      reject()
-    })
+      }).catch(function (error) {
+        logger.error(error)
+        reject(error)
+      })
   })
 }
