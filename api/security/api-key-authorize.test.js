@@ -220,4 +220,35 @@ describe('Api Key Authorizer', () => {
       Authorizer(request, response, next)
     })
   })
+
+  describe('has super admin API key', () => {
+    test('should succeed on GET request', done => {
+      const apiKey = {
+        api_key: 'some-api-key',
+        api_pattern: [
+          '.*'
+        ],
+        type: 'super'
+      }
+
+      const requestHeaders = {}
+      requestHeaders['x-api-key'] = apiKey.api_key
+
+      const request = {
+        method: 'GET',
+        query: {
+          uri: 'http://some.uri.com'
+        },
+        headers: requestHeaders
+      }
+
+      const next = (error) => {
+        expect(error).toBeUndefined()
+        done()
+      }
+      jest.spyOn(ApiKey, 'findOne').mockImplementation(() => Promise.resolve(apiKey))
+
+      Authorizer(request, response, next)
+    })
+  })
 })
