@@ -4,7 +4,7 @@ const ApiUser = require('./api-user')
 const factory = require('../test/factory')
 
 describe('ApiUser', () => {
-  it('should be defined', () => {
+  test('should be defined', () => {
     expect(ApiUser).toBeDefined()
   })
 
@@ -14,7 +14,7 @@ describe('ApiUser', () => {
       return factory.create('existing_user').then(existingUser => { user = existingUser })
     })
 
-    it('should return an existing user', () => {
+    test('should return an existing user', () => {
       expect.assertions(3)
       expect(user).toBeDefined()
       return ApiUser.retrieve(user.guid).then((result) => {
@@ -23,7 +23,7 @@ describe('ApiUser', () => {
       })
     })
 
-    it('should not return an existing score', () => {
+    test('should not return an existing user', () => {
       expect.assertions(1)
       return ApiUser.retrieve('86d88227-a0a0-4a91-b313-fc397765919c').then((result) => {
         expect(result).toBeNull()
@@ -38,14 +38,14 @@ describe('ApiUser', () => {
         factory.build('existing_user'),
         factory.build('created_user'),
         factory.create('updated_user')
-      ]).then(scores => {
-        existingUser = scores[0]
-        createdUser = scores[1]
-        updatedUser = scores[2]
+      ]).then(users => {
+        existingUser = users[0]
+        createdUser = users[1]
+        updatedUser = users[2]
       })
     })
 
-    it('should create a new user', done => {
+    test('should create a new user', done => {
       ApiUser.save(createdUser).then((result) => {
         expect(result).toBeDefined()
         expect(result[0].guid).toEqual(createdUser.guid)
@@ -56,7 +56,7 @@ describe('ApiUser', () => {
       })
     })
 
-    it('should update an existing user', done => {
+    test('should update an existing user', done => {
       ApiUser.save(updatedUser).then((result) => {
         expect(result).toBeDefined()
         expect(result[0].guid).toEqual(existingUser.guid)

@@ -225,9 +225,7 @@ describe('Api Key Authorizer', () => {
     test('should succeed on GET request', done => {
       const apiKey = {
         api_key: 'some-api-key',
-        api_pattern: [
-          '.*'
-        ],
+        api_pattern: [],
         type: 'super'
       }
 
@@ -236,9 +234,6 @@ describe('Api Key Authorizer', () => {
 
       const request = {
         method: 'GET',
-        query: {
-          uri: 'http://some.uri.com'
-        },
         headers: requestHeaders
       }
 

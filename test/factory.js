@@ -135,14 +135,14 @@ factory.extend('api_user', 'existing_user', {
 
 factory.extend('api_user', 'updated_user', {
   guid: userGuid,
-  api_pattern: ['*'],
+  api_pattern: ['.*'],
   contact_email: 'bob.test@cru.org',
   type: null
 })
 
 factory.extend('api_user', 'created_user', {
   guid: chance.guid(),
-  api_pattern: ['*'],
+  api_pattern: ['.*'],
   contact_email: 'frank.test@cru.org',
   type: null
 })
