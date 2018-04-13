@@ -304,17 +304,12 @@ describe('JWT Authorizer', () => {
     test('should succeed on GET request', done => {
       const apiUser = {
         guid: guid,
-        api_pattern: [
-          '.*'
-        ],
+        api_pattern: [],
         type: 'super'
       }
 
       const request = {
         method: 'GET',
-        query: {
-          uri: 'http://some.uri.com'
-        },
         user: {
           guid: guid
         }
