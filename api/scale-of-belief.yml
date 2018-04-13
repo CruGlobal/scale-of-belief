@@ -70,17 +70,36 @@ paths:
         401:
           $ref: '#/responses/Unauthorized'
   /scores:
+      get:
+        summary: Get multiple content scores by uri prefix.
+        tags:
+          - score
+        parameters:
+          - name: uri
+            description: Content URI prefix
+            in: query
+            required: true
+            type: string
+            format: uri
+        security:
+          - ApiKeyAuth: []
+          - JwtAuth: []
+        responses:
+          200:
+            description: OK
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/ContentScore'
+          401:
+            $ref: '#/responses/Unauthorized'
+          404:
+            $ref: '#/responses/NotFound'
+  /api-users:
     get:
-      summary: Get multiple content scores by uri prefix.
+      summary: Get API Users
       tags:
-        - score
-      parameters:
-        - name: uri
-          description: Content URI prefix
-          in: query
-          required: true
-          type: string
-          format: uri
+        - users
       security:
         - ApiKeyAuth: []
         - JwtAuth: []
@@ -90,11 +109,59 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/ContentScore'
+              $ref: '#/definitions/ApiUser'
         401:
           $ref: '#/responses/Unauthorized'
         404:
           $ref: '#/responses/NotFound'
+  /api-user:
+    get:
+      summary: Get single API User score by guid
+      tags:
+        - users
+      parameters:
+        - name: guid
+          description: guid
+          in: query
+          required: true
+          type: string
+          pattern: '^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$'
+      security:
+        - ApiKeyAuth: []
+        - JwtAuth: []
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ApiUser'
+        401:
+          $ref: '#/responses/Unauthorized'
+        404:
+          $ref: '#/responses/NotFound'
+    post:
+      summary: Create or Update an API user
+      tags:
+        - users
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: Create or update an API user
+          schema:
+            $ref: '#/definitions/ApiUser'
+      security:
+        - ApiKeyAuth: []
+        - JwtAuth: []
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ApiUser'
+        400:
+          $ref: '#/responses/BadRequest'
+        401:
+          $ref: '#/responses/Unauthorized'
   /content:
     get:
       summary: List known content URIs that are missing scores, narrow the list by content URI prefix
@@ -190,6 +257,21 @@ definitions:
         format: uri
       score:
         $ref: '#/definitions/Score'
+  ApiUser:
+      type: object
+      properties:
+        guid:
+          type: string
+          format: guid
+        api_pattern:
+          type: array
+          items:
+            type: string
+        contact_email:
+          type: string
+          format: email
+        type:
+          type: string
   Score:
     type: object
     properties:

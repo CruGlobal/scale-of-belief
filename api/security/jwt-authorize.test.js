@@ -299,4 +299,29 @@ describe('JWT Authorizer', () => {
       JwtAuthorizer(request, response, next)
     })
   })
+
+  describe('has super JWT token', () => {
+    test('should succeed on GET request', done => {
+      const apiUser = {
+        guid: guid,
+        api_pattern: [],
+        type: 'super'
+      }
+
+      const request = {
+        method: 'GET',
+        user: {
+          guid: guid
+        }
+      }
+
+      const next = (error) => {
+        expect(error).toBeUndefined()
+        done()
+      }
+      jest.spyOn(ApiUser, 'findOne').mockImplementation(() => Promise.resolve(apiUser))
+
+      JwtAuthorizer(request, response, next)
+    })
+  })
 })

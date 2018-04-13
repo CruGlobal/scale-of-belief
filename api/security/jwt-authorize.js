@@ -6,8 +6,13 @@ const logger = require('../../config/logger')
 const util = require('../util/util')
 
 module.exports = function authorize (request, response, next) {
-  validate(request, function (error, availableScopes) {
+  validate(request, function (error, availableScopes, isSuperAdmin) {
     if (!error) {
+      if (isSuperAdmin) {
+        next()
+        return
+      }
+
       if (!availableScopes || !availableScopes.length) {
         next(util.buildUnauthorizedError(error))
       } else {
@@ -51,25 +56,33 @@ function validate (request, callback) {
   if (!request.user || !request.user.guid) {
     callback(util.buildInvalidApiKey(), [])
   } else {
-    determineScopes(request.user.guid, callback)
+    determineScopesAndType(request.user.guid).then(values => {
+      callback(null, values.apiPatterns, values.isSuperAdmin)
+    }).catch(() => {
+      callback(util.buildInvalidApiKey(), [], false)
+    })
   }
 }
 
-function determineScopes (auth, callback) {
-  ApiUser.findOne(
-    {
-      where: {
-        guid: auth
-      }
-    }).then((dbApiUser) => {
-      if (dbApiUser) {
-        var apiPatterns = dbApiUser.api_pattern
-        callback(null, apiPatterns)
-      } else {
-        callback(util.buildInvalidApiKey(), [])
-      }
-    }).catch(function (error) {
-      logger.error(error)
-      callback(util.buildInvalidApiKey(), [])
-    })
+function determineScopesAndType (auth) {
+  return new Promise((resolve, reject) => {
+    ApiUser.findOne(
+      {
+        where: {
+          guid: auth
+        }
+      }).then((dbApiKey) => {
+        if (dbApiKey) {
+          resolve({
+            apiPatterns: dbApiKey.api_pattern,
+            isSuperAdmin: dbApiKey.type === 'super'
+          })
+        } else {
+          reject(new Error('User GUID not found'))
+        }
+      }).catch(function (error) {
+        logger.error(error)
+        reject(error)
+      })
+  })
 }

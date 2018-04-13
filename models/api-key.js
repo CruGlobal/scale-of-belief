@@ -10,7 +10,8 @@ const ApiKey = sequelize().define('ApiKey', {
     primaryKey: true,
     field: 'api_key'
   },
-  contact_email: DataTypes.STRING
+  contact_email: DataTypes.STRING,
+  type: DataTypes.STRING
 }, {
   tableName: 'api_keys',
   underscored: true

@@ -4,6 +4,7 @@ const factory = require('factory-girl').factory
 const User = require('../models/user')
 const Event = require('../models/event')
 const Score = require('../models/score')
+const ApiUser = require('../models/api-user')
 const chance = require('chance').Chance()
 const path = require('path')
 const fs = require('fs')
@@ -120,6 +121,30 @@ factory.extend('existing_score', 'updated_score', {
   follower: 2,
   guide: 2,
   confidence: 50
+})
+
+factory.define('api_user', ApiUser, {})
+
+const userGuid = chance.guid()
+factory.extend('api_user', 'existing_user', {
+  guid: userGuid,
+  api_pattern: ['http://some.uri.com'],
+  contact_email: 'steve.test@cru.org',
+  type: 'super'
+})
+
+factory.extend('api_user', 'updated_user', {
+  guid: userGuid,
+  api_pattern: ['.*'],
+  contact_email: 'bob.test@cru.org',
+  type: null
+})
+
+factory.extend('api_user', 'created_user', {
+  guid: chance.guid(),
+  api_pattern: ['.*'],
+  contact_email: 'frank.test@cru.org',
+  type: null
 })
 
 module.exports = factory

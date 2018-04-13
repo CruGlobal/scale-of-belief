@@ -6,8 +6,13 @@ const logger = require('../../config/logger')
 const util = require('../util/util')
 
 module.exports = function authorize (request, response, next) {
-  validate(request, function (error, availableScopes) {
+  validate(request, function (error, availableScopes, isSuperAdmin) {
     if (!error) {
+      if (isSuperAdmin) {
+        next()
+        return
+      }
+
       if (!availableScopes || !availableScopes.length) {
         next(util.buildUnauthorizedError(error))
       } else {
@@ -53,25 +58,33 @@ function validate (request, callback) {
   if (!auth) {
     callback(util.buildInvalidApiKey(), [])
   } else {
-    determineScopes(auth, callback)
+    determineScopesAndType(auth).then(values => {
+      callback(null, values.apiPatterns, values.isSuperAdmin)
+    }).catch(() => {
+      callback(util.buildInvalidApiKey(), [], false)
+    })
   }
 }
 
-function determineScopes (auth, callback) {
-  ApiKey.findOne(
-    {
-      where: {
-        api_key: auth
-      }
-    }).then((dbApiKey) => {
-      if (dbApiKey) {
-        var apiPatterns = dbApiKey.api_pattern
-        callback(null, apiPatterns)
-      } else {
-        callback(util.buildInvalidApiKey(), [])
-      }
-    }).catch(function (error) {
-      logger.error(error)
-      callback(util.buildInvalidApiKey(), [])
-    })
+function determineScopesAndType (auth) {
+  return new Promise((resolve, reject) => {
+    ApiKey.findOne(
+      {
+        where: {
+          api_key: auth
+        }
+      }).then((dbApiKey) => {
+        if (dbApiKey) {
+          resolve({
+            apiPatterns: dbApiKey.api_pattern,
+            isSuperAdmin: dbApiKey.type === 'super'
+          })
+        } else {
+          reject(new Error('API Key not found'))
+        }
+      }).catch(function (error) {
+        logger.error(error)
+        reject(error)
+      })
+  })
 }
