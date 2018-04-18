@@ -22,10 +22,7 @@ module.exports = {
         })
         response.json(transformedScores)
       } else {
-        response.status(404)
-        response.json({
-          message: 'Not Found'
-        })
+        response.json([])
       }
     })
   }
