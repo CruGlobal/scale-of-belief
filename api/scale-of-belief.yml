@@ -110,8 +110,6 @@ paths:
               $ref: '#/definitions/ApiUser'
         401:
           $ref: '#/responses/Unauthorized'
-        404:
-          $ref: '#/responses/NotFound'
   /api-user:
     get:
       summary: Get single API User score by guid
