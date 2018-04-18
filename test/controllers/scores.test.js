@@ -72,7 +72,7 @@ describe('ScoresController', () => {
   })
 
   describe('has no matches', () => {
-    test('should return not found to the client', done => {
+    test('should return an empty array to the client', done => {
       var request = {
         query: {
           uri: 'http://nowhere.com'
@@ -80,13 +80,9 @@ describe('ScoresController', () => {
       }
 
       var response = {
-        status: (statusToSet) => {
-          expect(statusToSet).toBeDefined()
-          expect(statusToSet).toEqual(404)
-        },
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
-          expect(jsonToSet).toEqual({ message: 'Not Found' })
+          expect(jsonToSet).toEqual([])
           done()
         }
       }
