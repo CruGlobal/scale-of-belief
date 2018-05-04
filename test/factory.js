@@ -109,7 +109,7 @@ factory.extend('blank_score', 'existing_score', {
 factory.extend('blank_score', 'created_score', {
   uri: 'http://somewhere.com/1',
   unaware: 1,
-  curious: 5,
+  curious: 6,
   follower: 3,
   guide: 1,
   confidence: 98

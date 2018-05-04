@@ -103,7 +103,7 @@ describe('ScoreController', () => {
       const newUri = 'http://somewhere.com/1'
       const newScore = {
         unaware: 1,
-        curious: 5,
+        curious: 6,
         follower: 3,
         guide: 1,
         confidence: 98
@@ -163,7 +163,7 @@ describe('ScoreController', () => {
       const queryParams = '?q1=v1&q2=v2'
       const newScore = {
         unaware: 1,
-        curious: 5,
+        curious: 6,
         follower: 3,
         guide: 1,
         confidence: 98
