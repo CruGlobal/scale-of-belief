@@ -2,6 +2,7 @@
 
 const Score = require('./score')
 const factory = require('../test/factory')
+const { omit } = require('lodash')
 
 describe('Score', () => {
   it('should be defined', () => {
@@ -47,7 +48,8 @@ describe('Score', () => {
       expect(score).toBeDefined()
       return Score.retrieve(score.uri).then((result) => {
         expect(result).toBeDefined()
-        expect(result.dataValues).toEqual(score.dataValues)
+        const dates = ['created_at', 'updated_at']
+        expect(omit(result.dataValues, dates)).toEqual(omit(score.dataValues, dates))
       })
     })
 

@@ -21,28 +21,28 @@ const Score = sequelize().define('Score', {
     type: DataTypes.INTEGER,
     validate: {
       min: 1,
-      max: 5
+      max: 6
     }
   },
   curious: {
     type: DataTypes.INTEGER,
     validate: {
       min: 1,
-      max: 5
+      max: 6
     }
   },
   follower: {
     type: DataTypes.INTEGER,
     validate: {
       min: 1,
-      max: 5
+      max: 6
     }
   },
   guide: {
     type: DataTypes.INTEGER,
     validate: {
       min: 1,
-      max: 5
+      max: 6
     }
   },
   confidence: {
