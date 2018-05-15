@@ -16,6 +16,9 @@
     "db:create": "sequelize db:create",
     "db:create:test": "sequelize --env test db:migrate"
   },
+  "engines": {
+    "node": "> 8.10.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
