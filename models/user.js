@@ -3,6 +3,7 @@
 const {
   clone,
   forEach,
+  includes,
   map,
   toLower,
   uniq
@@ -13,6 +14,8 @@ const sequelize = require('../config/sequelize')
 const eventFields = ['domain_userid', 'network_userid', 'user_fingerprint']
 const idFields = ['sso_guid', 'gr_master_person_id', 'mcid']
 const appFields = ['android_idfa', 'apple_idfa']
+const uuidFields = ['network_userid', 'sso_guid', 'gr_master_person_id']
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-4][0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 const User = sequelize().define('User', {
   domain_userid: {
@@ -64,12 +67,19 @@ forEach(User.IDENTITY_FIELDS, (field) => {
   })
 })
 
+const fieldValue = (value, field) => {
+  if (includes(uuidFields, field)) {
+    return uuidPattern.test(value) ? [value] : []
+  }
+  return [value]
+}
+
 User.fromEvent = (event) => {
   const user = new User()
 
   forEach(eventFields, field => {
     if (typeof event[field] !== 'undefined' && event[field]) {
-      user[field] = [event[field]]
+      user[field] = fieldValue(event[field], field)
     }
   })
 
@@ -77,16 +87,20 @@ User.fromEvent = (event) => {
   if (context instanceof Context) {
     if (context.hasSchema(Context.SCHEMA_MOBILE)) {
       const data = context.dataFor(Context.SCHEMA_MOBILE)
-      if (typeof data['androidIdfa'] !== 'undefined' && data['androidIdfa']) { user.android_idfa = [data['androidIdfa']] }
+      if (typeof data['androidIdfa'] !== 'undefined' && data['androidIdfa']) {
+        user.android_idfa = fieldValue(data['androidIdfa'], 'android_idfa')
+      }
       // Todo: iOS not sending events yet, this is a guess at the property name
-      if (typeof data['appleIdfa'] !== 'undefined' && data['appleIdfa']) { user.apple_idfa = [data['appleIdfa']] }
+      if (typeof data['appleIdfa'] !== 'undefined' && data['appleIdfa']) {
+        user.apple_idfa = fieldValue(data['appleIdfa'], 'apple_idfa')
+      }
     }
 
     if (context.hasSchema(Context.SCHEMA_IDS)) {
       const data = context.dataFor(Context.SCHEMA_IDS)
       forEach(idFields, field => {
         if (typeof data[field] !== 'undefined' && data[field]) {
-          user[field] = [data[field]]
+          user[field] = fieldValue(data[field], field)
         }
       })
     }
