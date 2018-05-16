@@ -76,16 +76,12 @@ const fieldValue = (value, field) => {
 
 User.fromEvent = (event) => {
   const user = new User()
-
-  forEach(eventFields, field => {
-    if (typeof event[field] !== 'undefined' && event[field]) {
-      user[field] = fieldValue(event[field], field)
-    }
-  })
+  let isMobile = false
 
   const context = event.contexts
   if (context instanceof Context) {
     if (context.hasSchema(Context.SCHEMA_MOBILE)) {
+      isMobile = true
       const data = context.dataFor(Context.SCHEMA_MOBILE)
       if (typeof data['androidIdfa'] !== 'undefined' && data['androidIdfa']) {
         user.android_idfa = fieldValue(data['androidIdfa'], 'android_idfa')
@@ -104,6 +100,15 @@ User.fromEvent = (event) => {
         }
       })
     }
+  }
+
+  if (!isMobile) {
+    // Only set cookie/browser based fields when not a mobile event
+    forEach(eventFields, field => {
+      if (typeof event[field] !== 'undefined' && event[field]) {
+        user[field] = fieldValue(event[field], field)
+      }
+    })
   }
 
   return user
