@@ -2,6 +2,7 @@
 
 const {
   clone,
+  compact,
   forEach,
   includes,
   map,
@@ -11,9 +12,9 @@ const {
 const Context = require('./context')
 const {DataTypes} = require('sequelize')
 const sequelize = require('../config/sequelize')
-const eventFields = ['domain_userid', 'network_userid', 'user_fingerprint']
+const browserFields = ['domain_userid', 'network_userid', 'user_fingerprint']
 const idFields = ['sso_guid', 'gr_master_person_id', 'mcid']
-const appFields = ['android_idfa', 'apple_idfa']
+const idfaFields = ['device_idfa']
 const uuidFields = ['network_userid', 'sso_guid', 'gr_master_person_id']
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-4][0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -45,11 +46,7 @@ const User = sequelize().define('User', {
     type: DataTypes.ARRAY(DataTypes.STRING),
     defaultValue: []
   },
-  android_idfa: {
-    type: DataTypes.ARRAY(DataTypes.STRING),
-    defaultValue: []
-  },
-  apple_idfa: {
+  device_idfa: {
     type: DataTypes.ARRAY(DataTypes.STRING),
     defaultValue: []
   }
@@ -59,7 +56,7 @@ const User = sequelize().define('User', {
   timestamps: false
 })
 
-User.IDENTITY_FIELDS = [].concat(idFields, eventFields, appFields)
+User.IDENTITY_FIELDS = [].concat(idFields, browserFields, idfaFields)
 
 forEach(User.IDENTITY_FIELDS, (field) => {
   User.prototype.__defineGetter__(`has_${field}`, function () {
@@ -83,13 +80,10 @@ User.fromEvent = (event) => {
     if (context.hasSchema(Context.SCHEMA_MOBILE)) {
       isMobile = true
       const data = context.dataFor(Context.SCHEMA_MOBILE)
-      if (typeof data['androidIdfa'] !== 'undefined' && data['androidIdfa']) {
-        user.android_idfa = fieldValue(data['androidIdfa'], 'android_idfa')
-      }
       // Todo: iOS not sending events yet, this is a guess at the property name
-      if (typeof data['appleIdfa'] !== 'undefined' && data['appleIdfa']) {
-        user.apple_idfa = fieldValue(data['appleIdfa'], 'apple_idfa')
-      }
+      user.device_idfa = compact(map(['androidIdfa', 'appleIdfa'], field => {
+        return typeof data[field] !== 'undefined' ? data[field] : undefined
+      }))
     }
 
     if (context.hasSchema(Context.SCHEMA_IDS)) {
@@ -104,7 +98,8 @@ User.fromEvent = (event) => {
 
   if (!isMobile) {
     // Only set cookie/browser based fields when not a mobile event
-    forEach(eventFields, field => {
+    // Android seemed to set these to random uuid's on each request.
+    forEach(browserFields, field => {
       if (typeof event[field] !== 'undefined' && event[field]) {
         user[field] = fieldValue(event[field], field)
       }

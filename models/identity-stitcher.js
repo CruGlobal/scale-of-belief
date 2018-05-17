@@ -177,16 +177,15 @@ const scoreMatch = (user, match) => {
   return sumBy(toPairs(userIntersection(user, match)), pair => {
     switch (pair[0]) {
       case 'gr_master_person_id':
-        return pair[1].length * 4
+        return pair[1].length * 5
       case 'sso_guid':
+        return pair[1].length * 4
+      case 'device_idfa':
         return pair[1].length * 3
-      case 'domain_userid':
-      case 'android_idfa':
-      case 'apple_idfa':
-        return pair[1].length * 2
       case 'mcid':
       case 'user_fingerprint':
       case 'network_userid':
+      case 'domain_userid':
         return pair[1].length * 1
       /* istanbul ignore next */
       default:
