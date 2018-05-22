@@ -38,6 +38,7 @@ package:
     - .git/**
     - test/**
     - '**/*.test.js'
+    - '**/*.sql'
 
 plugins:
   - '@cruglobal/serverless-merge-config'
