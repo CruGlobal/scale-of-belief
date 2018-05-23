@@ -238,5 +238,9 @@ class UnknownUserError extends Error {}
 
 module.exports = {
   IdentityStitcher: performIdentityStitching,
-  UnknownUserError: UnknownUserError
+  UnknownUserError: UnknownUserError,
+  /**
+   * @private
+   */
+  _isSameSame: isSameSame
 }
