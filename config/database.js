@@ -12,8 +12,8 @@ const defaults = {
   port: process.env.DB_PORT_5432_TCP_PORT || 5432,
   // Disable operator aliases, we don't use them (also disables deprecation warning).
   operatorsAliases: false,
-  // Use logger for logging
-  logging: (msg) => logger.debug(msg),
+  // Use logger for logging at debug level, only if DEBUG env is set
+  logging: (msg) => { if (process.env['DEBUG'] === '*') logger.debug(msg) },
   pool: {
     max: 10,
     idle: 500,
