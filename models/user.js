@@ -82,7 +82,7 @@ User.fromEvent = (event) => {
       const data = context.dataFor(Context.SCHEMA_MOBILE)
       // Todo: iOS not sending events yet, this is a guess at the property name
       user.device_idfa = compact(map(['androidIdfa', 'appleIdfa'], field => {
-        return typeof data[field] !== 'undefined' ? data[field] : undefined
+        return data[field]
       }))
     }
 
