@@ -204,7 +204,10 @@ Event.fromRecord = (record) => {
   const event = new Event()
   event.event_id = decoded[Fields.event_id]
   event.decodedFields = decoded
-  logger.debug(JSON.stringify(mapValues(Fields, value => decoded[value])))
+  // Log event_id with encoded data. Will allow re-creating kinesis stream locally for debugging
+  logger.debug(JSON.stringify({event_id: event.id, kinesis: {data: record.kinesis.data}}))
+  // Log mapped fields for easier visual debugging
+  logger.info(JSON.stringify(mapValues(Fields, value => decoded[value])))
   event.uri = uriFromEvent(event)
   return event
 }

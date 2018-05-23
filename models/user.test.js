@@ -20,8 +20,7 @@ describe('User', () => {
         expect(user.domain_userid).toEqual([])
         expect(user.network_userid).toEqual([])
         expect(user.user_fingerprint).toEqual([])
-        expect(user.android_idfa).toEqual(['GnfzTXaSGltsr454irrZ'])
-        expect(user.apple_idfa).toEqual([])
+        expect(user.device_idfa).toEqual(['GnfzTXaSGltsr454irrZ'])
         expect(user.mcid).toEqual([])
         expect(user.sso_guid).toEqual([])
         expect(user.gr_master_person_id).toEqual([])
@@ -38,8 +37,7 @@ describe('User', () => {
         expect(user.domain_userid).toEqual([])
         expect(user.network_userid).toEqual([])
         expect(user.user_fingerprint).toEqual([])
-        expect(user.apple_idfa).toEqual(['9fLpCpwhvGLKMUJqrPMW'])
-        expect(user.android_idfa).toEqual([])
+        expect(user.device_idfa).toEqual(['9fLpCpwhvGLKMUJqrPMW'])
         expect(user.mcid).toEqual(['1234567890'])
         expect(user.sso_guid).toEqual(['16c3ce20-396d-4702-8c3f-e5dd0b8ad69e'])
         expect(user.gr_master_person_id).toEqual(['a3b99eb7-f7bf-4443-9c93-09367ab4024b'])
@@ -54,13 +52,9 @@ describe('User', () => {
       it('should set user fields based on web event', () => {
         const user = User.fromEvent(event)
         expect(user.domain_userid).toEqual([event.domain_userid])
-        expect(user.domain_userid).toHaveLength(1)
         expect(user.network_userid).toEqual([event.network_userid.toLowerCase()])
-        expect(user.network_userid).toHaveLength(1)
         expect(user.user_fingerprint).toEqual([event.user_fingerprint])
-        expect(user.user_fingerprint).toHaveLength(1)
-        expect(user.apple_idfa).toEqual([])
-        expect(user.android_idfa).toEqual([])
+        expect(user.device_idfa).toEqual([])
         expect(user.mcid).toEqual(['1234567890'])
         expect(user.sso_guid).toEqual([])
         expect(user.gr_master_person_id).toEqual([])
@@ -84,7 +78,7 @@ describe('User', () => {
           mcid: ['mcid1'],
           gr_master_person_id: ['d0bfe465-86a3-49a6-9341-c0cbfdf305f4'],
           sso_guid: ['c4f2282f-1c4e-4fdb-ac29-dde5c1c0e913'],
-          android_idfa: ['android1']
+          device_idfa: ['android1']
         })
       ]).then(users => {
         user = users[0]
@@ -96,8 +90,7 @@ describe('User', () => {
       expect(user.merge(other)).toBe(user)
       expect(user.dataValues).toEqual({
         user_fingerprint: [],
-        android_idfa: ['android1'],
-        apple_idfa: [],
+        device_idfa: ['android1'],
         id: null,
         domain_userid: ['domain1', 'domain2'],
         network_userid: ['270ecd56-9182-40f5-a87c-f4400f43cbea'],

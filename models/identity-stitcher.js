@@ -177,16 +177,15 @@ const scoreMatch = (user, match) => {
   return sumBy(toPairs(userIntersection(user, match)), pair => {
     switch (pair[0]) {
       case 'gr_master_person_id':
-        return pair[1].length * 4
+        return pair[1].length * 5
       case 'sso_guid':
+        return pair[1].length * 4
+      case 'device_idfa':
         return pair[1].length * 3
-      case 'domain_userid':
-      case 'android_idfa':
-      case 'apple_idfa':
-        return pair[1].length * 2
       case 'mcid':
       case 'user_fingerprint':
       case 'network_userid':
+      case 'domain_userid':
         return pair[1].length * 1
       /* istanbul ignore next */
       default:
@@ -204,21 +203,24 @@ const scoreMatch = (user, match) => {
 const isSameSame = (user, other) => {
   const matches = userIntersection(user, other)
   // If gr_master_person_id or sso_guid match, then it's the same user
-  if (matches['gr_master_person_id'].length > 0 || matches['sso_guid'].length > 0) {
-    return true
-  }
+  if (matches['gr_master_person_id'].length > 0 || matches['sso_guid'].length > 0) return true
 
   // If gr_master_person_id exists on both, and are different, it's not the same
-  if (user.has_gr_master_person_id && other.has_gr_master_person_id && matches['gr_master_person_id'].length === 0) {
-    return false
-  }
+  if (user.has_gr_master_person_id && other.has_gr_master_person_id && matches['gr_master_person_id'].length === 0) return false
 
   // If sso_guid exists on both, and is different, it's not the same
-  if (user.has_sso_guid && other.has_sso_guid && matches['sso_guid'].length === 0) {
-    return false
-  }
+  if (user.has_sso_guid && other.has_sso_guid && matches['sso_guid'].length === 0) return false
 
-  return true
+  // If device_idfa match, then it's the same user
+  if (matches['device_idfa'].length > 0) return true
+
+  // If device_idfa exists on both and is different, t's not the same
+  if (user.has_device_idfa && other.has_device_idfa && matches['device_idfa'].length === 0) return false
+
+  // If at least 2 fields match, it's the same user
+  if (sumBy(toPairs(matches), pair => { return pair[1] > 0 ? 1 : 0 }) >= 2) return true
+
+  return false
 }
 
 /**
@@ -236,5 +238,13 @@ class UnknownUserError extends Error {}
 
 module.exports = {
   IdentityStitcher: performIdentityStitching,
-  UnknownUserError: UnknownUserError
+  UnknownUserError: UnknownUserError,
+  /**
+   * @private
+   */
+  _isSameSame: isSameSame,
+  /**
+   * @private
+   */
+  _rejectAmbiguous: rejectAmbiguous
 }
