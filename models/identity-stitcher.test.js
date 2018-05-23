@@ -2,7 +2,9 @@
 
 const {
   IdentityStitcher,
-  UnknownUserError
+  UnknownUserError,
+  _isSameSame,
+  _rejectAmbiguous
 } = require('./identity-stitcher')
 const factory = require('../test/factory')
 const chance = require('chance').Chance()
@@ -41,7 +43,8 @@ describe('IdentityStitcher', () => {
   describe('has one match', () => {
     let other
     beforeEach(() => {
-      return factory.create('web_user', {mcid: user.mcid}).then(webUser => { other = webUser })
+      return factory.create('web_user', {mcid: user.mcid, domain_userid: user.domain_userid})
+        .then(webUser => { other = webUser })
     })
 
     it('should merge user', () => {
@@ -109,7 +112,7 @@ describe('IdentityStitcher', () => {
     beforeEach(() => {
       return Promise.all([
         factory.create('web_user', {gr_master_person_id: user.gr_master_person_id}),
-        factory.create('authenticated_web_user', {mcid: user.mcid}), // false positive
+        factory.create('authenticated_web_user', {mcid: user.mcid, domain_userid: user.domain_userid}), // false positive
         factory.create('web_user', {sso_guid: user.sso_guid}),
         factory.create('web_user', {mcid: user.mcid, sso_guid: [chance.guid()]}) // false positive
       ]).then((users) => { others = users })
@@ -153,6 +156,106 @@ describe('IdentityStitcher', () => {
         expect(event.user_id).toEqual(identity.id)
         expect(identity).toBe(user)
         expect(ids).not.toEqual(expect.arrayContaining([identity.id]))
+      })
+    })
+  })
+
+  describe('_isSameSame(user, other)', () => {
+    let other
+    beforeEach(() => {
+      return factory.create('web_user').then(webUser => { other = webUser })
+    })
+
+    describe('other has same \'sso_guid\'', () => {
+      it('should be same same', () => {
+        other.sso_guid = user.sso_guid
+        expect(_isSameSame(user, other)).toBe(true)
+      })
+
+      describe('and different \'gr_master_person_id\'', () => {
+        it('should be same same', () => {
+          other.sso_guid = user.sso_guid
+          other.gr_master_person_id = [chance.guid().toLowerCase()]
+          expect(_isSameSame(user, other)).toBe(true)
+        })
+      })
+    })
+
+    describe('other has same \'gr_master_person_id\'', () => {
+      it('should be same same', () => {
+        other.gr_master_person_id = user.gr_master_person_id
+        expect(_isSameSame(user, other)).toBe(true)
+      })
+
+      describe('and different \'sso_guid\'', () => {
+        it('should be same same', () => {
+          other.gr_master_person_id = user.gr_master_person_id
+          other.sso_guid = [chance.guid().toLowerCase()]
+          expect(_isSameSame(user, other)).toBe(true)
+        })
+      })
+    })
+
+    describe('other has different \'sso_guid\'', () => {
+      it('should NOT be same same', () => {
+        other.sso_guid = [chance.guid().toLowerCase()]
+        expect(_isSameSame(user, other)).toBe(false)
+      })
+
+      describe('and same \'network_userid\' and \'domain_userid\'', () => {
+        it('should NOT be same same', () => {
+          other.sso_guid = [chance.guid().toLowerCase()]
+          other.domain_userid = user.domain_userid
+          other.network_userid = user.network_userid
+          expect(_isSameSame(user, other)).toBe(false)
+        })
+      })
+    })
+
+    describe('other has different \'gr_master_person_id\'', () => {
+      it('should NOT be same same', () => {
+        other.gr_master_person_id = [chance.guid().toLowerCase()]
+        expect(_isSameSame(user, other)).toBe(false)
+      })
+
+      describe('and same \'network_userid\' and \'domain_userid\'', () => {
+        it('should NOT be same same', () => {
+          other.sso_guid = [chance.guid().toLowerCase()]
+          other.domain_userid = user.domain_userid
+          other.network_userid = user.network_userid
+          expect(_isSameSame(user, other)).toBe(false)
+        })
+      })
+    })
+
+    describe('other has same \'device_idfa\'', () => {
+      it('should be same same', () => {
+        other.device_idfa = user.device_idfa = [chance.android_id()]
+        expect(_isSameSame(user, other)).toBe(true)
+      })
+    })
+
+    describe('other has different \'device_idfa\'', () => {
+      it('should NOT be same same', () => {
+        user.device_idfa = [chance.android_id()]
+        other.device_idfa = [chance.apple_token()]
+        expect(_isSameSame(user, other)).toBe(false)
+      })
+    })
+  })
+
+  describe('_rejectAmbiguous(user, matches)', () => {
+    let matches
+    beforeEach(() => {
+      return Promise.all([
+        factory.create('web_user', {sso_guid: [chance.guid().toLowerCase()]}),
+        factory.create('web_user', {mcid: user.mcid, domain_userid: user.domain_userid})
+      ]).then(users => { matches = users })
+    })
+
+    it('correctly rejects ambiguous matches', () => {
+      return _rejectAmbiguous(user, matches).then((result) => {
+        expect(result).toHaveLength(1)
       })
     })
   })
