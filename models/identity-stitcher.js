@@ -242,5 +242,9 @@ module.exports = {
   /**
    * @private
    */
-  _isSameSame: isSameSame
+  _isSameSame: isSameSame,
+  /**
+   * @private
+   */
+  _rejectAmbiguous: rejectAmbiguous
 }

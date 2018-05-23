@@ -3,7 +3,8 @@
 const {
   IdentityStitcher,
   UnknownUserError,
-  _isSameSame
+  _isSameSame,
+  _rejectAmbiguous
 } = require('./identity-stitcher')
 const factory = require('../test/factory')
 const chance = require('chance').Chance()
@@ -111,7 +112,7 @@ describe('IdentityStitcher', () => {
     beforeEach(() => {
       return Promise.all([
         factory.create('web_user', {gr_master_person_id: user.gr_master_person_id}),
-        factory.create('authenticated_web_user', {mcid: user.mcid}), // false positive
+        factory.create('authenticated_web_user', {mcid: user.mcid, domain_userid: user.domain_userid}), // false positive
         factory.create('web_user', {sso_guid: user.sso_guid}),
         factory.create('web_user', {mcid: user.mcid, sso_guid: [chance.guid()]}) // false positive
       ]).then((users) => { others = users })
@@ -239,6 +240,22 @@ describe('IdentityStitcher', () => {
         user.device_idfa = [chance.android_id()]
         other.device_idfa = [chance.apple_token()]
         expect(_isSameSame(user, other)).toBe(false)
+      })
+    })
+  })
+
+  describe('_rejectAmbiguous(user, matches)', () => {
+    let matches
+    beforeEach(() => {
+      return Promise.all([
+        factory.create('web_user', {sso_guid: [chance.guid().toLowerCase()]}),
+        factory.create('web_user', {mcid: user.mcid, domain_userid: user.domain_userid})
+      ]).then(users => { matches = users })
+    })
+
+    it('correctly rejects ambiguous matches', () => {
+      return _rejectAmbiguous(user, matches).then((result) => {
+        expect(result).toHaveLength(1)
       })
     })
   })
