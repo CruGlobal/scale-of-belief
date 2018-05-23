@@ -14,15 +14,16 @@ factory.define('user', User, {})
 factory.extend('user', 'web_user', {
   mcid: () => [chance.natural().toString()],
   network_userid: () => [chance.guid()],
+  domain_userid: () => [chance.natural().toString()],
   user_fingerprint: () => [chance.natural().toString()]
 })
 
 factory.extend('user', 'android_user', {
-  android_idfa: () => [chance.android_id()]
+  device_idfa: () => [chance.android_id()]
 })
 
 factory.extend('user', 'apple_user', {
-  apple_idfa: () => [chance.apple_token()]
+  device_idfa: () => [chance.apple_token()]
 })
 
 factory.extend('web_user', 'authenticated_web_user', {

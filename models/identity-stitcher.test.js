@@ -41,7 +41,8 @@ describe('IdentityStitcher', () => {
   describe('has one match', () => {
     let other
     beforeEach(() => {
-      return factory.create('web_user', {mcid: user.mcid}).then(webUser => { other = webUser })
+      return factory.create('web_user', {mcid: user.mcid, domain_userid: user.domain_userid})
+        .then(webUser => { other = webUser })
     })
 
     it('should merge user', () => {
