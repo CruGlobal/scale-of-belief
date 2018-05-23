@@ -12,6 +12,7 @@ module.exports = () => {
     DB_PORT_5432_TCP_PORT: process.env['DB_PORT_5432_TCP_PORT'] || 5432,
     ROLLBAR_ACCESS_TOKEN: process.env['ROLLBAR_ACCESS_TOKEN'] || '',
     JWT_SECRET: process.env['JWT_SECRET'] || 'secret',
-    THE_KEY_SERVICE_URL: process.env['THE_KEY_SERVICE_URL'] || 'http://localhost:3000/api/login'
+    THE_KEY_SERVICE_URL: process.env['THE_KEY_SERVICE_URL'] || 'http://localhost:3000/api/login',
+    THE_KEY_API_KEY: process.env['THE_KEY_API_KEY']
   }
 }
