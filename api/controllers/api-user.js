@@ -24,7 +24,6 @@ const post = (request, response) => {
   // lookup guid
   if (!requestBody.guid && requestBody.contact_email) {
     const req = https.get('https://thekey.me/cas/api/' + process.env.THE_KEY_API_KEY + '/user/attributes?email=' + requestBody.contact_email, (res) => {
-
       if (res.statusCode !== 200) {
         response.status(res.statusCode)
         response.end(res.statusCode === 404 ? 'The email used is not an existing Key user account.' : 'Guid lookup error')
