@@ -15,13 +15,28 @@ const rollbar = new Rollbar({
   }
 })
 
+function errorSerializer (_key, value) {
+  if (value instanceof Error) {
+    let error = {}
+    Object.getOwnPropertyNames(value).forEach(key => {
+      if (key === 'stack') {
+        error[key] = value[key].split('\n').map(item => item.trim())
+      } else {
+        error[key] = value[key]
+      }
+    })
+    return error
+  }
+  return value
+}
+
 // Proxy specific methods to logger before sending to rollbar
 module.exports = new Proxy(rollbar, {
   get: function (obj, prop) {
     if (prop in proxyMap) {
       const origFunc = obj[prop]
       return function (...args) {
-        logger[proxyMap[prop]].apply(this, args)
+        logger[proxyMap[prop]].apply(this, [JSON.stringify(args, errorSerializer, 2)])
         return origFunc.apply(this, args)
       }
     }
