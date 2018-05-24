@@ -36,7 +36,7 @@ module.exports = new Proxy(rollbar, {
     if (prop in proxyMap) {
       const origFunc = obj[prop]
       return function (...args) {
-        logger[proxyMap[prop]].apply(this, [JSON.stringify(args, errorSerializer, 2)])
+        logger[proxyMap[prop]].apply(this, [JSON.stringify(args, errorSerializer, process.env['IS_LOCAL'] ? 2 : 0)])
         return origFunc.apply(this, args)
       }
     }
