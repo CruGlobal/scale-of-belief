@@ -16,7 +16,7 @@ const browserFields = ['domain_userid', 'network_userid', 'user_fingerprint']
 const idFields = ['sso_guid', 'gr_master_person_id', 'mcid']
 const idfaFields = ['device_idfa']
 const uuidFields = ['network_userid', 'sso_guid', 'gr_master_person_id']
-const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 const User = sequelize().define('User', {
   domain_userid: {
