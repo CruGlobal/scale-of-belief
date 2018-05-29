@@ -3,6 +3,8 @@
 const Score = require('./score')
 const factory = require('../test/factory')
 const { omit } = require('lodash')
+const paperTrail = require('../config/papertrail')
+const Revisions = paperTrail['revisions']
 
 describe('Score', () => {
   it('should be defined', () => {
@@ -48,8 +50,8 @@ describe('Score', () => {
       expect(score).toBeDefined()
       return Score.retrieve(score.uri).then((result) => {
         expect(result).toBeDefined()
-        const dates = ['created_at', 'updated_at']
-        expect(omit(result.dataValues, dates)).toEqual(omit(score.dataValues, dates))
+        const exclude = ['created_at', 'updated_at', 'revision']
+        expect(omit(result.dataValues, exclude)).toEqual(omit(score.dataValues, exclude))
       })
     })
 
@@ -67,7 +69,7 @@ describe('Score', () => {
       return Promise.all([
         factory.build('existing_score'),
         factory.build('created_score'),
-        factory.create('updated_score')
+        factory.build('updated_score')
       ]).then(scores => {
         existingScore = scores[0]
         createdScore = scores[1]
@@ -141,5 +143,9 @@ describe('Score', () => {
         done()
       })
     })
+  })
+
+  afterAll(() => {
+    Revisions.destroy({truncate: true})
   })
 })

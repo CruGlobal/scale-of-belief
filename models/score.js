@@ -2,6 +2,7 @@
 
 const {DataTypes} = require('sequelize')
 const sequelize = require('../config/sequelize')
+require('../config/papertrail')
 const Score = sequelize().define('Score', {
   uri: {
     type: DataTypes.STRING,
@@ -96,5 +97,7 @@ Score.save = (uri, score) => {
     )
   })
 }
+
+Score.Revisions = Score.hasPaperTrail()
 
 module.exports = Score
