@@ -1,5 +1,12 @@
 'use strict';
 
+/**
+ * Customized version of
+ * https://www.npmjs.com/package/sequelize-paper-trail
+ * version 2.0.0
+ * to work with our application.
+ */
+
 var Sequelize = require('sequelize');
 var diff = require('deep-diff').diff;
 var jsdiff = require('diff');
@@ -116,6 +123,10 @@ exports.init = function (sequelize, optionsArg) {
   if (debug) {
     log('parsed options:');
     log(options);
+  }
+
+  if (!options.documentIdType) {
+    options.documentIdType = Sequelize.INTEGER;
   }
 
   var ns = cls.getNamespace(options.continuationNamespace);
@@ -249,8 +260,8 @@ exports.init = function (sequelize, optionsArg) {
       log('revisionId', currentRevisionId);
     }
 
-    instance.set(options.revisionAttribute, (currentRevisionId || 0) + 1);
     if (delta && delta.length > 0) {
+      instance.set(options.revisionAttribute, (currentRevisionId || 0) + 1);
       if (!instance.context) {
         instance.context = {};
       }
@@ -298,12 +309,22 @@ exports.init = function (sequelize, optionsArg) {
       }
 
       // Build revision
-      var revision = Revision.build({
-        model: this.name,
-        documentId: instance.id,
-        document: JSON.stringify(currentVersion),
-        userId: ns.get(options.continuationKey) || opt[options.continuationKey]
-      });
+      var revision
+      if (options.underscoredAttributes) {
+        revision = Revision.build({
+          model: this.name,
+          document_id: instance.get('primaryKey'),
+          document: JSON.stringify(currentVersion),
+          user_id: ns.get(options.continuationKey) || opt[options.continuationKey]
+        });
+      } else {
+        revision = Revision.build({
+          model: this.name,
+          documentId: instance.get('primaryKey'),
+          document: JSON.stringify(currentVersion),
+          userId: ns.get(options.continuationKey) || opt[options.continuationKey]
+        });
+      }
 
       revision[options.revisionAttribute] = instance.get(options.revisionAttribute);
 
@@ -366,7 +387,7 @@ exports.init = function (sequelize, optionsArg) {
       }
 
       attributes[options.defaultAttributes.documentId] = {
-        type: Sequelize.INTEGER,
+        type: options.documentIdType,
         allowNull: false
       };
 
