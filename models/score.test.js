@@ -145,6 +145,18 @@ describe('Score', () => {
     })
   })
 
+  describe('Score.getPrimaryKey()', () => {
+    let score
+    beforeEach(() => {
+      return factory.build('existing_score').then(existingScore => { score = existingScore })
+    })
+
+    it('should return the uri', () => {
+      const primaryKey = score.get('primaryKey')
+      expect(primaryKey).toEqual(score.uri)
+    })
+  })
+
   afterAll(() => {
     Revisions.destroy({truncate: true})
   })

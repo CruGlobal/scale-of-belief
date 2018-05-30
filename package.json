@@ -74,7 +74,8 @@
     "setupTestFrameworkScriptFile": "./test/test-setup.js",
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "/test/"
+      "/test/",
+      "/vendor/"
     ]
   }
 }

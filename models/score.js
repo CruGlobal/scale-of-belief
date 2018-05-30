@@ -55,7 +55,12 @@ const Score = sequelize().define('Score', {
   }
 }, {
   tableName: 'scores',
-  underscored: true
+  underscored: true,
+  getterMethods: {
+    primaryKey () {
+      return this.uri
+    }
+  }
 })
 
 Score.toApiScore = (score) => {

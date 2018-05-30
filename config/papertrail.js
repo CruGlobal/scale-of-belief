@@ -2,7 +2,7 @@
 
 const Sequelize = require('sequelize')
 const sequelize = require('./sequelize')
-const PaperTrail = require('sequelize-paper-trail')
+const PaperTrail = require('../vendor/papertrail')
 
 const User = require('../models/user')
 const Event = require('../models/event')
@@ -18,6 +18,7 @@ const paperTrail = PaperTrail.init(sequelize(), {
   enableMigration: false,
   userModel: 'ApiUser', // This has to be defined, but is not being used right now
   revisionModel: 'revisions',
+  documentIdType: Sequelize.STRING,
 //  revisionChangeModel: 'revision_changes',
   debug: process.env['DEBUG'] === '*'
 })
