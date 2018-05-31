@@ -114,7 +114,6 @@ describe('ScoreController', () => {
           score: newScore
         }
       }
-      const result = [ createdScore, true ]
 
       const response = {
         json: (jsonToSet) => {
@@ -124,7 +123,7 @@ describe('ScoreController', () => {
         }
       }
 
-      jest.spyOn(Score, 'save').mockImplementation(() => Promise.resolve(result))
+      jest.spyOn(Score, 'save').mockImplementation(() => Promise.resolve(createdScore))
 
       ScoreController.post(request, response)
     })
@@ -143,7 +142,7 @@ describe('ScoreController', () => {
           score: newScore
         }
       }
-      const result = [ updatedScore, true ]
+      const result = [2, [ updatedScore, true ]]
 
       const response = {
         json: (jsonToSet) => {
@@ -178,7 +177,6 @@ describe('ScoreController', () => {
         uri: newUri,
         score: newScore
       }
-      const result = [ createdScore, true ]
 
       const response = {
         json: (jsonToSet) => {
@@ -188,7 +186,7 @@ describe('ScoreController', () => {
         }
       }
 
-      jest.spyOn(Score, 'save').mockImplementation(() => Promise.resolve(result))
+      jest.spyOn(Score, 'save').mockImplementation(() => Promise.resolve(createdScore))
 
       ScoreController.post(request, response)
       expect(Score.save).toHaveBeenCalledWith(newUri, newScore)

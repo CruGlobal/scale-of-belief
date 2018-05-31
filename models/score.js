@@ -86,20 +86,32 @@ Score.retrieve = (uri) => {
 
 Score.save = (uri, score) => {
   return sequelize().transaction(function (t) {
-    return Score.upsert(
-      {
-        uri: uri,
-        unaware: score.unaware,
-        curious: score.curious,
-        follower: score.follower,
-        guide: score.guide,
-        confidence: score.confidence
-      },
-      {
-        transaction: t,
-        returning: true
+    const upsertData = {
+      uri: uri,
+      unaware: score.unaware,
+      curious: score.curious,
+      follower: score.follower,
+      guide: score.guide,
+      confidence: score.confidence
+    }
+
+    return Score.findById(uri).then((result) => {
+      if (result) {
+        return result.update(
+          upsertData,
+          {
+            transaction: t,
+            returning: true
+          })
+      } else {
+        return Score.create(
+          upsertData,
+          {
+            transaction: t,
+            returning: true
+          })
       }
-    )
+    })
   })
 }
 

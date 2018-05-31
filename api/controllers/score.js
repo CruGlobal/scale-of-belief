@@ -20,7 +20,12 @@ const get = (request, response) => {
 const post = (request, response) => {
   var requestBody = request.body
   Score.save(util.sanitizeUri(requestBody.uri), requestBody.score).then(function (result) {
-    response.json(Score.toApiScore(result[0].dataValues))
+    // On update, we will have a multi-dimensional array (first element being the version), on create we won't
+    if (Array.isArray(result)) {
+      response.json(Score.toApiScore(result[1][0].dataValues))
+    } else {
+      response.json(Score.toApiScore(result.dataValues))
+    }
   })
 }
 

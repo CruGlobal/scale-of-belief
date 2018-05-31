@@ -64,16 +64,14 @@ describe('Score', () => {
   })
 
   describe('Score.save()', () => {
-    let existingScore, createdScore, updatedScore
+    let createdScore, updatedScore
     beforeEach(() => {
       return Promise.all([
-        factory.build('existing_score'),
         factory.build('created_score'),
         factory.build('updated_score')
       ]).then(scores => {
-        existingScore = scores[0]
-        createdScore = scores[1]
-        updatedScore = scores[2]
+        createdScore = scores[0]
+        updatedScore = scores[1]
       })
     })
 
@@ -87,12 +85,12 @@ describe('Score', () => {
       }
       Score.save(createdScore.uri, inputScore).then((result) => {
         expect(result).toBeDefined()
-        expect(result[0].dataValues.uri).toEqual(createdScore.dataValues.uri)
-        expect(result[0].dataValues.unaware).toEqual(createdScore.dataValues.unaware)
-        expect(result[0].dataValues.curious).toEqual(createdScore.dataValues.curious)
-        expect(result[0].dataValues.follower).toEqual(createdScore.dataValues.follower)
-        expect(result[0].dataValues.guide).toEqual(createdScore.dataValues.guide)
-        expect(result[0].dataValues.confidence).toEqual(createdScore.dataValues.confidence)
+        expect(result.dataValues.uri).toEqual(createdScore.dataValues.uri)
+        expect(result.dataValues.unaware).toEqual(createdScore.dataValues.unaware)
+        expect(result.dataValues.curious).toEqual(createdScore.dataValues.curious)
+        expect(result.dataValues.follower).toEqual(createdScore.dataValues.follower)
+        expect(result.dataValues.guide).toEqual(createdScore.dataValues.guide)
+        expect(result.dataValues.confidence).toEqual(createdScore.dataValues.confidence)
         done()
       })
     })
@@ -105,25 +103,30 @@ describe('Score', () => {
         guide: updatedScore.guide,
         confidence: updatedScore.confidence
       }
-      Score.save(existingScore.uri, inputScore).then((result) => {
-        expect(result).toBeDefined()
-        expect(result[0].dataValues.uri).toEqual(existingScore.dataValues.uri)
 
-        expect(result[0].dataValues.unaware).toEqual(updatedScore.dataValues.unaware)
-        expect(result[0].dataValues.unaware).not.toEqual(existingScore.dataValues.unaware)
+      factory.create('existing_score').then((existingScore) => {
+        expect(existingScore).toBeDefined()
 
-        expect(result[0].dataValues.curious).toEqual(updatedScore.dataValues.curious)
-        expect(result[0].dataValues.curious).not.toEqual(existingScore.dataValues.curious)
+        Score.save(existingScore.uri, inputScore).then((result) => {
+          expect(result).toBeDefined()
+          expect(result.dataValues.uri).toEqual(existingScore.dataValues.uri)
 
-        expect(result[0].dataValues.follower).toEqual(updatedScore.dataValues.follower)
-        expect(result[0].dataValues.follower).not.toEqual(existingScore.dataValues.follower)
+          expect(result.dataValues.unaware).toEqual(updatedScore.dataValues.unaware)
+          expect(result.dataValues.unaware).not.toEqual(existingScore.dataValues.unaware)
 
-        expect(result[0].dataValues.guide).toEqual(updatedScore.dataValues.guide)
-        expect(result[0].dataValues.guide).not.toEqual(existingScore.dataValues.guide)
+          expect(result.dataValues.curious).toEqual(updatedScore.dataValues.curious)
+          expect(result.dataValues.curious).not.toEqual(existingScore.dataValues.curious)
 
-        expect(result[0].dataValues.confidence).toEqual(updatedScore.dataValues.confidence)
-        expect(result[0].dataValues.confidence).not.toEqual(existingScore.dataValues.confidence)
-        done()
+          expect(result.dataValues.follower).toEqual(updatedScore.dataValues.follower)
+          expect(result.dataValues.follower).not.toEqual(existingScore.dataValues.follower)
+
+          expect(result.dataValues.guide).toEqual(updatedScore.dataValues.guide)
+          expect(result.dataValues.guide).not.toEqual(existingScore.dataValues.guide)
+
+          expect(result.dataValues.confidence).toEqual(updatedScore.dataValues.confidence)
+          expect(result.dataValues.confidence).not.toEqual(existingScore.dataValues.confidence)
+          done()
+        })
       })
     })
 
