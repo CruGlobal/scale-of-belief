@@ -104,7 +104,8 @@ factory.extend('blank_score', 'existing_score', {
   curious: 1,
   follower: 1,
   guide: 1,
-  confidence: 0
+  confidence: 0,
+  revision: 1
 })
 
 factory.extend('blank_score', 'created_score', {
@@ -113,7 +114,8 @@ factory.extend('blank_score', 'created_score', {
   curious: 6,
   follower: 3,
   guide: 1,
-  confidence: 98
+  confidence: 98,
+  revision: 1
 })
 
 factory.extend('existing_score', 'updated_score', {
@@ -121,7 +123,8 @@ factory.extend('existing_score', 'updated_score', {
   curious: 2,
   follower: 2,
   guide: 2,
-  confidence: 50
+  confidence: 50,
+  revision: 2
 })
 
 factory.define('api_user', ApiUser, {})

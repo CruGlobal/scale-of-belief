@@ -2,6 +2,7 @@
 
 const {DataTypes} = require('sequelize')
 const sequelize = require('../config/sequelize')
+require('../config/papertrail')
 const Score = sequelize().define('Score', {
   uri: {
     type: DataTypes.STRING,
@@ -54,7 +55,12 @@ const Score = sequelize().define('Score', {
   }
 }, {
   tableName: 'scores',
-  underscored: true
+  underscored: true,
+  getterMethods: {
+    primaryKey () {
+      return this.uri
+    }
+  }
 })
 
 Score.toApiScore = (score) => {
@@ -80,21 +86,35 @@ Score.retrieve = (uri) => {
 
 Score.save = (uri, score) => {
   return sequelize().transaction(function (t) {
-    return Score.upsert(
-      {
-        uri: uri,
-        unaware: score.unaware,
-        curious: score.curious,
-        follower: score.follower,
-        guide: score.guide,
-        confidence: score.confidence
-      },
-      {
-        transaction: t,
-        returning: true
+    const upsertData = {
+      uri: uri,
+      unaware: score.unaware,
+      curious: score.curious,
+      follower: score.follower,
+      guide: score.guide,
+      confidence: score.confidence
+    }
+
+    return Score.findById(uri).then((result) => {
+      if (result) {
+        return result.update(
+          upsertData,
+          {
+            transaction: t,
+            returning: true
+          })
+      } else {
+        return Score.create(
+          upsertData,
+          {
+            transaction: t,
+            returning: true
+          })
       }
-    )
+    })
   })
 }
+
+Score.Revisions = Score.hasPaperTrail()
 
 module.exports = Score

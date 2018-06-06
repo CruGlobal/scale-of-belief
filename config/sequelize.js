@@ -23,7 +23,7 @@ const close = () => {
     database = undefined
     // Delete sequelize Models from require cache.
     // They internally cache sequelize object and need to be reloaded on warm start
-    forEach(['../models/event', '../models/user', '../models/score'], value => {
+    forEach(['../models/event', '../models/user', '../models/score', './papertrail'], value => {
       delete require.cache[require.resolve(value)]
     })
     isClosing = false
