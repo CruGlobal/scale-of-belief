@@ -33,6 +33,8 @@ functions:
           method: ANY
   migrate:
     handler: db/migrate.handler
+  redshift:
+    handler: db/redshift.handler
 
 package:
   exclude:
