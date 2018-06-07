@@ -5,8 +5,6 @@ const {castArray, find, startsWith} = require('lodash')
 class Context {
   static get SCHEMA_WEB_PAGE () { return 'iglu:com.snowplowanalytics.snowplow/web_page/jsonschema' }
 
-  static get SCHEMA_SCORES () { return 'iglu:org.cru/contentscores/jsonschema' }
-
   static get SCHEMA_IDS () { return 'iglu:org.cru/ids/jsonschema' }
 
   static get SCHEMA_MOBILE () { return 'iglu:com.snowplowanalytics.snowplow/mobile_context/jsonschema' }

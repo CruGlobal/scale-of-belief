@@ -150,7 +150,7 @@ const Event = sequelize().define('Event', {
   event_id: DataTypes.UUID,
   user_id: DataTypes.BIGINT,
   uri: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(2048),
     get () {
       var value = this.getDataValue('uri')
       if (value) {

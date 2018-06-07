@@ -12,25 +12,17 @@ describe('Score', () => {
   })
 
   describe('Score.toApiScore()', () => {
-    it('should create a json object with a "score" sub-object', () => {
+    it('should create a json object', () => {
       const dbScore = {
         uri: 'http://somewhere.com',
-        unaware: 2,
-        curious: 3,
-        follower: 1,
-        guide: 2,
-        confidence: 50
+        score: 2,
+        weight: 3
       }
 
       const expectedApiScore = {
         uri: dbScore.uri,
-        score: {
-          unaware: dbScore.unaware,
-          curious: dbScore.curious,
-          follower: dbScore.follower,
-          guide: dbScore.guide,
-          confidence: dbScore.confidence
-        }
+        score: dbScore.score,
+        weight: dbScore.weight
       }
 
       const apiScore = Score.toApiScore(dbScore)
@@ -77,31 +69,22 @@ describe('Score', () => {
 
     it('should create a new score', done => {
       const inputScore = {
-        unaware: createdScore.unaware,
-        curious: createdScore.curious,
-        follower: createdScore.follower,
-        guide: createdScore.guide,
-        confidence: createdScore.confidence
+        score: createdScore.score,
+        weight: createdScore.weight
       }
       Score.save(createdScore.uri, inputScore).then((result) => {
         expect(result).toBeDefined()
         expect(result.dataValues.uri).toEqual(createdScore.dataValues.uri)
-        expect(result.dataValues.unaware).toEqual(createdScore.dataValues.unaware)
-        expect(result.dataValues.curious).toEqual(createdScore.dataValues.curious)
-        expect(result.dataValues.follower).toEqual(createdScore.dataValues.follower)
-        expect(result.dataValues.guide).toEqual(createdScore.dataValues.guide)
-        expect(result.dataValues.confidence).toEqual(createdScore.dataValues.confidence)
+        expect(result.dataValues.score).toEqual(createdScore.dataValues.score)
+        expect(result.dataValues.weight).toEqual(createdScore.dataValues.weight)
         done()
       })
     })
 
     it('should update an existing score', done => {
       const inputScore = {
-        unaware: updatedScore.unaware,
-        curious: updatedScore.curious,
-        follower: updatedScore.follower,
-        guide: updatedScore.guide,
-        confidence: updatedScore.confidence
+        score: updatedScore.score,
+        weight: updatedScore.weight
       }
 
       factory.create('existing_score').then((existingScore) => {
@@ -111,20 +94,11 @@ describe('Score', () => {
           expect(result).toBeDefined()
           expect(result.dataValues.uri).toEqual(existingScore.dataValues.uri)
 
-          expect(result.dataValues.unaware).toEqual(updatedScore.dataValues.unaware)
-          expect(result.dataValues.unaware).not.toEqual(existingScore.dataValues.unaware)
+          expect(result.dataValues.score).toEqual(updatedScore.dataValues.score)
+          expect(result.dataValues.score).not.toEqual(existingScore.dataValues.score)
 
-          expect(result.dataValues.curious).toEqual(updatedScore.dataValues.curious)
-          expect(result.dataValues.curious).not.toEqual(existingScore.dataValues.curious)
-
-          expect(result.dataValues.follower).toEqual(updatedScore.dataValues.follower)
-          expect(result.dataValues.follower).not.toEqual(existingScore.dataValues.follower)
-
-          expect(result.dataValues.guide).toEqual(updatedScore.dataValues.guide)
-          expect(result.dataValues.guide).not.toEqual(existingScore.dataValues.guide)
-
-          expect(result.dataValues.confidence).toEqual(updatedScore.dataValues.confidence)
-          expect(result.dataValues.confidence).not.toEqual(existingScore.dataValues.confidence)
+          expect(result.dataValues.weight).toEqual(updatedScore.dataValues.weight)
+          expect(result.dataValues.weight).not.toEqual(existingScore.dataValues.weight)
           done()
         })
       })
@@ -132,11 +106,8 @@ describe('Score', () => {
 
     it('should fail if saving with a null URI', done => {
       const inputScore = {
-        unaware: updatedScore.unaware,
-        curious: updatedScore.curious,
-        follower: updatedScore.follower,
-        guide: updatedScore.guide,
-        confidence: updatedScore.confidence
+        score: updatedScore.score,
+        weight: updatedScore.weight
       }
 
       Score.save(null, inputScore).then((result) => {

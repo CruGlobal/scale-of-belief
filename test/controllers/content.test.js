@@ -11,11 +11,8 @@ describe('ContentController', () => {
       factory.build('existing_score'),
       factory.build('blank_score', {
         uri: 'http://some.other.uri.com',
-        unaware: 1,
-        curious: 3,
-        follower: 2,
-        guide: 3,
-        confidence: 75
+        score: 3,
+        weight: 1
       }),
       factory.build('web_event', {
         uri: 'http://some.uri.com'

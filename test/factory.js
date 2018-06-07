@@ -100,30 +100,21 @@ factory.define('blank_score', Score, {})
 
 factory.extend('blank_score', 'existing_score', {
   uri: 'http://some.uri.com',
-  unaware: 1,
-  curious: 1,
-  follower: 1,
-  guide: 1,
-  confidence: 0,
+  score: 5,
+  weight: 3,
   revision: 1
 })
 
 factory.extend('blank_score', 'created_score', {
   uri: 'http://somewhere.com/1',
-  unaware: 1,
-  curious: 6,
-  follower: 3,
-  guide: 1,
-  confidence: 98,
+  score: 1,
+  weight: 6,
   revision: 1
 })
 
 factory.extend('existing_score', 'updated_score', {
-  unaware: 2,
-  curious: 2,
-  follower: 2,
-  guide: 2,
-  confidence: 50,
+  score: 2,
+  weight: 1,
   revision: 2
 })
 

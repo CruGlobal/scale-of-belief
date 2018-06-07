@@ -72,7 +72,7 @@ describe('ScoreController', () => {
         },
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
-          expect(jsonToSet).toEqual({ message: 'Not Found' })
+          expect(jsonToSet).toEqual({message: 'Not Found'})
           done()
         }
       }
@@ -102,17 +102,11 @@ describe('ScoreController', () => {
     test('should create a new score', done => {
       const newUri = 'http://somewhere.com/1'
       const newScore = {
-        unaware: 1,
-        curious: 6,
-        follower: 3,
-        guide: 1,
-        confidence: 98
+        score: 1,
+        weight: 6
       }
       const request = {
-        body: {
-          uri: newUri,
-          score: newScore
-        }
+        body: Object.assign({uri: newUri}, newScore)
       }
 
       const response = {
@@ -130,19 +124,13 @@ describe('ScoreController', () => {
 
     test('should update an existing score', done => {
       const newScore = {
-        unaware: 2,
-        curious: 2,
-        follower: 2,
-        guide: 2,
-        confidence: 50
+        score: 2,
+        weight: 1
       }
       const request = {
-        body: {
-          uri: score.uri,
-          score: newScore
-        }
+        body: Object.assign({uri: score.uri}, newScore)
       }
-      const result = [2, [ updatedScore, true ]]
+      const result = [2, [updatedScore, true]]
 
       const response = {
         json: (jsonToSet) => {
@@ -161,22 +149,17 @@ describe('ScoreController', () => {
       const newUri = 'http://somewhere.com/1'
       const queryParams = '?q1=v1&q2=v2'
       const newScore = {
-        unaware: 1,
-        curious: 6,
-        follower: 3,
-        guide: 1,
-        confidence: 98
+        score: 1,
+        weight: 6
       }
       const request = {
-        body: {
-          uri: newUri + queryParams,
-          score: newScore
-        }
+        body: Object.assign({
+          uri: newUri + queryParams
+        }, newScore)
       }
-      const expectedJson = {
-        uri: newUri,
-        score: newScore
-      }
+      const expectedJson = Object.assign({
+        uri: newUri
+      }, newScore)
 
       const response = {
         json: (jsonToSet) => {

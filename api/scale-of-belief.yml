@@ -271,32 +271,15 @@ definitions:
   Score:
     type: object
     properties:
-      unaware:
-        type: integer
-        minimum: 1
-        maximum: 6
-      curious:
-        type: integer
-        minimum: 1
-        maximum: 6
-      follower:
-        type: integer
-        minimum: 1
-        maximum: 6
-      guide:
-        type: integer
-        minimum: 1
-        maximum: 6
-      confidence:
+      score:
         type: integer
         minimum: 0
-        maximum: 100
+        maximum: 10
+      weight:
+        type: integer
+        minimum: 1
     required:
-      - unaware
-      - curious
-      - follower
-      - guide
-      - confidence
+      - score
   Credentials:
     type: object
     properties:
