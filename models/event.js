@@ -203,6 +203,8 @@ Event.fromRecord = (record) => {
   }
   const event = new Event()
   event.event_id = decoded[Fields.event_id]
+  // Use collector timestamp as event creation time, forcing UTC
+  event.created_at = new Date(decoded[Fields.collector_tstamp] + '+0000')
   event.decodedFields = decoded
   // Log event_id with encoded data. Will allow re-creating kinesis stream locally for debugging
   logger.debug(JSON.stringify({event_id: event.event_id, kinesis: {data: record.kinesis.data}}))
