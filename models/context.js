@@ -1,6 +1,6 @@
 'use strict'
 
-const {castArray, find, startsWith} = require('lodash')
+const {castArray, isEmpty, find, startsWith} = require('lodash')
 
 class Context {
   static get SCHEMA_WEB_PAGE () { return 'iglu:com.snowplowanalytics.snowplow/web_page/jsonschema' }
@@ -13,7 +13,11 @@ class Context {
 
   constructor (context) {
     try {
-      this.context = typeof context === 'string' ? JSON.parse(context) : context
+      if (typeof context === 'string') {
+        this.context = isEmpty(context) ? {} : JSON.parse(context)
+      } else {
+        this.context = context
+      }
     } catch (error) {
       throw new ContextError(error.message + ': ' + context)
     }
