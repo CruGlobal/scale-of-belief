@@ -1,6 +1,6 @@
 'use strict'
 
-const tracer = require('../config/tracer')
+const tracer = require('../config/tracer') // eslint-disable-line no-unused-vars
 const rollbar = require('../config/rollbar')
 const logger = require('../config/logger')
 const {forEach, chunk} = require('lodash')
