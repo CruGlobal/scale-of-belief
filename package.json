@@ -39,6 +39,8 @@
   "dependencies": {
     "aws-sdk": "^2.230.1",
     "body-parser": "^1.18.2",
+    "concat-stream": "^1.6.2",
+    "diff": "^3.5.0",
     "dotenv": "^5.0.0",
     "express": "^4.16.2",
     "express-jwt": "^5.3.1",
