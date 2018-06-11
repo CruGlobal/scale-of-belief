@@ -38,10 +38,12 @@ describe('Score', () => {
     })
 
     it('should return an existing score', () => {
-      expect.assertions(3)
+      expect.assertions(5)
       expect(score).toBeDefined()
+      expect(score).not.toBeNull()
       return Score.retrieve(score.uri).then((result) => {
         expect(result).toBeDefined()
+        expect(result).not.toBeNull()
         const exclude = ['created_at', 'updated_at', 'revision']
         expect(omit(result.dataValues, exclude)).toEqual(omit(score.dataValues, exclude))
       })
