@@ -252,7 +252,12 @@ definitions:
         type: string
         format: uri
       score:
-        $ref: '#/definitions/Score'
+        type: integer
+        minimum: 0
+        maximum: 10
+      weight:
+        type: integer
+        minimum: 1
   ApiUser:
       type: object
       properties:
@@ -268,35 +273,6 @@ definitions:
           format: email
         type:
           type: string
-  Score:
-    type: object
-    properties:
-      unaware:
-        type: integer
-        minimum: 1
-        maximum: 6
-      curious:
-        type: integer
-        minimum: 1
-        maximum: 6
-      follower:
-        type: integer
-        minimum: 1
-        maximum: 6
-      guide:
-        type: integer
-        minimum: 1
-        maximum: 6
-      confidence:
-        type: integer
-        minimum: 0
-        maximum: 100
-    required:
-      - unaware
-      - curious
-      - follower
-      - guide
-      - confidence
   Credentials:
     type: object
     properties:

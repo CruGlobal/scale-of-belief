@@ -5,7 +5,7 @@ const sequelize = require('../config/sequelize')
 require('../config/papertrail')
 const Score = sequelize().define('Score', {
   uri: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(2048),
     get () {
       return this.getDataValue('uri').toLowerCase()
     },
@@ -18,39 +18,17 @@ const Score = sequelize().define('Score', {
     },
     primaryKey: true
   },
-  unaware: {
-    type: DataTypes.INTEGER,
-    validate: {
-      min: 1,
-      max: 6
-    }
-  },
-  curious: {
-    type: DataTypes.INTEGER,
-    validate: {
-      min: 1,
-      max: 6
-    }
-  },
-  follower: {
-    type: DataTypes.INTEGER,
-    validate: {
-      min: 1,
-      max: 6
-    }
-  },
-  guide: {
-    type: DataTypes.INTEGER,
-    validate: {
-      min: 1,
-      max: 6
-    }
-  },
-  confidence: {
+  score: {
     type: DataTypes.INTEGER,
     validate: {
       min: 0,
-      max: 100
+      max: 10
+    }
+  },
+  weight: {
+    type: DataTypes.INTEGER,
+    validate: {
+      min: 1
     }
   }
 }, {
@@ -66,13 +44,8 @@ const Score = sequelize().define('Score', {
 Score.toApiScore = (score) => {
   return {
     uri: score.uri,
-    score: {
-      unaware: score.unaware,
-      curious: score.curious,
-      follower: score.follower,
-      guide: score.guide,
-      confidence: score.confidence
-    }
+    score: score.score,
+    weight: score.weight
   }
 }
 
@@ -88,11 +61,8 @@ Score.save = (uri, score) => {
   return sequelize().transaction(function (t) {
     const upsertData = {
       uri: uri,
-      unaware: score.unaware,
-      curious: score.curious,
-      follower: score.follower,
-      guide: score.guide,
-      confidence: score.confidence
+      score: score.score,
+      weight: score.weight
     }
 
     return Score.findById(uri).then((result) => {

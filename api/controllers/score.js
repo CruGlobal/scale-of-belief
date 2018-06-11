@@ -2,6 +2,7 @@
 
 const Score = require('../../models/score')
 const util = require('../util/util')
+const {pick} = require('lodash')
 
 const get = (request, response) => {
   var uri = util.sanitizeUri(request.query['uri'])
@@ -19,7 +20,7 @@ const get = (request, response) => {
 
 const post = (request, response) => {
   var requestBody = request.body
-  Score.save(util.sanitizeUri(requestBody.uri), requestBody.score).then(function (result) {
+  Score.save(util.sanitizeUri(requestBody.uri), pick(requestBody, ['score', 'weight'])).then(function (result) {
     // On update, we will have a multi-dimensional array (first element being the version), on create we won't
     if (Array.isArray(result)) {
       response.json(Score.toApiScore(result[1][0].dataValues))
