@@ -225,7 +225,7 @@ forEach(Fields, (index, key) => {
 Event.fromRecord = (record) => {
   let data
   try {
-    data = Buffer.from(record.kinesis.data, 'base64').toString('ascii')
+    data = Buffer.from(record.kinesis.data, 'base64').toString('utf8')
   } catch (e) {
     throw new InvalidEventError('Malformed kinesis event: ' + e.message)
   }
