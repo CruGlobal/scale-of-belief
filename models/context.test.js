@@ -28,6 +28,10 @@ describe('Context', () => {
     expect(() => new Context('{hello: 123}')).toThrowError(Context.ContextError)
   })
 
+  it('should not throw an error on an empty string', () => {
+    expect(() => new Context('')).not.toThrowError(Context.ContextError)
+  })
+
   describe('hasSchema()', () => {
     it('returns \'true\' if schema exists', () => {
       const context = new Context(fixture)
