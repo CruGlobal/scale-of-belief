@@ -44,6 +44,7 @@ describe('Event', () => {
       const event = Event.fromRecord({kinesis: {data: data}})
       expect(event).toBeInstanceOf(Event)
       expect(event.event_id).toEqual('508e441b-8e9b-40f3-a83a-605df8b141c8')
+      expect(event.created_at).toEqual(new Date('2018-02-01T15:17:32.355Z'))
       expect(event.uri).toEqual('https://stage.cru.org/us/en/how-to-know-god/would-you-like-to-know-god-personally/decision.html')
     })
 
@@ -63,6 +64,7 @@ describe('Event', () => {
       const event = Event.fromRecord({kinesis: {data: data}})
       expect(event).toBeInstanceOf(Event)
       expect(event.event_id).toEqual('dce78971-1132-4abb-aa40-81b06285ce45')
+      expect(event.created_at).toEqual(new Date('2018-03-26T17:08:40.689Z'))
       expect(event.uri).toEqual(null)
     })
 
@@ -71,6 +73,7 @@ describe('Event', () => {
       const event = Event.fromRecord({kinesis: {data: data}})
       expect(event).toBeInstanceOf(Event)
       expect(event.event_id).toEqual('97f3cead-5a3a-455d-9589-4758039f1599')
+      expect(event.created_at).toEqual(new Date('2018-03-26T17:08:40.689Z'))
       expect(event.uri).toEqual(null)
     })
   })
