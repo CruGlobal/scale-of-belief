@@ -12,7 +12,11 @@ class Context {
   static get SCHEMA_SCREEN_VIEW () { return 'iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema' }
 
   constructor (context) {
-    this.context = typeof context === 'string' ? JSON.parse(context) : context
+    try {
+      this.context = typeof context === 'string' ? JSON.parse(context) : context
+    } catch (error) {
+      throw new ContextError(error.message + ': ' + context)
+    }
   }
 
   hasSchema (schema) {
@@ -24,5 +28,9 @@ class Context {
     return typeof found !== 'undefined' ? found.data : found
   }
 }
+
+class ContextError extends Error {}
+
+Context.ContextError = ContextError
 
 module.exports = Context

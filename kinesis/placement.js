@@ -22,15 +22,17 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
             event.save().then(event => {
               resolve()
             }, error => {
-              rollbar.error('event.save() error', error)
+              rollbar.error('event.save() error', error, {record: record})
               resolve(error)
             })
           }, error => {
-            rollbar.error('IdentityStitcher(event) error', error)
+            rollbar.error('IdentityStitcher(event) error', error, {record: record})
             resolve(error)
           })
         } catch (error) {
-          rollbar.error('Event.fromRecord(record) error', error)
+          if (!(error instanceof Event.BotEventError)) {
+            rollbar.error('Event.fromRecord(record) error', error, {record: record})
+          }
           resolve(error)
         }
       })

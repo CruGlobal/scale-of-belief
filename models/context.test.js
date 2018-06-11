@@ -24,6 +24,10 @@ describe('Context', () => {
     expect(context.context).toEqual({sample: {test: [1, 2, 3]}})
   })
 
+  it('throws a ContextError on invalid json string', () => {
+    expect(() => new Context('{hello: 123}')).toThrowError(Context.ContextError)
+  })
+
   describe('hasSchema()', () => {
     it('returns \'true\' if schema exists', () => {
       const context = new Context(fixture)
