@@ -227,12 +227,12 @@ Event.fromRecord = (record) => {
   try {
     data = Buffer.from(record.kinesis.data, 'base64').toString('ascii')
   } catch (e) {
-    throw new InvalidEventError('Malformed kinesis event')
+    throw new InvalidEventError('Malformed kinesis event: ' + e.message)
   }
   const decoded = data.split('\t')
   // Throw an error if we have less fields than we should. Snowplow can add more, but it doesn't remove any existing.
   if (decoded.length < Object.keys(Fields).length) {
-    throw new InvalidEventError('Kinesis event is missing fields')
+    throw new InvalidEventError(`Kinesis event is missing fields (needs: ${Object.keys(Fields).length}, has: ${decoded.length})`)
   }
   const event = new Event()
   event.event_id = decoded[Fields.event_id]
