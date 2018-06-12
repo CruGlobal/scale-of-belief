@@ -41,6 +41,10 @@ describe('Context', () => {
       const context = new Context(fixture)
       expect(context.hasSchema(Context.SCHEMA_MOBILE)).toEqual(false)
     })
+    it('returns \'false\' if context is undefined', () => {
+      const context = new Context('')
+      expect(context.hasSchema(Context.SCHEMA_MOBILE)).toEqual(false)
+    })
   })
 
   describe('dataFor()', () => {
