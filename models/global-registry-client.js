@@ -1,7 +1,7 @@
 'use strict'
 
 const request = require('request')
-const {assign, forEach} = require('lodash')
+const {forEach} = require('lodash')
 
 request.debug = true
 
@@ -19,7 +19,7 @@ class GlobalRegistryClient {
         let options = {
           url: `${this.baseUrl}/entities`,
           json: true,
-          body: this.postBody(masterPersonId, placement),
+          body: this.placementBody(masterPersonId, placement),
           headers: {
             'Authorization': `Bearer ${this.apiKey}`
           }
@@ -34,19 +34,17 @@ class GlobalRegistryClient {
     return Promise.all(requests)
   }
 
-  postBody (masterPersonId, placement) {
+  placementBody (masterPersonId, placement) {
     return {
       entity: {
-        scale_of_belief: assign({
-          placement: placement.placement || 'unaware',
-          // TODO weighted_placement not added to staging GR entity yet
-          // weighted_placement: placement.weightedPlacement || 'unaware'
+        scale_of_belief: {
+          placement: placement.placement,
           client_integration_id: masterPersonId,
           'master_person:relationship': {
             master_person: masterPersonId,
             client_integration_id: masterPersonId
           }
-        }, placement.values, placement.weightedValues)
+        }
       }
     }
   }
