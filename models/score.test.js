@@ -42,6 +42,8 @@ describe('Score', () => {
       expect(score).toBeDefined()
       return Score.retrieve(score.uri).then((result) => {
         expect(result).toBeDefined()
+        console.log(result)
+        console.log(score)
         const exclude = ['created_at', 'updated_at', 'revision']
         expect(omit(result.dataValues, exclude)).toEqual(omit(score.dataValues, exclude))
       })
