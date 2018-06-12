@@ -28,6 +28,9 @@ class Context {
   }
 
   dataFor (schema) {
+    if (isEmpty(this.context)) {
+      return undefined
+    }
     const found = find(castArray(this.context.data), item => startsWith(item.schema, schema))
     return typeof found !== 'undefined' ? found.data : found
   }
