@@ -123,12 +123,14 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
   }
 
   const moveData = async (tableName, stagingTable, primaryKey) => {
+    const now = Date.now()
+    const lowerThreshold = new Date(now - (10 * 60 * 1000)).toISOString() // 10 minutes ago
+
     return new Promise((resolve, reject) => {
       const copyQuery = `COPY (
         SELECT *
         FROM ${tableName}
-        WHERE created_at > '2018-05-18'
-        LIMIT 3)
+        WHERE updated_at >= '${lowerThreshold}')
         TO STDOUT WITH(FORMAT CSV, HEADER);`
 
       const localDbClient = new Client({
