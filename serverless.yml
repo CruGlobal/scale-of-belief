@@ -26,6 +26,7 @@ functions:
           enabled: true
   api:
     handler: api/index.handler
+    timeout: 30
     events:
       - http:
           path: /api/{any+}
