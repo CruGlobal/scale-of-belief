@@ -5,13 +5,17 @@ const sequelize = require('../config/sequelize')
 class Placement {
   static get QUERY () {
     return `SELECT
-      CAST(ROUND(SUM(scores.score * scores.weight) / SUM(scores.weight)::numeric, 2) AS NUMERIC) as placement
-    FROM
-      events
-      INNER JOIN scores as scores ON scores.uri = events.uri AND scores.weight > 0
-    WHERE
-      events.user_id = :user_id
-      AND events.created_at > current_timestamp - interval '90' day`
+        scores.score AS placement,
+        SUM(scores.weight) AS weight
+      FROM
+        events
+        INNER JOIN scores as scores ON scores.uri = events.uri AND scores.weight > 0
+      WHERE
+        events.user_id = :user_id
+        AND events.created_at > current_timestamp - interval '90' day
+      GROUP BY scores.score
+      ORDER BY weight DESC, placement ASC
+      LIMIT 1`
   }
 
   /**

@@ -24,19 +24,19 @@ describe('Placement', () => {
 
     it('should return placement value', () => {
       let placement = new Placement({id: 345})
-      placement._placement = 5.00
-      expect(placement.placement).toEqual(5.00)
+      placement._placement = 5
+      expect(placement.placement).toEqual(5)
     })
   })
 
   describe('calculate()', () => {
     it('should calculate placement', () => {
-      jest.spyOn(sequelize(), 'query').mockImplementation(() => Promise.resolve([{placement: 3.14}]))
+      jest.spyOn(sequelize(), 'query').mockImplementation(() => Promise.resolve([{placement: 7}]))
 
       let placement = new Placement({id: 123})
       return placement.calculate().then(p => {
         expect(p).toEqual(placement)
-        expect(p._placement).toEqual(3.14)
+        expect(p._placement).toEqual(7)
       })
     })
   })

@@ -91,12 +91,12 @@ describe('GlobalRegistryClient', () => {
     describe('placement with value', () => {
       it('build the correct POST body', () => {
         let placement = new Placement({})
-        placement._placement = 3.14
+        placement._placement = 6
 
         expect(client.placementBody('1234567890', placement)).toMatchObject({
           entity: {
             scale_of_belief: {
-              placement: 3.14,
+              placement: 6,
               client_integration_id: '1234567890',
               'master_person:relationship': {
                 master_person: '1234567890', client_integration_id: '1234567890'

@@ -38,11 +38,11 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
                     // Resolve this event
                     resolve(event)
                   }, error => {
-                    rollbar.error('GlobalRegistry.updatePlacement(placement) error', error)
+                    rollbar.error(error, {record: record})
                     resolve(error)
                   })
                 }, error => {
-                  rollbar.error('Placement(user).calculate() error', error)
+                  rollbar.error(error, {record: record})
                   resolve(error)
                 })
               } else {
