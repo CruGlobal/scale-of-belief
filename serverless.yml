@@ -21,7 +21,7 @@ functions:
     events:
       - stream:
           arn: arn:aws:kinesis:us-east-1:056154071827:stream/snowplow_enrich
-          batchSize: 100
+          batchSize: 500
           startingPosition: LATEST
           enabled: true
   api:
