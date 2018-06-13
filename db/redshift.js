@@ -195,8 +195,13 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
       throw new Error('Error connecting to Redshift client: ' + error)
     }
 
-    await moveData('scores', 'score_staging', 'uri')
-    await moveData('events', 'event_staging', 'id')
+    try {
+      await moveData('scores', 'score_staging', 'uri')
+      await moveData('events', 'event_staging', 'id')
+    } catch (error) {
+      throw new Error(error)
+    }
+
     redshiftClient.end().then(() => {
       lambdaCallback(null, 'Move to Redshift successful')
     })
