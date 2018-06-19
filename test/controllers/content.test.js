@@ -47,12 +47,19 @@ describe('ContentController', () => {
       var response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
-          expect(jsonToSet).toEqual([event1.uri])
+          expect(jsonToSet).toEqual({
+            data: [event1.uri],
+            meta: {
+              total: 1
+            }
+          })
           done()
         }
       }
 
-      jest.spyOn(sequelize(), 'query').mockImplementation(() => Promise.resolve([event1]))
+      jest.spyOn(sequelize(), 'query')
+        .mockImplementationOnce(() => Promise.resolve([{count: 1}]))
+        .mockImplementationOnce(() => Promise.resolve([event1]))
 
       ContentController.get(request, response)
     })
@@ -69,12 +76,19 @@ describe('ContentController', () => {
       var response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
-          expect(jsonToSet).toEqual([event1.uri, event2.uri])
+          expect(jsonToSet).toEqual({
+            data: [event1.uri, event2.uri],
+            meta: {
+              total: 2
+            }
+          })
           done()
         }
       }
 
-      jest.spyOn(sequelize(), 'query').mockImplementation(() => Promise.resolve([event1, event2]))
+      jest.spyOn(sequelize(), 'query')
+        .mockImplementationOnce(() => Promise.resolve([{count: 2}]))
+        .mockImplementationOnce(() => Promise.resolve([event1, event2]))
 
       ContentController.get(request, response)
     })
@@ -91,12 +105,19 @@ describe('ContentController', () => {
       var response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
-          expect(jsonToSet).toEqual([])
+          expect(jsonToSet).toEqual({
+            data: [],
+            meta: {
+              total: 0
+            }
+          })
           done()
         }
       }
 
-      jest.spyOn(sequelize(), 'query').mockImplementation(() => Promise.resolve([]))
+      jest.spyOn(sequelize(), 'query')
+        .mockImplementationOnce(() => Promise.resolve([{count: 0}]))
+        .mockImplementationOnce(() => Promise.resolve([]))
 
       ContentController.get(request, response)
     })

@@ -35,12 +35,17 @@ describe('ScoresController', () => {
       var response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
-          expect(jsonToSet).toEqual([Score.toApiScore(score1)])
+          expect(jsonToSet).toEqual({
+            data: [Score.toApiScore(score1)],
+            meta: {
+              total: 1
+            }
+          })
           done()
         }
       }
 
-      jest.spyOn(Score, 'findAll').mockImplementation(() => Promise.resolve([score1]))
+      jest.spyOn(Score, 'findAndCountAll').mockImplementation(() => Promise.resolve({rows: [score1], count: 1}))
 
       ScoresController.get(request, response)
     })
@@ -57,12 +62,17 @@ describe('ScoresController', () => {
       var response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
-          expect(jsonToSet).toEqual([Score.toApiScore(score1), Score.toApiScore(score2)])
+          expect(jsonToSet).toEqual({
+            data: [Score.toApiScore(score1), Score.toApiScore(score2)],
+            meta: {
+              total: 2
+            }
+          })
           done()
         }
       }
 
-      jest.spyOn(Score, 'findAll').mockImplementation(() => Promise.resolve([score1, score2]))
+      jest.spyOn(Score, 'findAndCountAll').mockImplementation(() => Promise.resolve({rows: [score1, score2], count: 2}))
 
       ScoresController.get(request, response)
     })
@@ -79,12 +89,17 @@ describe('ScoresController', () => {
       var response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
-          expect(jsonToSet).toEqual([])
+          expect(jsonToSet).toEqual({
+            data: [],
+            meta: {
+              total: 0
+            }
+          })
           done()
         }
       }
 
-      jest.spyOn(Score, 'findAll').mockImplementation(() => Promise.resolve([]))
+      jest.spyOn(Score, 'findAndCountAll').mockImplementation(() => Promise.resolve({rows: [], count: 0}))
 
       ScoresController.get(request, response)
     })
