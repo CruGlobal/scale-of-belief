@@ -169,6 +169,16 @@ paths:
           in: query
           type: string
           format: uri
+        - name: page
+          description: Which page of results
+          in: query
+          required: false
+          type: integer
+        - name: per_page
+          description: How many results on a page
+          in: query
+          required: false
+          type: integer
       security:
         - ApiKeyAuth: []
         - JwtAuth: []
