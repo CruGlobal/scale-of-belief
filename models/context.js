@@ -11,6 +11,8 @@ class Context {
 
   static get SCHEMA_SCREEN_VIEW () { return 'iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema' }
 
+  static get SCHEMA_CONTENT_SCORING () { return 'iglu:org.cru/content-scoring/jsonschema' }
+
   constructor (context) {
     try {
       if (typeof context === 'string') {

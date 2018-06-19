@@ -3,6 +3,7 @@
 const {
   forEach,
   includes,
+  isEmpty,
   mapValues,
   startsWith
 } = require('lodash')
@@ -260,26 +261,25 @@ Event.fromRecord = (record) => {
  * @returns {String|NULL}
  */
 function uriFromEvent (event) {
-  if (event.page_url) {
+  const contexts = event.contexts
+  let format
+  // Use content-scoring.uri if present
+  if (contexts && contexts.hasSchema(Context.SCHEMA_CONTENT_SCORING)) {
     try {
-      const parsed = Url.parse(event.page_url)
-      const url = Url.format({
+      const contentScoring = contexts.dataFor(Context.SCHEMA_CONTENT_SCORING)
+      const parsed = Url.parse(contentScoring.uri)
+      format = {
         protocol: parsed.protocol,
         slashes: true,
         hostname: parsed.hostname,
         pathname: parsed.pathname
-      })
-      if (startsWith(url, '///')) {
-        return null
       }
-      return url
     } catch (e) {
-      // TypeError - page_url was not a string, will probably never hit this since base64 decode always produces strings
+      // TypeError - contentScoring.uri was not a string
       /* istanbul ignore next */
       return null
     }
-  } else if (event.platform === 'mob') { // TODO: Might be different on iOS
-    // TODO: GodTools is only app sending events. This will need to get refactored when we have more than screen_views
+  } else if (event.platform === 'mob') { // TODO: Mobile apps should be updated to use content-scoring context
     const unstruct = event.unstruct_event
     let pathname = ''
     /* istanbul ignore else */
@@ -287,12 +287,33 @@ function uriFromEvent (event) {
       const data = unstruct.dataFor(Context.SCHEMA_SCREEN_VIEW)
       pathname = 'screen_view/' + data.name.replace(/[^a-zA-Z0-9-_]/g, '')
     }
-    return Url.format({
+    format = {
       protocol: 'mobile',
       slashes: true,
       hostname: event.app_id, // GodTools
       pathname: pathname
-    })
+    }
+  } else if (event.page_url) {
+    try {
+      const parsed = Url.parse(event.page_url)
+      format = {
+        protocol: parsed.protocol,
+        slashes: true,
+        hostname: parsed.hostname,
+        pathname: parsed.pathname
+      }
+    } catch (e) {
+      // TypeError - page_url was not a string, will probably never hit this since base64 decode always produces strings
+      /* istanbul ignore next */
+      return null
+    }
+  }
+  if (!isEmpty(format)) {
+    const url = Url.format(format)
+    if (startsWith(url, '///')) {
+      return null
+    }
+    return url
   }
   return null
 }
