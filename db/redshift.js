@@ -10,6 +10,9 @@ const rollbar = require('../config/rollbar')
 const concat = require('concat-stream')
 const AWS = require('aws-sdk')
 const dateUtil = require('./util/date-util')
+const redis = require('redis')
+
+const LAST_SUCCESS_KEY = 'scale-of-belief-redshift-lambda-last-success'
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
   AWS.config.update({region: 'us-east-1'})
@@ -124,9 +127,30 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
 
   const moveData = async (tableName, stagingTable, primaryKey) => {
     const now = Date.now()
-    const lowerThreshold = new Date(now - (10 * 60 * 1000)).toISOString() // 10 minutes ago
+    let lowerThreshold = new Date(now - (10 * 60 * 1000)).toISOString() // default to 10 minutes ago
+
 
     return new Promise((resolve, reject) => {
+      const redisClient = redis.createClient(REDIS_PORT_6379_TCP_ADDR_PORT, process.env.REDIS_PORT_6379_TCP_ADDR)
+
+      redisClient.on('connect', () => {
+        console.log('Redis connected')
+      })
+
+      redisClient.on('error', (error) => {
+        throw new Error('Error connecting to Redis: ' + error)
+      })
+
+      redisClient.get(LAST_SUCCESS_KEY, (error, response) => {
+        if (error) {
+          throw new Error(`Error retrieving ${LAST_SUCCESS_KEY}: ${error}`)
+        }
+
+        if (response) {
+          lowerThreshold = response
+        }
+      })
+
       const copyQuery = `COPY (
         SELECT *
         FROM ${tableName}
@@ -188,6 +212,22 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     })
   }
 
+  const updateLastSuccess = async () => {
+    return new Promise((resolve, reject) => {
+      const redisClient = redis.createClient(REDIS_PORT_6379_TCP_ADDR_PORT, process.env.REDIS_PORT_6379_TCP_ADDR)
+
+      redisClient.on('connect', () => {
+        console.log('Redis connected')
+      })
+
+      redisClient.on('error', (error) => {
+        throw new Error('Error connecting to Redis: ' + error)
+      })
+
+      redisClient.set(LAST_SUCCESS_KEY, Date.now().toISOString())
+    })
+  }
+
   const workingFunction = async () => {
     try {
       await redshiftClient.connect()
@@ -198,6 +238,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     try {
       await moveData('scores', 'score_staging', 'uri')
       await moveData('events', 'event_staging', 'id')
+      await updateLastSuccess()
     } catch (error) {
       throw new Error(error)
     }
