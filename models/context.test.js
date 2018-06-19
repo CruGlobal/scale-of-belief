@@ -12,6 +12,7 @@ describe('Context', () => {
     expect(Context.SCHEMA_MOBILE).toEqual('iglu:com.snowplowanalytics.snowplow/mobile_context/jsonschema')
     expect(Context.SCHEMA_WEB_PAGE).toEqual('iglu:com.snowplowanalytics.snowplow/web_page/jsonschema')
     expect(Context.SCHEMA_SCREEN_VIEW).toEqual('iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema')
+    expect(Context.SCHEMA_CONTENT_SCORING).toEqual('iglu:org.cru/content-scoring/jsonschema')
   })
 
   it('constructor accepts string', () => {

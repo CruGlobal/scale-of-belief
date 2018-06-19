@@ -17,7 +17,7 @@ const defaults = {
   pool: {
     max: 10,
     idle: 500,
-    acquire: 30000
+    acquire: 60000
   }
 }
 
