@@ -17,7 +17,7 @@ const get = (request, response) => {
   const offset = (page - 1) * perPage
 
   sequelize().query(
-    'SELECT events.uri ' +
+    'SELECT DISTINCT events.uri ' +
     'FROM events LEFT JOIN scores USING (uri) ' +
     'WHERE scores.uri IS NULL AND events.uri LIKE(:uri) ' +
     'ORDER BY events.uri ' +
