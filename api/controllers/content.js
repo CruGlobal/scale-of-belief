@@ -9,7 +9,7 @@ const get = (request, response) => {
   let page = request.query['page']
   let perPage = request.query['per_page']
 
-  if (!isInt(page) || !isInt(perPage)) {
+  if (!util.isInt(page) || !util.isInt(perPage)) {
     page = 1
     perPage = 25
   }
@@ -47,15 +47,6 @@ const get = (request, response) => {
       response.json({ data: uris, meta: { total: count }})
     })
   })
-}
-
-const isInt = (value) => {
-  let x
-  if (isNaN(value)) {
-    return false
-  }
-  x = parseFloat(value)
-  return (x | 0) === x
 }
 
 module.exports = { get: get }

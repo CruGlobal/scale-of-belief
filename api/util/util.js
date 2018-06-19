@@ -37,10 +37,20 @@ const sanitizeUri = (uri) => {
   return uri.toLowerCase()
 }
 
+const isInt = (value) => {
+  let x
+  if (isNaN(value)) {
+    return false
+  }
+  x = parseFloat(value)
+  return (x | 0) === x
+}
+
 module.exports = {
   buildUnauthorizedResponse: buildUnauthorizedResponse,
   buildUnauthorizedError: buildUnauthorizedError,
   buildInvalidApiKey: buildInvalidApiKey,
   buildInternalErrorResponse: buildInternalErrorResponse,
-  sanitizeUri: sanitizeUri
+  sanitizeUri: sanitizeUri,
+  isInt: isInt
 }
