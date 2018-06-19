@@ -7,7 +7,8 @@ const {
   includes,
   map,
   toLower,
-  uniq
+  uniq,
+  without
 } = require('lodash')
 const Context = require('./context')
 const {DataTypes} = require('sequelize')
@@ -73,12 +74,10 @@ const fieldValue = (value, field) => {
 
 User.fromEvent = (event) => {
   const user = new User()
-  let isMobile = false
 
   const context = event.contexts
   if (context instanceof Context) {
     if (context.hasSchema(Context.SCHEMA_MOBILE)) {
-      isMobile = true
       const data = context.dataFor(Context.SCHEMA_MOBILE)
       // Todo: iOS not sending events yet, this is a guess at the property name
       user.device_idfa = compact(map(['androidIdfa', 'appleIdfa'], field => {
@@ -96,15 +95,14 @@ User.fromEvent = (event) => {
     }
   }
 
-  if (!isMobile) {
-    // Only set cookie/browser based fields when not a mobile event
-    // Android seemed to set these to random uuid's on each request.
-    forEach(browserFields, field => {
-      if (typeof event[field] !== 'undefined' && event[field]) {
-        user[field] = fieldValue(event[field], field)
-      }
-    })
-  }
+  // Skip network_userid field on mobile and server platforms.
+  // They seem to set these to random uuid's on each request.
+  const fields = includes(['mob', 'srv'], event.platform) ? without(browserFields, 'network_userid') : browserFields
+  forEach(fields, field => {
+    if (typeof event[field] !== 'undefined' && event[field]) {
+      user[field] = fieldValue(event[field], field)
+    }
+  })
 
   return user
 }
