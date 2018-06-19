@@ -5,7 +5,7 @@ const {forEach} = require('lodash')
 const util = require('../util/util')
 
 const get = (request, response) => {
-  var uri = util.sanitizeUri(request.query['uri'])
+  let uri = util.sanitizeUri(request.query['uri'])
   let page = request.query['page']
   let perPage = request.query['per_page']
 
@@ -27,7 +27,7 @@ const get = (request, response) => {
       type: sequelize().QueryTypes.SELECT
     }
   ).then((results) => {
-    var uris = []
+    let uris = []
     forEach(results, (result) => {
       uris.push(result.uri)
     })
