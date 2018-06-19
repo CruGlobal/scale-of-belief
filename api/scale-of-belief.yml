@@ -205,6 +205,12 @@ paths:
           in: query
           required: false
           type: integer
+        - name: order
+          description: Order direction
+          in: query
+          required: false
+          type: string
+          enum: [ASC, DESC]
       security:
         - ApiKeyAuth: []
         - JwtAuth: []
