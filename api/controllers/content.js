@@ -49,7 +49,12 @@ const get = (request, response) => {
       forEach(results, (result) => {
         uris.push(result.uri)
       })
-      response.json({ data: uris, meta: { total: count }})
+      response.json({
+        data: uris,
+        meta: {
+          total: count
+        }
+      })
     })
   })
 }

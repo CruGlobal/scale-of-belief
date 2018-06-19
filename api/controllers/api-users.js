@@ -30,7 +30,12 @@ module.exports = {
       offset: offset,
       order: [[orderBy, order]]
     }).then((users) => {
-      response.json({ data: users.rows, meta: { total: users.count }})
+      response.json({
+        data: users.rows,
+        meta: {
+          total: users.count
+        }
+      })
     })
   }
 }
