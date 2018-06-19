@@ -186,11 +186,17 @@ paths:
         200:
           description: OK
           schema:
-            type: array
-            items:
-              description: Content URI
-              type: string
-              format: uri
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  description: Content URI
+                  type: string
+                  format: uri
+              meta:
+                $ref: '#/definitions/Meta'
+
         401:
           $ref: '#/responses/Unauthorized'
   /login:
@@ -297,3 +303,8 @@ definitions:
         type: string
     required:
       - error
+  Meta:
+    type: object
+    properties:
+      total:
+        type: integer

@@ -16,22 +16,36 @@ const get = (request, response) => {
 
   const offset = (page - 1) * perPage
 
-  sequelize().query(
+  let baseQuery =
     'SELECT DISTINCT events.uri ' +
     'FROM events LEFT JOIN scores USING (uri) ' +
-    'WHERE scores.uri IS NULL AND events.uri LIKE(:uri) ' +
-    'ORDER BY events.uri ' +
-    'LIMIT :perPage OFFSET :offset',
+    'WHERE scores.uri IS NULL AND events.uri LIKE(:uri) '
+
+  let count
+
+  sequelize().query('SELECT COUNT(a.*) FROM (' + baseQuery + ') AS a',
     {
-      replacements: { uri: uri + '%', perPage: perPage, offset: offset },
+      replacements: { uri: uri + '%', perPage: perPage + 1, offset: offset },
       type: sequelize().QueryTypes.SELECT
     }
   ).then((results) => {
-    let uris = []
-    forEach(results, (result) => {
-      uris.push(result.uri)
+    count = results[0].count
+
+    sequelize().query(
+      baseQuery +
+      'ORDER BY events.uri ' +
+      'LIMIT :perPage OFFSET :offset',
+      {
+        replacements: { uri: uri + '%', perPage: perPage, offset: offset },
+        type: sequelize().QueryTypes.SELECT
+      }
+    ).then((results) => {
+      let uris = []
+      forEach(results, (result) => {
+        uris.push(result.uri)
+      })
+      response.json({ data: uris, meta: { total: count }})
     })
-    response.json(uris)
   })
 }
 
