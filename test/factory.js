@@ -48,6 +48,7 @@ factory.define('event', Event, {
 factory.extend('event', 'web_event', {}, {
   afterBuild: (model) => {
     model.decodedFields = {
+      [Event.Fields['platform']]: 'web',
       [Event.Fields['domain_userid']]: chance.natural().toString(),
       [Event.Fields['user_fingerprint']]: chance.natural().toString(),
       [Event.Fields['network_userid']]: chance.guid(),
@@ -60,6 +61,7 @@ factory.extend('event', 'web_event', {}, {
 factory.extend('event', 'authenticated_web_event', {}, {
   afterBuild: (model) => {
     model.decodedFields = {
+      [Event.Fields['platform']]: 'web',
       [Event.Fields['domain_userid']]: chance.natural().toString(),
       [Event.Fields['user_fingerprint']]: chance.natural().toString(),
       [Event.Fields['network_userid']]: chance.guid(),
@@ -72,6 +74,7 @@ factory.extend('event', 'authenticated_web_event', {}, {
 factory.extend('event', 'android_event', {}, {
   afterBuild: (model) => {
     model.decodedFields = {
+      [Event.Fields['platform']]: 'mob',
       [Event.Fields['contexts']]: fs.readFileSync(path.join(__fixturesDir, 'context', 'android.json'), 'utf-8')
     }
     return model
@@ -81,6 +84,7 @@ factory.extend('event', 'android_event', {}, {
 factory.extend('event', 'authenticated_android_event', {}, {
   afterBuild: (model) => {
     model.decodedFields = {
+      [Event.Fields['platform']]: 'mob',
       [Event.Fields['contexts']]: fs.readFileSync(path.join(__fixturesDir, 'context', 'authenticated_android.json'), 'utf-8')
     }
     return model
@@ -90,6 +94,7 @@ factory.extend('event', 'authenticated_android_event', {}, {
 factory.extend('event', 'authenticated_apple_event', {}, {
   afterBuild: (model) => {
     model.decodedFields = {
+      [Event.Fields['platform']]: 'mob',
       [Event.Fields['contexts']]: fs.readFileSync(path.join(__fixturesDir, 'context', 'authenticated_apple.json'), 'utf-8')
     }
     return model

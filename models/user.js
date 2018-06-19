@@ -67,7 +67,7 @@ forEach(User.IDENTITY_FIELDS, (field) => {
 
 const fieldValue = (value, field) => {
   if (includes(uuidFields, field)) {
-    return uuidPattern.test(value) ? [value] : []
+    return uuidPattern.test(value) ? [value] : /* istanbul ignore next */ []
   }
   return [value]
 }
