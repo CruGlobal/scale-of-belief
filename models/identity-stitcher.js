@@ -28,9 +28,9 @@ const {
  */
 const possibleMatches = (user, transaction) => {
   const orClause = []
-  // Generate OR query skipping id and id_seq columns as well as empty values
+  // Generate OR query skipping id, id_seq and user_fingerprint columns as well as empty values
   forIn(user.toJSON(), (value, key) => {
-    if (includes(['id', 'id_seq'], key) || isEmpty(value)) {
+    if (includes(['id', 'id_seq', 'user_fingerprint'], key) || isEmpty(value)) {
       return
     }
     orClause.push({[key]: {[Op.contains]: value}})

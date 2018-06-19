@@ -76,5 +76,13 @@ describe('Event', () => {
       expect(event.created_at).toEqual(new Date('2018-03-26T17:08:40.689Z'))
       expect(event.uri).toEqual(null)
     })
+
+    it('should parse event from server', () => {
+      const data = fs.readFileSync(path.join(__fixturesDir, 'event', 'server.txt'), 'utf-8')
+      const event = Event.fromRecord({kinesis: {data: data}})
+      expect(event).toBeInstanceOf(Event)
+      expect(event.event_id).toEqual('dd94ffab-e35a-4863-81fb-22102bc250a6')
+      expect(event.uri).toEqual('survey://bulk-import/self-selected-1')
+    })
   })
 })
