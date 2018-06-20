@@ -27,6 +27,8 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     port: process.env.REDSHIFT_DB_PORT_5432_TCP_PORT
   })
 
+  const redisClient = redis.createClient(process.env.REDIS_PORT_6379_TCP_ADDR_PORT, process.env.REDIS_PORT_6379_TCP_ADDR)
+
   const shouldAbort = (error) => {
     if (error) {
       rollbar.error('Error in transaction: ', error)
@@ -129,14 +131,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     const now = Date.now()
     let lowerThreshold = new Date(now - (10 * 60 * 1000)).toISOString() // default to 10 minutes ago
 
-
     return new Promise((resolve, reject) => {
-      const redisClient = redis.createClient(REDIS_PORT_6379_TCP_ADDR_PORT, process.env.REDIS_PORT_6379_TCP_ADDR)
-
-      redisClient.on('connect', () => {
-        console.log('Redis connected')
-      })
-
       redisClient.on('error', (error) => {
         throw new Error('Error connecting to Redis: ' + error)
       })
@@ -214,17 +209,12 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
 
   const updateLastSuccess = async () => {
     return new Promise((resolve, reject) => {
-      const redisClient = redis.createClient(REDIS_PORT_6379_TCP_ADDR_PORT, process.env.REDIS_PORT_6379_TCP_ADDR)
-
-      redisClient.on('connect', () => {
-        console.log('Redis connected')
-      })
-
       redisClient.on('error', (error) => {
         throw new Error('Error connecting to Redis: ' + error)
       })
 
-      redisClient.set(LAST_SUCCESS_KEY, Date.now().toISOString())
+      redisClient.set(LAST_SUCCESS_KEY, new Date(Date.now()).toISOString())
+      resolve()
     })
   }
 
@@ -244,6 +234,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     }
 
     redshiftClient.end().then(() => {
+      redisClient.quit()
       lambdaCallback(null, 'Move to Redshift successful')
     })
     .catch((error) => {
@@ -255,6 +246,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     workingFunction()
   } catch (error) {
     redshiftClient.end().then(() => {
+      redisClient.quit()
       lambdaCallback('Failed to move data to Redshift: ' + error)
     })
   }
