@@ -38,15 +38,11 @@ module.exports = {
       offset: offset,
       order: [[orderBy, order]]
     }).then((scores) => {
-      if (scores && scores.rows) {
-        var transformedScores = []
-        forEach(scores.rows, (score) => {
-          transformedScores.push(Score.toApiScore(score))
-        })
-        response.json({ data: transformedScores, meta: { total: scores.count } })
-      } else {
-        response.json({ data: [], meta: { total: 0 } })
-      }
+      var transformedScores = []
+      forEach(scores.rows, (score) => {
+        transformedScores.push(Score.toApiScore(score))
+      })
+      response.json({ data: transformedScores, meta: { total: scores.count } })
     })
   }
 }
