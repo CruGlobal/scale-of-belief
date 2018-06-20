@@ -122,4 +122,32 @@ describe('ContentController', () => {
       ContentController.get(request, response)
     })
   })
+
+  describe('has more than one page of matches', () => {
+    it('should return limited rows with a full count total', done => {
+      const request = {
+        query: {
+          uri: 'http',
+          page: '1',
+          per_page: '1',
+          order: 'ASC'
+        }
+      }
+
+      const response = {
+        json: (jsonToSet) => {
+          expect(jsonToSet).toBeDefined()
+          expect(jsonToSet.data).toEqual([event1.uri])
+          expect(jsonToSet.meta.total).toEqual(2)
+          done()
+        }
+      }
+
+      jest.spyOn(sequelize(), 'query')
+        .mockImplementationOnce(() => Promise.resolve([{count: 2}]))
+        .mockImplementationOnce(() => Promise.resolve([event1]))
+
+      ContentController.get(request, response)
+    })
+  })
 })
