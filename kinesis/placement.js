@@ -40,7 +40,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
           }, {retries: 3, minTimeout: 100})
             .then(user => {
               // IdentityStitcher returns a saved user, but we still need to save the event
-              event.save().then(event => {
+              event.replace().then(event => {
                 // If the user has master_person identities, calculate placement
                 if (user.has_gr_master_person_id) {
                   new Placement(user).calculate().then(placement => {
