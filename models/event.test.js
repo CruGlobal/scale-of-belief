@@ -120,7 +120,7 @@ describe('Event', () => {
         let eventId = chance.guid()
         return Promise.all([
           factory.create('web_event', {event_id: eventId, user_id: 123}).then(webUser => { event1 = webUser }),
-          factory.build('web_event', {event_id: eventId, user_id: 123}).then(webUser => { event2 = webUser }),
+          factory.build('web_event', {event_id: eventId, user_id: 123}).then(webUser => { event2 = webUser })
         ])
       })
 
@@ -141,7 +141,7 @@ describe('Event', () => {
       })
 
       it('should throw the error', () => {
-        jest.spyOn(event, 'save').mockImplementation(() => Promise.reject('any reason'))
+        jest.spyOn(event, 'save').mockImplementation(() => Promise.reject(new Error('any reason')))
 
         return expect(event.replace()).rejects.toThrow('any reason')
       })
