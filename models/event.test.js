@@ -56,7 +56,7 @@ describe('Event', () => {
       const event = Event.fromRecord({kinesis: {data: data}})
       expect(event).toBeInstanceOf(Event)
       expect(event.event_id).toEqual('6c5838d3-8e5d-4687-9459-111a43a60839')
-      expect(event.uri).toEqual('mobile://godtools/screen_view/toolinfo')
+      expect(event.uri).toEqual('godtools://screen_view/toolinfo')
     })
 
     it('should parse event missing page_url', () => {
