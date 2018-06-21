@@ -30,7 +30,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
               })
           }, {retries: 3, minTimeout: 100})
             .then(user => {
-              event.save().then(event => {
+              event.replace().then(event => {
                 resolve()
               }, error => {
                 rollbar.error('event.save() error', error, {record: record})
