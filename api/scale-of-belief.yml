@@ -81,6 +81,27 @@ paths:
             required: true
             type: string
             format: uri
+          - name: page
+            description: Which page of results
+            in: query
+            required: false
+            type: integer
+          - name: per_page
+            description: How many results on a page
+            in: query
+            required: false
+            type: integer
+          - name: order_by
+            description: Which field to order by
+            in: query
+            required: false
+            type: string
+          - name: order
+            description: Order direction
+            in: query
+            required: false
+            type: string
+            enum: [ASC, DESC]
         security:
           - ApiKeyAuth: []
           - JwtAuth: []
@@ -88,9 +109,14 @@ paths:
           200:
             description: OK
             schema:
-              type: array
-              items:
-                $ref: '#/definitions/ContentScore'
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/ContentScore'
+                meta:
+                  $ref: '#/definitions/Meta'
           401:
             $ref: '#/responses/Unauthorized'
   /api-users:
@@ -98,6 +124,28 @@ paths:
       summary: Get API Users
       tags:
         - users
+      parameters:
+        - name: page
+          description: Which page of results
+          in: query
+          required: false
+          type: integer
+        - name: per_page
+          description: How many results on a page
+          in: query
+          required: false
+          type: integer
+        - name: order_by
+          description: Which field to order by
+          in: query
+          required: false
+          type: string
+        - name: order
+          description: Order direction
+          in: query
+          required: false
+          type: string
+          enum: [ASC, DESC]
       security:
         - ApiKeyAuth: []
         - JwtAuth: []
@@ -105,9 +153,14 @@ paths:
         200:
           description: OK
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/ApiUser'
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/ApiUser'
+              meta:
+                $ref: '#/definitions/Meta'
         401:
           $ref: '#/responses/Unauthorized'
   /api-user:
@@ -169,6 +222,22 @@ paths:
           in: query
           type: string
           format: uri
+        - name: page
+          description: Which page of results
+          in: query
+          required: false
+          type: integer
+        - name: per_page
+          description: How many results on a page
+          in: query
+          required: false
+          type: integer
+        - name: order
+          description: Order direction
+          in: query
+          required: false
+          type: string
+          enum: [ASC, DESC]
       security:
         - ApiKeyAuth: []
         - JwtAuth: []
@@ -176,11 +245,17 @@ paths:
         200:
           description: OK
           schema:
-            type: array
-            items:
-              description: Content URI
-              type: string
-              format: uri
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  description: Content URI
+                  type: string
+                  format: uri
+              meta:
+                $ref: '#/definitions/Meta'
+
         401:
           $ref: '#/responses/Unauthorized'
   /login:
@@ -287,3 +362,8 @@ definitions:
         type: string
     required:
       - error
+  Meta:
+    type: object
+    properties:
+      total:
+        type: integer
