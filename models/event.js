@@ -295,18 +295,19 @@ function uriFromEvent (event) {
       /* istanbul ignore next */
       return null
     }
-  } else if (event.platform === 'mob') { // TODO: Mobile apps should be updated to use content-scoring context
+  } else if (event.platform === 'mob') {
+    // Fallback for mobile apps that don't use the content-scoring context
     const unstruct = event.unstruct_event
     let pathname = ''
     /* istanbul ignore else */
     if (unstruct && unstruct.hasSchema(Context.SCHEMA_SCREEN_VIEW)) {
       const data = unstruct.dataFor(Context.SCHEMA_SCREEN_VIEW)
-      pathname = 'screen_view/' + data.name.replace(/[^a-zA-Z0-9-_]/g, '')
+      pathname = data.name.replace(/[^a-zA-Z0-9-_]/g, '')
     }
     format = {
-      protocol: 'mobile',
+      protocol: event.app_id,
       slashes: true,
-      hostname: event.app_id, // GodTools
+      hostname: event.event_name,
       pathname: pathname
     }
   } else if (event.page_url) {
