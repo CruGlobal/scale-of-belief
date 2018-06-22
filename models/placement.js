@@ -12,9 +12,11 @@ class Placement {
         INNER JOIN scores as scores ON scores.uri = events.uri AND scores.weight > 0
       WHERE
         events.user_id = :user_id
-        AND events.created_at > current_timestamp - interval '90' day
-      GROUP BY scores.score
-      ORDER BY weight DESC, placement ASC
+      GROUP BY
+        scores.score
+      ORDER BY
+        weight DESC,
+        placement ASC
       LIMIT 1`
   }
 
