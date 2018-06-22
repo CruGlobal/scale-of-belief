@@ -33,6 +33,7 @@ functions:
           method: ANY
   migrate:
     handler: db/migrate.handler
+    timeout: 300
   redshift:
     handler: db/redshift.handler
     timeout: 300
