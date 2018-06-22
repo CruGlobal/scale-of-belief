@@ -18,10 +18,10 @@ class GlobalRegistryClient {
       const promise = new Promise(resolve => {
         let options = {
           url: `${this.baseUrl}/entities`,
-          json: true,
-          body: this.placementBody(masterPersonId, placement),
+          body: JSON.stringify(this.placementBody(masterPersonId, placement)),
           headers: {
-            'Authorization': `Bearer ${this.apiKey}`
+            'authorization': `Bearer ${this.apiKey}`,
+            'content-type': 'application/json'
           }
         }
         request.post(options, (err, response, body) => {

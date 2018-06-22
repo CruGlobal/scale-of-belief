@@ -57,6 +57,9 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
                         rollbar.error(error, {record: record})
                         resolve(error)
                       })
+                    } else {
+                      // Event isn't scored, resolve it
+                      resolve(event)
                     }
                   })
                 } else {
