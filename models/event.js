@@ -9,6 +9,7 @@ const {
   startsWith
 } = require('lodash')
 const Context = require('./context')
+const Score = require('./score')
 const {DataTypes, Sequelize} = require('sequelize')
 const sequelize = require('../config/sequelize')
 const Url = require('url')
@@ -358,6 +359,13 @@ Event.prototype.replace = function () {
       // Re-throw error if we didn't rescue it
       throw error
     })
+}
+
+Event.prototype.isScored = function () {
+  if (typeof this.uri === 'undefined' || this.uri === null) {
+    return Promise.resolve(false)
+  }
+  return Score.findOne({where: {uri: this.uri}}).then(score => score !== null)
 }
 
 class InvalidEventError extends Error {}

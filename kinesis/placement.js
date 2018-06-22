@@ -26,8 +26,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
         try {
           // Build an event object from each record, catch any resulting errors (InvalidEventError)
           const event = Event.fromRecord(record)
-          // Stitch current event into known identities
-          IdentityStitcher(event)
+          // Stitch current event into known identities, retrying on deadlock
           promiseRetry((retry, number) => {
             return IdentityStitcher(event)
               .catch(error => {
@@ -41,20 +40,24 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
             .then(user => {
               // IdentityStitcher returns a saved user, but we still need to save the event
               event.replace().then(event => {
-                // If the user has master_person identities, calculate placement
+                // If the user has master_person identities and current event is scored, calculate placement
                 if (user.has_gr_master_person_id) {
-                  new Placement(user).calculate().then(placement => {
-                    // Update Global Registry
-                    GlobalRegistry.updatePlacement(placement).then(() => {
-                      // Resolve this event
-                      resolve(event)
-                    }, error => {
-                      rollbar.error(error, {record: record})
-                      resolve(error)
-                    })
-                  }, error => {
-                    rollbar.error(error, {record: record})
-                    resolve(error)
+                  event.isScored().then(isScored => {
+                    if (isScored) {
+                      new Placement(user).calculate().then(placement => {
+                        // Update Global Registry
+                        GlobalRegistry.updatePlacement(placement).then(() => {
+                          // Resolve this event
+                          resolve(event)
+                        }, error => {
+                          rollbar.error(error, {record: record})
+                          resolve(error)
+                        })
+                      }, error => {
+                        rollbar.error(error, {record: record})
+                        resolve(error)
+                      })
+                    }
                   })
                 } else {
                   // Resolve this event
