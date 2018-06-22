@@ -10,7 +10,7 @@ module.exports = {
       // Update events.event_id to require a value
       .then(() => queryInterface.changeColumn('events', 'event_id', {type: Sequelize.UUID, allowNull: false}))
       // Remove events by duplicate event_id keeping the most recent
-      .then(() => queryInterface.sequelize.query('DELETE FROM events a USING events b WHERE a.created_at < b.created_at AND a.event_id = b.event_id'))
+      .then(() => queryInterface.sequelize.query('DELETE FROM events a USING events b WHERE a.id < b.id AND a.event_id = b.event_id'))
       // Add unique index on events.event_id
       .then(() => queryInterface.addIndex('events', {fields: ['event_id'], unique: true}))
   },
