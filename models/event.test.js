@@ -162,7 +162,7 @@ describe('Event', () => {
       })
     })
 
-    describe('event without unscored uri', () => {
+    describe('event with unscored uri', () => {
       let event
       beforeEach(() => {
         return factory.build('web_event', {uri: 'sample://score'}).then(webEvent => { event = webEvent })
@@ -175,7 +175,7 @@ describe('Event', () => {
       })
     })
 
-    describe('event without scored uri', () => {
+    describe('event with scored uri', () => {
       let event
       beforeEach(() => {
         return factory.build('web_event', {uri: 'sample://score'})
