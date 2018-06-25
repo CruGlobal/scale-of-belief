@@ -4,6 +4,14 @@ const Sequelize = require('sequelize')
 const environment = process.env.NODE_ENV === 'test' ? 'test' : 'development'
 const config = require('./database')[environment]
 const {forEach} = require('lodash')
+const requiredModels = [
+  '../models/event',
+  '../models/user',
+  '../models/score',
+  '../models/api-user',
+  '../models/api-key',
+  './papertrail'
+]
 let database
 let isClosing = false
 
@@ -23,7 +31,7 @@ const close = () => {
     database = undefined
     // Delete sequelize Models from require cache.
     // They internally cache sequelize object and need to be reloaded on warm start
-    forEach(['../models/event', '../models/user', '../models/score', './papertrail'], value => {
+    forEach(requiredModels, value => {
       delete require.cache[require.resolve(value)]
     })
     isClosing = false

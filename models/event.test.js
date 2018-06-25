@@ -147,4 +147,47 @@ describe('Event', () => {
       })
     })
   })
+
+  describe('prototype.isScored()', () => {
+    describe('event without a uri', () => {
+      let event
+      beforeEach(() => {
+        return factory.build('web_event').then(webEvent => { event = webEvent })
+      })
+
+      it('should resolve \'false\'', () => {
+        event.isScored().then(result => {
+          expect(result).toBe(false)
+        })
+      })
+    })
+
+    describe('event with unscored uri', () => {
+      let event
+      beforeEach(() => {
+        return factory.build('web_event', {uri: 'sample://score'}).then(webEvent => { event = webEvent })
+      })
+
+      it('should resolve \'false\'', () => {
+        event.isScored().then(result => {
+          expect(result).toBe(false)
+        })
+      })
+    })
+
+    describe('event with scored uri', () => {
+      let event
+      beforeEach(() => {
+        return factory.build('web_event', {uri: 'sample://score'})
+          .then(webEvent => { event = webEvent })
+          .then(() => factory.create('existing_score', {uri: 'sample://score'}))
+      })
+
+      it('should resolve \'true\'', () => {
+        event.isScored().then(result => {
+          expect(result).toBe(true)
+        })
+      })
+    })
+  })
 })

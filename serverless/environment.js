@@ -14,6 +14,8 @@ module.exports = () => {
     JWT_SECRET: process.env['JWT_SECRET'] || 'secret',
     THE_KEY_SERVICE_URL: process.env['THE_KEY_SERVICE_URL'] || 'http://localhost:3000/api/login',
     THE_KEY_API_KEY: process.env['THE_KEY_API_KEY'],
+    GLOBAL_REGISTRY_URL: process.env['GLOBAL_REGISTRY_URL'] || 'https://stage-backend.global-registry.org',
+    GLOBAL_REGISTRY_TOKEN: process.env['GLOBAL_REGISTRY_TOKEN'] || 'secret',
     REDSHIFT_DB_ENV_POSTGRESQL_DB: process.env['REDSHIFT_DB_ENV_POSTGRESQL_DB'],
     REDSHIFT_DB_ENV_POSTGRESQL_USER: process.env['REDSHIFT_DB_ENV_POSTGRESQL_USER'],
     REDSHIFT_DB_ENV_POSTGRESQL_PASS: process.env['REDSHIFT_DB_ENV_POSTGRESQL_PASS'],
