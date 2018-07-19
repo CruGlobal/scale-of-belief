@@ -80,17 +80,17 @@ function determineScopesAndType (auth) {
           api_key: auth
         }
       }).then((dbApiKey) => {
-      if (dbApiKey) {
-        resolve({
-          apiPatterns: dbApiKey.api_pattern,
-          isSuperAdmin: dbApiKey.type === 'super'
-        })
-      } else {
-        reject(new Error('API Key not found'))
-      }
-    }).catch(function (error) {
-      logger.error(error)
-      reject(error)
-    })
+        if (dbApiKey) {
+          resolve({
+            apiPatterns: dbApiKey.api_pattern,
+            isSuperAdmin: dbApiKey.type === 'super'
+          })
+        } else {
+          reject(new Error('API Key not found'))
+        }
+      }).catch(function (error) {
+        logger.error(error)
+        reject(error)
+      })
   })
 }
