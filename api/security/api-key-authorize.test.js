@@ -27,6 +27,9 @@ describe('Api Key Authorizer', () => {
         query: {
           uri: 'http://some.uri.com'
         },
+        route: {
+          path: '/api/endpoint'
+        },
         headers: requestHeaders
       }
 
@@ -52,6 +55,38 @@ describe('Api Key Authorizer', () => {
         method: 'POST',
         body: {
           uri: 'http://some.uri.com'
+        },
+        route: {
+          path: '/api/endpoint'
+        },
+        headers: requestHeaders
+      }
+
+      const next = (error) => {
+        expect(error).toBeUndefined()
+        done()
+      }
+      jest.spyOn(ApiKey, 'findOne').mockImplementation(() => Promise.resolve(apiKey))
+
+      Authorizer(request, response, next)
+    })
+
+    test('should succeed on GET request for placement endpoint', done => {
+      const apiKey = {
+        api_key: 'some-api-key',
+        api_pattern: '.*'
+      }
+
+      const requestHeaders = {}
+      requestHeaders['x-api-key'] = apiKey.api_key
+
+      const request = {
+        method: 'POST',
+        body: {
+          uri: 'http://some.uri.com'
+        },
+        route: {
+          path: '/api/placement'
         },
         headers: requestHeaders
       }
@@ -130,6 +165,9 @@ describe('Api Key Authorizer', () => {
         query: {
           uri: 'http://some.uri.com'
         },
+        route: {
+          path: '/api/endpoint'
+        },
         headers: invalidRequestHeaders
       }
 
@@ -157,12 +195,44 @@ describe('Api Key Authorizer', () => {
         body: {
           uri: 'http://some.uri.com'
         },
+        route: {
+          path: '/api/endpoint'
+        },
         headers: invalidRequestHeaders
       }
 
       const next = (error) => {
         expect(error).toBeDefined()
         expect(error).toEqual(unauthorizedError)
+        done()
+      }
+      jest.spyOn(ApiKey, 'findOne').mockImplementation(() => Promise.resolve(apiKey))
+
+      Authorizer(request, response, next)
+    })
+
+    test('should succeed on GET request for placement endpoint', done => {
+      const apiKey = {
+        api_key: 'some-api-key',
+        api_pattern: null
+      }
+
+      const invalidRequestHeaders = {}
+      invalidRequestHeaders['x-api-key'] = apiKey.api_key
+
+      const request = {
+        method: 'GET',
+        query: {
+          uri: 'http://some.uri.com'
+        },
+        route: {
+          path: '/api/placement'
+        },
+        headers: invalidRequestHeaders
+      }
+
+      const next = (error) => {
+        expect(error).toBeUndefined()
         done()
       }
       jest.spyOn(ApiKey, 'findOne').mockImplementation(() => Promise.resolve(apiKey))

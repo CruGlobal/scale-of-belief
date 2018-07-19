@@ -114,7 +114,7 @@ describe('GlobalRegistryClient', () => {
         expect(client.placementBody('0987654321', placement)).toMatchObject({
           entity: {
             scale_of_belief: {
-              placement: 0,
+              placement: null,
               client_integration_id: '0987654321',
               'master_person:relationship': {
                 master_person: '0987654321',

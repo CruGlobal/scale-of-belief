@@ -13,6 +13,12 @@ module.exports = function authorize (request, response, next) {
         return
       }
 
+      // Allow placement requests regardless of apiPatterns
+      if (request.route.path === '/api/placement') {
+        next()
+        return
+      }
+
       if (!availableScopes || !availableScopes.length) {
         next(util.buildUnauthorizedError(error))
       } else {
@@ -74,17 +80,17 @@ function determineScopesAndType (auth) {
           api_key: auth
         }
       }).then((dbApiKey) => {
-        if (dbApiKey) {
-          resolve({
-            apiPatterns: dbApiKey.api_pattern,
-            isSuperAdmin: dbApiKey.type === 'super'
-          })
-        } else {
-          reject(new Error('API Key not found'))
-        }
-      }).catch(function (error) {
-        logger.error(error)
-        reject(error)
-      })
+      if (dbApiKey) {
+        resolve({
+          apiPatterns: dbApiKey.api_pattern,
+          isSuperAdmin: dbApiKey.type === 'super'
+        })
+      } else {
+        reject(new Error('API Key not found'))
+      }
+    }).catch(function (error) {
+      logger.error(error)
+      reject(error)
+    })
   })
 }

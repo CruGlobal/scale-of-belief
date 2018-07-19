@@ -292,6 +292,58 @@ paths:
             type: string
         401:
           $ref: '#/responses/Unauthorized'
+  /placement:
+    get:
+      summary: Get a users placement on the scale of belief
+      tags:
+        - placement
+      parameters:
+        - name: mcid
+          description: Adobe Experience Cloud ID
+          in: query
+          type: string
+        - name: sso_guid
+          description: SSO Guid
+          in: query
+          type: string
+        - name: gr_master_person_id
+          description: Global Registry master_person uuid
+          in: query
+          type: string
+        - name: device_idfa
+          description: Mobile device idfa
+          in: query
+          type: string
+        - name: domain_userid
+          description: Snowplow domain_userid
+          in: query
+          type: string
+        - name: network_userid
+          description: Snowplow network_userid
+          in: query
+          type: string
+        - name: user_fingerprint
+          description: Snowplow user_fingerprint
+          in: query
+          type: string
+      security:
+        - ApiKeyAuth: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              placement:
+                type:
+                  - integer
+                  - 'null'
+        400:
+          $ref: '#/responses/BadRequest'
+        401:
+          $ref: '#/responses/Unauthorized'
+        404:
+          $ref: '#/responses/NotFound'
 
 securityDefinitions:
   ApiKeyAuth:
