@@ -218,7 +218,7 @@ const isSameSame = (user, other) => {
   if (user.has_device_idfa && other.has_device_idfa && matches['device_idfa'].length === 0) return false
 
   // If at least 2 fields match, it's the same user
-  if (sumBy(toPairs(matches), pair => { return pair[1] > 0 ? 1 : 0 }) >= 2) return true
+  if (sumBy(toPairs(matches), pair => { return pair[1].length > 0 ? 1 : 0 }) >= 2) return true
 
   return false
 }
