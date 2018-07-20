@@ -110,20 +110,22 @@ const mergeMatches = (user, matches, transaction) => {
 
     // Matches are ordered by score, so let first be the winner
     const winner = matches.shift()
-    const queries = []
     const loserIds = []
 
-    // Merge losers with winner and destroy them
+    // Merge losers with winner
     forEach(matches, loser => {
       winner.merge(loser)
       if (!loser.isNewRecord) {
         loserIds.push(loser.id)
-        queries.push(loser.destroy({transaction: transaction}))
       }
     })
 
-    return Promise
-      .all(queries) // wait for deletes
+    // Delete losers or start with a resolved promise
+    let query = (loserIds.length > 0)
+      ? User.destroy({where: {id: {[Op.in]: loserIds}}, transaction: transaction}) : Promise.resolve()
+
+    // Wait for query (if needed) before
+    return query
       .then(() => winner.save({transaction: transaction})) // save user
       .then(identity => {
         // update Events linked to merged matches (if we merged)
