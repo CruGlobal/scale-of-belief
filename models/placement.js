@@ -25,6 +25,7 @@ class Placement {
    */
   constructor (user) {
     this.user = user
+    this._placement = null
   }
 
   /**
@@ -35,13 +36,14 @@ class Placement {
     return sequelize()
       .query(Placement.QUERY, {replacements: {user_id: this.user.id}, type: sequelize().QueryTypes.SELECT})
       .then(results => {
-        self._placement = results[0].placement
+        let result = results[0]
+        self._placement = typeof result === 'undefined' ? null : result.placement
         return self
       })
   }
 
   get placement () {
-    return this._placement || 0
+    return this._placement
   }
 }
 

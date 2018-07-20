@@ -13,6 +13,12 @@ module.exports = function authorize (request, response, next) {
         return
       }
 
+      // Allow placement requests regardless of apiPatterns
+      if (request.route.path === '/api/placement') {
+        next()
+        return
+      }
+
       if (!availableScopes || !availableScopes.length) {
         next(util.buildUnauthorizedError(error))
       } else {

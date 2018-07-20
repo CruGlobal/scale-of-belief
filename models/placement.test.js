@@ -17,9 +17,9 @@ describe('Placement', () => {
   })
 
   describe('placement getter', () => {
-    it('should return \'0\' by default', () => {
+    it('should return \'null\' by default', () => {
       let placement = new Placement({id: 234})
-      expect(placement.placement).toEqual(0)
+      expect(placement.placement).toEqual(null)
     })
 
     it('should return placement value', () => {
