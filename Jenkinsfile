@@ -1,5 +1,5 @@
 #!groovy
-@Library('jenkins-jobs@kma-6-pipeline-deployments-for-scale-of-belief-lambda') _
+@Library('jenkins-jobs') _
 
 serverlessPipeline(
     hipchatRoom: 'scale-of-belief'
