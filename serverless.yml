@@ -34,6 +34,9 @@ functions:
       - http:
           path: /api/{any+}
           method: ANY
+          cors:
+            origin: '*'
+            maxAge: 86400
   migrate:
     handler: db/migrate.handler
     timeout: 300
