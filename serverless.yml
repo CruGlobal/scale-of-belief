@@ -39,10 +39,10 @@ functions:
             maxAge: 86400
   migrate:
     handler: db/migrate.handler
-    timeout: 300
+    timeout: 120
   redshift:
     handler: db/redshift.handler
-    timeout: 300
+    timeout: 120
     events:
       - schedule: rate(5 minutes)
 
