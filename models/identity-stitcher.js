@@ -40,7 +40,8 @@ const possibleMatches = (user, transaction) => {
     lock: transaction.LOCK.UPDATE,
     where: {
       [Op.or]: orClause
-    }
+    },
+    limit: 200
   })
 }
 
