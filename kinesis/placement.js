@@ -41,31 +41,31 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
               // IdentityStitcher returns a saved user, but we still need to save the event
               event.replace().then(event => {
                 // If the user has master_person identities and current event is scored, calculate placement
-                if (user.has_gr_master_person_id) {
-                  event.isScored().then(isScored => {
-                    if (isScored) {
-                      new Placement(user).calculate().then(placement => {
-                        // Update Global Registry
-                        GlobalRegistry.updatePlacement(placement).then(() => {
-                          // Resolve this event
-                          resolve(event)
-                        }, error => {
-                          rollbar.error(error, {record: record})
-                          resolve(error)
-                        })
-                      }, error => {
-                        rollbar.error(error, {record: record})
-                        resolve(error)
-                      })
-                    } else {
-                      // Event isn't scored, resolve it
-                      resolve(event)
-                    }
-                  })
-                } else {
+                // if (user.has_gr_master_person_id) {
+                //   event.isScored().then(isScored => {
+                //     if (isScored) {
+                //       new Placement(user).calculate().then(placement => {
+                //         // Update Global Registry
+                //         GlobalRegistry.updatePlacement(placement).then(() => {
+                //           // Resolve this event
+                //           resolve(event)
+                //         }, error => {
+                //           rollbar.error(error, {record: record})
+                //           resolve(error)
+                //         })
+                //       }, error => {
+                //         rollbar.error(error, {record: record})
+                //         resolve(error)
+                //       })
+                //     } else {
+                //       // Event isn't scored, resolve it
+                //       resolve(event)
+                //     }
+                //   })
+                // } else {
                   // Resolve this event
-                  resolve(event)
-                }
+                resolve(event)
+                // }
               }, error => {
                 rollbar.error('event.save() error', error, {record: record})
                 resolve(error)
