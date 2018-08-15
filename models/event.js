@@ -207,7 +207,9 @@ const Event = sequelize().define('Event', {
         this.setDataValue('uri', val)
       }
     }
-  }
+  },
+  derived_tstamp: 'TIMESTAMP(0)',
+  collector_tstamp: 'TIMESTAMP(0)'
 }, {
   tableName: 'events',
   underscored: true
@@ -218,7 +220,7 @@ Event.Fields = Fields
 // prototype Fields on Event instances
 forEach(Fields, (index, key) => {
   // Skip event_id and user_id, these are Event columns
-  if (includes(['event_id', 'user_id'], key)) {
+  if (includes(['event_id', 'user_id', 'derived_tstamp', 'collector_tstamp'], key)) {
     return
   }
   Event.prototype.__defineGetter__(key, function () {
@@ -245,10 +247,10 @@ Event.fromRecord = (record) => {
   }
   const event = new Event()
   event.event_id = decoded[Fields.event_id]
-  // Use collector timestamp as event creation time, forcing UTC
-  event.created_at = new Date(decoded[Fields.collector_tstamp] + '+0000')
   // Use event_name for the event type (page_view, page_ping, link_click, screen_view...)
   event.type = decoded[Fields.event_name]
+  event.collector_tstamp = decoded[Fields.collector_tstamp]
+  event.derived_tstamp = decoded[Fields.derived_tstamp]
   event.decodedFields = decoded
 
   // Log event_id with encoded data. Will allow re-creating kinesis stream locally for debugging
