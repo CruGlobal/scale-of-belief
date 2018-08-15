@@ -3,8 +3,8 @@
 const rollbar = require('../config/rollbar')
 const logger = require('../config/logger')
 const {forEach, chunk} = require('lodash')
-const Placement = require('../models/placement')
-const GlobalRegistry = require('../config/global-registry')
+// const Placement = require('../models/placement')
+// const GlobalRegistry = require('../config/global-registry')
 const promiseRetry = require('promise-retry')
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
