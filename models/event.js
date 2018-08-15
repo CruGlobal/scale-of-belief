@@ -219,7 +219,7 @@ Event.Fields = Fields
 
 // prototype Fields on Event instances
 forEach(Fields, (index, key) => {
-  // Skip event_id and user_id, these are Event columns
+  // Skip named Event columns that collide with Field names
   if (includes(['event_id', 'user_id', 'derived_tstamp', 'collector_tstamp'], key)) {
     return
   }
