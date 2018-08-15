@@ -24,7 +24,7 @@ functions:
     events:
       - stream:
           arn: arn:aws:kinesis:us-east-1:056154071827:stream/snowplow_enrich
-          batchSize: 100
+          batchSize: 25
           startingPosition: LATEST
           enabled: ${self:custom.placementEnabled.${opt:stage}, self:custom.placementEnabled.other}
   api:
@@ -34,12 +34,15 @@ functions:
       - http:
           path: /api/{any+}
           method: ANY
+          cors:
+            origin: '*'
+            maxAge: 86400
   migrate:
     handler: db/migrate.handler
-    timeout: 300
+    timeout: 120
   redshift:
     handler: db/redshift.handler
-    timeout: 300
+    timeout: 120
     events:
       - schedule: rate(5 minutes)
 
