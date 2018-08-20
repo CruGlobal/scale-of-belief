@@ -1,8 +1,8 @@
 'use strict'
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.addColumn('events', 'derived_tstamp', 'TIMESTAMP(0)')
-      .then(() => queryInterface.addColumn('events', 'collector_tstamp', 'TIMESTAMP(0)'))
+    return queryInterface.addColumn('events', 'derived_tstamp', 'TIMESTAMP(3)')
+      .then(() => queryInterface.addColumn('events', 'collector_tstamp', 'TIMESTAMP(3)'))
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.removeColumn('events', 'derived_tstamp')

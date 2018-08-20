@@ -208,8 +208,8 @@ const Event = sequelize().define('Event', {
       }
     }
   },
-  derived_tstamp: 'TIMESTAMP(0)',
-  collector_tstamp: 'TIMESTAMP(0)'
+  derived_tstamp: 'TIMESTAMP(3)',
+  collector_tstamp: 'TIMESTAMP(3)'
 }, {
   tableName: 'events',
   underscored: true
