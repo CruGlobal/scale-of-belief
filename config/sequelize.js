@@ -1,5 +1,6 @@
 'use strict'
 
+const decache = require('decache')
 const Sequelize = require('sequelize')
 const environment = process.env.NODE_ENV === 'test' ? 'test' : 'development'
 const config = require('./database')[environment]
@@ -32,7 +33,7 @@ const close = () => {
     // Delete sequelize Models from require cache.
     // They internally cache sequelize object and need to be reloaded on warm start
     forEach(requiredModels, value => {
-      delete require.cache[require.resolve(value)]
+      decache(value)
     })
     isClosing = false
   })
