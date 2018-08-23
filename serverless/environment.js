@@ -24,6 +24,10 @@ module.exports = () => {
     REDSHIFT_IAM_ROLE: process.env['REDSHIFT_IAM_ROLE'],
     REDSHIFT_S3_BUCKET: process.env['REDSHIFT_S3_BUCKET'],
     REDIS_PORT_6379_TCP_ADDR: process.env['REDIS_PORT_6379_TCP_ADDR'],
-    REDIS_PORT_6379_TCP_ADDR_PORT: process.env['REDIS_PORT_6379_TCP_ADDR_PORT'] || 6379
+    REDIS_PORT_6379_TCP_ADDR_PORT: process.env['REDIS_PORT_6379_TCP_ADDR_PORT'] || 6379,
+    ACS_JWT: process.env['ACS_JWT'] || 'jwt',
+    ACS_CLIENT_SECRET: process.env['ACS_CLIENT_SECRET'] || 'secret',
+    ACS_API_KEY: process.env['ACS_API_KEY'] || '',
+    ACS_URL: process.env['ACS_URL'] || 'https://mc.adobe.io/cru/campaign/'
   }
 }
