@@ -84,7 +84,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
             }
           })
         } catch (error) {
-          if (!(error instanceof Event.BotEventError)) {
+          if (!(error instanceof Event.BotEventError || error instanceof Event.BadAppIdEventError)) {
             rollbar.error('Event.fromRecord(record) error', error, {record: record})
           }
           resolve(error)
