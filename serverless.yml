@@ -26,14 +26,12 @@ functions:
           arn: arn:aws:kinesis:us-east-1:056154071827:stream/snowplow_enrich
           batchSize: 25
           startingPosition: LATEST
-          enabled: false
-#          enabled: ${self:custom.placementEnabled.${opt:stage}, self:custom.placementEnabled.other}
+          enabled: ${self:custom.placementEnabled.${opt:stage}, self:custom.placementEnabled.other}
       - stream:
           arn: arn:aws:kinesis:us-east-1:056154071827:stream/scale-of-belief-retry
           batchSize: 25
           startingPosition: TRIM_HORIZON
-          enabled: false
-#          enabled: ${self:custom.placementEnabled.${opt:stage}, self:custom.placementEnabled.other}
+          enabled: ${self:custom.placementEnabled.${opt:stage}, self:custom.placementEnabled.other}
   api:
     handler: api/index.handler
     timeout: 30
