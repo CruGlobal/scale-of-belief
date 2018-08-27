@@ -41,6 +41,21 @@ describe('Event', () => {
       expect(() => Event.fromRecord({kinesis: {data: data}})).toThrowError(Event.BotEventError)
     })
 
+    it('should throw BadAppIdEventError for an event with a bad app_id (empty)', () => {
+      const data = fs.readFileSync(path.join(__fixturesDir, 'event', 'app-id-empty.txt'), 'utf-8')
+      expect(() => Event.fromRecord({kinesis: {data: data}})).toThrowError(Event.BadAppIdEventError)
+    })
+
+    it('should throw BadAppIdEventError for an event with a bad app_id (-web)', () => {
+      const data = fs.readFileSync(path.join(__fixturesDir, 'event', 'app-id-web.txt'), 'utf-8')
+      expect(() => Event.fromRecord({kinesis: {data: data}})).toThrowError(Event.BadAppIdEventError)
+    })
+
+    it('should throw BadAppIdEventError for an event with a bad app_id (localhost)', () => {
+      const data = fs.readFileSync(path.join(__fixturesDir, 'event', 'app-id-localhost.txt'), 'utf-8')
+      expect(() => Event.fromRecord({kinesis: {data: data}})).toThrowError(Event.BadAppIdEventError)
+    })
+
     it('should parse event with valid page_url', () => {
       const data = fs.readFileSync(path.join(__fixturesDir, 'event', 'web-valid.txt'), 'utf-8')
       const event = Event.fromRecord({kinesis: {data: data}})

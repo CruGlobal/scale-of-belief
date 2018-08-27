@@ -9,7 +9,7 @@ const promiseRetry = require('promise-retry')
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
   const sequelize = require('../config/sequelize')
-  const {IdentityStitcher, UnknownUserError} = require('../models/identity-stitcher')
+  const {IdentityStitcher, UnknownUserError, KnownTestUserError} = require('../models/identity-stitcher')
   const Event = require('../models/event')
 
   // Chunk event into 25 records and log
@@ -76,7 +76,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
                     resolve(error)
                   })
                 }, error => {
-                  if (!(error instanceof UnknownUserError)) {
+                  if (!(error instanceof UnknownUserError || error instanceof KnownTestUserError)) {
                     rollbar.error('IdentityStitcher(event) error', error, {record: record})
                   }
                   resolve(error)
@@ -84,7 +84,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
             }
           })
         } catch (error) {
-          if (!(error instanceof Event.BotEventError)) {
+          if (!(error instanceof Event.BotEventError || error instanceof Event.BadAppIdEventError)) {
             rollbar.error('Event.fromRecord(record) error', error, {record: record})
           }
           resolve(error)
