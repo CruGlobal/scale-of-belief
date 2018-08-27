@@ -28,6 +28,7 @@ module.exports = () => {
     ACS_JWT: process.env['ACS_JWT'] || 'jwt',
     ACS_CLIENT_SECRET: process.env['ACS_CLIENT_SECRET'] || 'secret',
     ACS_API_KEY: process.env['ACS_API_KEY'] || '',
-    ACS_URL: process.env['ACS_URL'] || 'https://mc.adobe.io/cru/campaign/'
+    ACS_URL: process.env['ACS_URL'] || 'https://mc.adobe.io/cru/campaign/',
+    SNS_TOPIC_ARN: process.env['SNS_TOPIC_ARN'] || ''
   }
 }

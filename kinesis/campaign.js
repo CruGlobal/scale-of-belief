@@ -6,9 +6,11 @@ const {forEach} = require('lodash')
 const ACCESS_TOKEN = 'scale-of-belief-lambda-campaign-access-token'
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
-  const placement = lambdaEvent.placement
-  const grMasterPersonId = lambdaEvent.grMasterPersonId
-  const email = lambdaEvent.email
+  let message = lambdaEvent.Records[0].Sns.Message
+  message = JSON.parse(message)
+  const placement = message.placement
+  const grMasterPersonId = message.grMasterPersonId
+  const email = message.email
 
   const asyncHandler = async () => {
     let accessToken = await retrieveAccessToken()
