@@ -20,6 +20,14 @@ const {
   without,
   zipObject
 } = require('lodash')
+const TestUserGuids = [
+  '49e1f2f9-55cc-6c10-58ff-b9b46ca79579' // test@test.com
+]
+const TestUserGRIds = [
+  '6017a717-251c-434f-aa2f-e4279328fa59', // test@test.com
+  'f19c4ec2-057d-4b7b-958b-e88452881a28',
+  '2c4b60d4-7b21-43f7-836f-4f255330ecd2'
+]
 
 /**
  * Find all Users that match at least one identity of a given user
@@ -154,6 +162,10 @@ const performIdentityStitching = (event) => {
       throw new UnknownUserError('Event did not contain identity fields')
     }
 
+    if (isKnownTestUser(user)) {
+      throw new KnownTestUserError('User is a known testing account.')
+    }
+
     resolve(sequelize().transaction(transaction => {
       return possibleMatches(user, transaction)
         .then(matches => orderByScore(user, matches))
@@ -236,11 +248,19 @@ const userIntersection = (user, other) => {
   return zipObject(User.IDENTITY_FIELDS, map(User.IDENTITY_FIELDS, (field) => intersection(user[field], other[field])))
 }
 
+const isKnownTestUser = (user) => {
+  return intersection(user.sso_guid || [], TestUserGuids).length > 0 ||
+    intersection(user.gr_master_person_id || [], TestUserGRIds).length > 0
+}
+
 class UnknownUserError extends Error {}
+
+class KnownTestUserError extends Error {}
 
 module.exports = {
   IdentityStitcher: performIdentityStitching,
   UnknownUserError: UnknownUserError,
+  KnownTestUserError: KnownTestUserError,
   /**
    * @private
    */

@@ -3,6 +3,7 @@
 const {
   IdentityStitcher,
   UnknownUserError,
+  KnownTestUserError,
   _isSameSame,
   _rejectAmbiguous
 } = require('./identity-stitcher')
@@ -24,6 +25,18 @@ describe('IdentityStitcher', () => {
 
   it('event without user identities should throw UnknownUserError', () => {
     return expect(IdentityStitcher(new Event())).rejects.toThrowError(UnknownUserError)
+  })
+
+  it('event with know test user identities (sso_guid) should throw KnownTestUserError', () => {
+    user.sso_guid = ['49e1f2f9-55cc-6c10-58ff-b9b46ca79579']
+    jest.spyOn(User, 'fromEvent').mockImplementation(() => user)
+    return expect(IdentityStitcher(new Event())).rejects.toThrowError(KnownTestUserError)
+  })
+
+  it('event with know test user identities (gr_master_person_id) should throw KnownTestUserError', () => {
+    user.gr_master_person_id = ['f19c4ec2-057d-4b7b-958b-e88452881a28']
+    jest.spyOn(User, 'fromEvent').mockImplementation(() => user)
+    return expect(IdentityStitcher(new Event())).rejects.toThrowError(KnownTestUserError)
   })
 
   describe('has no matches', () => {
