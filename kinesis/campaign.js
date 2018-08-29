@@ -10,7 +10,6 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
   message = JSON.parse(message)
   const placement = message.placement
   const grMasterPersonId = message.grMasterPersonId
-  const email = message.email
 
   const asyncHandler = async () => {
     let accessToken = await retrieveAccessToken()
@@ -18,7 +17,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     if (accessToken instanceof Error) {
       throw new Error(accessToken)
     }
-    let matchedUsers = await AdobeCampaign.retrieveCampaignUser(email, grMasterPersonId, accessToken)
+    let matchedUsers = await AdobeCampaign.retrieveCampaignUser(grMasterPersonId, accessToken)
 
     let promises = []
     forEach(matchedUsers, (user) => {

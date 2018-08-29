@@ -114,10 +114,9 @@ describe('AdobeCampaignClient', () => {
     const accessToken = 'access-token'
 
     it('should retrieve one campaign user', done => {
-      const email = 'test@test.com'
       const grMasterPersonId = 'gr-id'
       const options = {
-        url: `${exampleUri}/profileAndServicesExt/profile/byEmail?email=${email}`,
+        url: `${exampleUri}/profileAndServicesExt/profile/byGlobalid?globalId_parameter=${grMasterPersonId}`,
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'X-Api-Key': exampleApiKey,
@@ -133,8 +132,8 @@ describe('AdobeCampaignClient', () => {
           }
         ],
         count: {
-          // note: in my testing, the actual response has profile//byEmail rather than profile/byEmail
-          href: `${exampleUri}/profileAndServicesExt/profile/byEmail/_count?email=${email}&_lineStart=some-pkey`,
+          // note: in my testing, the actual response has profile//byGlobalid rather than profile/byGlobalid
+          href: `${exampleUri}/profileAndServicesExt/profile/byGlobalid/_count?globalId_parameter=${grMasterPersonId}&_lineStart=some-pkey`,
           value: 1
         },
         serverSidePagination: false
@@ -144,7 +143,7 @@ describe('AdobeCampaignClient', () => {
         callback(null, mockResponse, JSON.stringify(mockBody))
       })
 
-      client.retrieveCampaignUser(email, grMasterPersonId, accessToken).then((users) => {
+      client.retrieveCampaignUser(grMasterPersonId, accessToken).then((users) => {
         expect(users).toBeDefined()
         expect(users.length).toEqual(1)
         expect(requestMock).toHaveBeenCalledWith(options, expect.anything())
@@ -154,24 +153,21 @@ describe('AdobeCampaignClient', () => {
     })
 
     it('should retrieve multiple campaign users', done => {
-      const email = 'test@test.com'
       const grMasterPersonId = 'gr-id'
       const mockResponse = { statusCode: 200 }
       const mockBody = {
         content: [
           {
             PKey: 'pkey',
-            cusGlobalID: grMasterPersonId,
-            email: email
+            cusGlobalID: grMasterPersonId
           },
           {
             PKey: 'pkey2',
-            cusGlobalID: grMasterPersonId,
-            email: email
+            cusGlobalID: grMasterPersonId
           }
         ],
         count: {
-          href: `${exampleUri}/profileAndServicesExt/profile/byEmail/_count?email=${email}&_lineStart=some-pkey`,
+          href: `${exampleUri}/profileAndServicesExt/profile/byGlobalid/_count?globalId_parameter=${grMasterPersonId}&_lineStart=some-pkey`,
           value: 2
         },
         serverSidePagination: false
@@ -181,7 +177,7 @@ describe('AdobeCampaignClient', () => {
         callback(null, mockResponse, JSON.stringify(mockBody))
       })
 
-      client.retrieveCampaignUser(email, grMasterPersonId, accessToken).then((users) => {
+      client.retrieveCampaignUser(grMasterPersonId, accessToken).then((users) => {
         expect(users).toBeDefined()
         expect(users.length).toEqual(2)
         requestMock.mockReset()
@@ -190,13 +186,12 @@ describe('AdobeCampaignClient', () => {
     })
 
     it('should retrieve zero campaign users', done => {
-      const email = 'nobody@test.com'
       const grMasterPersonId = 'no-id'
       const mockResponse = { statusCode: 200 }
       const mockBody = {
         content: [],
         count: {
-          href: `${exampleUri}/profileAndServicesExt/profile/byEmail/_count?email=${email}&_lineStart=some-pkey`,
+          href: `${exampleUri}/profileAndServicesExt/profile/byGlobalid/_count?globalId_parameter=${grMasterPersonId}&_lineStart=some-pkey`,
           value: 0
         },
         serverSidePagination: false
@@ -206,7 +201,7 @@ describe('AdobeCampaignClient', () => {
         callback(null, mockResponse, JSON.stringify(mockBody))
       })
 
-      client.retrieveCampaignUser(email, grMasterPersonId, accessToken).then((users) => {
+      client.retrieveCampaignUser(grMasterPersonId, accessToken).then((users) => {
         expect(users).toBeDefined()
         expect(users.length).toEqual(0)
         requestMock.mockReset()
@@ -215,7 +210,6 @@ describe('AdobeCampaignClient', () => {
     })
 
     it('should request a new access token when ours is expired', done => {
-      const email = 'test@test.com'
       const grMasterPersonId = 'gr-id'
       const mockFirstResponse = { statusCode: 401 }
       const mockSecondResponse = { statusCode: 200 }
@@ -231,8 +225,8 @@ describe('AdobeCampaignClient', () => {
           }
         ],
         count: {
-          // note: in my testing, the actual response has profile//byEmail rather than profile/byEmail
-          href: `${exampleUri}/profileAndServicesExt/profile/byEmail/_count?email=${email}&_lineStart=some-pkey`,
+          // note: in my testing, the actual response has profile//byGlobalid rather than profile/byGlobalid
+          href: `${exampleUri}/profileAndServicesExt/profile/byGlobalid/_count?globalId_parameter=${grMasterPersonId}&_lineStart=some-pkey`,
           value: 1
         },
         serverSidePagination: false
@@ -256,7 +250,7 @@ describe('AdobeCampaignClient', () => {
         callback(null, mockResponse, JSON.stringify(mockBody))
       })
 
-      client.retrieveCampaignUser(email, grMasterPersonId, accessToken).then((users) => {
+      client.retrieveCampaignUser(grMasterPersonId, accessToken).then((users) => {
         expect(requestMock).toHaveBeenCalledTimes(2)
         expect(requestPostMock).toHaveBeenCalledTimes(1)
         expect(users).toBeDefined()
@@ -268,7 +262,6 @@ describe('AdobeCampaignClient', () => {
     })
 
     it('should fail to retrieve campaign users', done => {
-      const email = 'error@test.com'
       const grMasterPersonId = 'no-id'
       const mockResponse = { statusCode: 500 }
       const mockBody = {
@@ -280,7 +273,7 @@ describe('AdobeCampaignClient', () => {
         callback(null, mockResponse, JSON.stringify(mockBody))
       })
 
-      client.retrieveCampaignUser(email, grMasterPersonId, accessToken).then((users) => {
+      client.retrieveCampaignUser(grMasterPersonId, accessToken).then((users) => {
         requestMock.mockReset()
         done.fail()
       }).catch((error) => {
@@ -292,14 +285,13 @@ describe('AdobeCampaignClient', () => {
     })
 
     it('should get an error retrieving campaign users', done => {
-      const email = 'error@test.com'
       const grMasterPersonId = 'no-id'
 
       const requestMock = jest.spyOn(request, 'get').mockImplementation((options, callback) => {
         callback(new Error('Some Error!'), null, null)
       })
 
-      client.retrieveCampaignUser(email, grMasterPersonId, accessToken).then((users) => {
+      client.retrieveCampaignUser(grMasterPersonId, accessToken).then((users) => {
         requestMock.mockReset()
         done.fail()
       }).catch((error) => {
@@ -308,50 +300,6 @@ describe('AdobeCampaignClient', () => {
         expect(error.message).toEqual('Some Error!')
         done()
       })
-    })
-  })
-
-  describe('filterUsers()', () => {
-    const client = new AdobeCampaignClient(exampleUri, exampleApiKey, exampleJwt, exampleSecret)
-    const grMasterPersonId = 'gr-id'
-
-    let allUsers = [
-      {
-        email: 'test@test.com',
-        cusGlobalID: grMasterPersonId,
-        cusSSOGUID: 'some-guid'
-      }
-    ]
-
-    it('should return all of the users', () => {
-      const filteredUsers = client.filterUsers(allUsers, grMasterPersonId)
-      expect(filteredUsers).toBeDefined()
-      expect(filteredUsers.length).toEqual(1)
-      expect(filteredUsers).toEqual(allUsers)
-    })
-
-    it('should return one of the users', () => {
-      allUsers.push({
-        email: 'test@test.com',
-        cusGlobalID: 'other-gr-id',
-        cusSSOGUID: 'other-guid'
-      })
-      const filteredUsers = client.filterUsers(allUsers, grMasterPersonId)
-      expect(filteredUsers).toBeDefined()
-      expect(filteredUsers.length).toEqual(1)
-      expect(filteredUsers[0]).toEqual(
-        {
-          email: 'test@test.com',
-          cusGlobalID: grMasterPersonId,
-          cusSSOGUID: 'some-guid'
-        }
-      )
-    })
-
-    it('should return zero of the users', () => {
-      const filteredUsers = client.filterUsers(allUsers, 'third-gr-id')
-      expect(filteredUsers).toBeDefined()
-      expect(filteredUsers.length).toEqual(0)
     })
   })
 

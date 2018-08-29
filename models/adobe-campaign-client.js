@@ -1,7 +1,6 @@
 'use strict'
 
 const request = require('request')
-const {forEach} = require('lodash')
 const redis = require('redis')
 
 const ACCESS_TOKEN = 'scale-of-belief-lambda-campaign-access-token'
@@ -56,11 +55,11 @@ class AdobeCampaignClient {
   }
 
   /**
-   * Returns all users with the given email address and GR master person ID (cusGlobalID).
+   * Returns all users with the given GR master person ID (cusGlobalID).
    */
-  retrieveCampaignUser (email, grMasterPersonId, accessToken) {
+  retrieveCampaignUser (grMasterPersonId, accessToken) {
     let options = {
-      url: `${this.baseUrl}/profileAndServicesExt/profile/byEmail?email=${email}`,
+      url: `${this.baseUrl}/profileAndServicesExt/profile/byGlobalid?globalId_parameter=${grMasterPersonId}`,
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'X-Api-Key': this.apiKey,
@@ -74,25 +73,14 @@ class AdobeCampaignClient {
           reject(err)
         } else if (response.statusCode === 401) {
           let newAccessToken = await this.retrieveAccessToken()
-          resolve(this.retrieveCampaignUser(email, grMasterPersonId, newAccessToken))
+          resolve(this.retrieveCampaignUser(grMasterPersonId, newAccessToken))
         } else if (response.statusCode >= 400) {
           reject(new Error('Something went wrong with your request: ' + body))
         }
 
-        resolve(this.filterUsers(JSON.parse(body).content, grMasterPersonId))
+        resolve(JSON.parse(body).content)
       })
     })
-  }
-
-  filterUsers (users, grMasterPersonId) {
-    let filteredUsers = []
-    forEach(users, (user) => {
-      if (user['cusGlobalID'] && user['cusGlobalID'] === grMasterPersonId) {
-        filteredUsers.push(user)
-      }
-    })
-
-    return filteredUsers
   }
 
   updateCampaignUserPlacement (pkey, placement, accessToken) {
