@@ -247,8 +247,8 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
       redisClient.quit()
       lambdaCallback('Failed to move data to Redshift: ' + error)
     })
-    .catch((error) => {
-      throw new Error('Failed to disconnect from Redshift client: ' + error)
+    .catch((redshiftDisconnectError) => {
+      lambdaCallback('Failed to disconnect from Redshift client: ' + redshiftDisconnectError)
     })
   })
 })
