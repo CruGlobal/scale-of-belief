@@ -201,6 +201,9 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
                 throw new Error('Failed to get data into Redshift: ' + error)
               }
             })
+            .catch((error) => {
+              throw new Error('Failed to begin transaction in Redshift: ' + error)
+            })
           }
         })
       })
