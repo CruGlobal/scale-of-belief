@@ -39,32 +39,42 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
       redisClient.on('error', (error) => {
         rollbar.warn(`Error connecting to Redis: ${error}`)
         AdobeCampaign.retrieveAccessToken().then((accessToken) => {
-          redisClient.quit()
+          disconnectClient(redisClient)
           resolve(accessToken)
         }).catch((error) => {
-          redisClient.quit()
+          disconnectClient(redisClient)
           reject(error)
         })
+      })
+
+      redisClient.on('end', () => {
+        console.log('Disconnected from Redis')
       })
 
       redisClient.get(ACCESS_TOKEN, (error, response) => {
         if (error) {
           rollbar.warn(`Error retrieving ACCESS_TOKEN: ${error}`)
-          redisClient.quit()
+          disconnectClient(redisClient)
         } else if (response) {
-          redisClient.quit()
+          disconnectClient(redisClient)
           resolve(response)
         }
 
         AdobeCampaign.retrieveAccessToken().then((accessToken) => {
-          redisClient.quit()
+          disconnectClient(redisClient)
           resolve(accessToken)
         }).catch((error) => {
-          redisClient.quit()
+          disconnectClient(redisClient)
           reject(error)
         })
       })
     })
+  }
+
+  const disconnectClient = (redisClient) => {
+    if (redisClient.connected) {
+      redisClient.quit()
+    }
   }
 
   asyncHandler().then((message) => {

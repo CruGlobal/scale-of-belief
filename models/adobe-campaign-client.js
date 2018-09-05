@@ -38,6 +38,7 @@ class AdobeCampaignClient {
           const accessToken = JSON.parse(body).access_token
 
           redisClient.set(ACCESS_TOKEN, accessToken)
+          redisClient.quit()
           resolve(accessToken)
         } else {
           reject(new Error('Failed to retrieve access token: ' + body))
