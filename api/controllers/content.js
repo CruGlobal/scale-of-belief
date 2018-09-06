@@ -1,8 +1,9 @@
 'use strict'
 
-const sequelize = require('../../config/sequelize')
 const {forEach} = require('lodash')
 const util = require('../util/util')
+const Unscored = require('../../models/unscored')
+const {Op} = require('sequelize')
 
 const get = (request, response) => {
   let uri = util.sanitizeUri(request.query['uri'])
@@ -21,41 +22,21 @@ const get = (request, response) => {
 
   const offset = (page - 1) * perPage
 
-  let baseQuery =
-    'SELECT DISTINCT events.uri ' +
-    'FROM events LEFT JOIN scores USING (uri) ' +
-    'WHERE scores.uri IS NULL AND events.uri LIKE(:uri)'
-
-  let count
-
-  sequelize().query('SELECT COUNT(a.*) FROM (' + baseQuery + ') AS a',
-    {
-      replacements: { uri: uri + '%', perPage: perPage + 1, offset: offset },
-      type: sequelize().QueryTypes.SELECT
-    }
-  ).then((results) => {
-    count = results[0].count
-
-    sequelize().query(
-      baseQuery +
-      ' ORDER BY events.uri ' + order +
-      ' LIMIT :perPage OFFSET :offset',
-      {
-        replacements: { uri: uri + '%', perPage: perPage, offset: offset },
-        type: sequelize().QueryTypes.SELECT
+  Unscored.findAndCountAll({
+    where: {
+      uri: {
+        [Op.like]: uri + '%'
       }
-    ).then((results) => {
-      let uris = []
-      forEach(results, (result) => {
-        uris.push(result.uri)
-      })
-      response.json({
-        data: uris,
-        meta: {
-          total: count
-        }
-      })
+    },
+    limit: perPage,
+    offset: offset,
+    order: [['uri', order]]
+  }).then((results) => {
+    let uris = []
+    forEach(results.rows, (result) => {
+      uris.push(result.uri)
     })
+    response.json({ data: uris, meta: { total: results.count } })
   })
 }
 

@@ -2,33 +2,25 @@
 
 const ContentController = require('../../api/controllers/content.js')
 const factory = require('../factory')
-const sequelize = require('../../config/sequelize')
+const Unscored = require('../../models/unscored')
 
 describe('ContentController', () => {
-  let event1, event2
+  let unscored1, unscored2
   beforeEach(() => {
     return Promise.all([
-      factory.build('existing_score'),
-      factory.build('blank_score', {
-        uri: 'http://some.other.uri.com',
-        score: 3,
-        weight: 1
-      }),
-      factory.build('web_event', {
-        uri: 'http://some.uri.com'
-      }),
-      factory.build('web_event', {
-        uri: 'http://some.uri.com/1'
-      }),
-      factory.build('web_event', {
+      factory.build('unscored'),
+      factory.build('unscored', {
         uri: 'http://some.other.uri.com'
       }),
-      factory.build('web_event', {
+      factory.build('unscored', {
+        uri: 'http://some.uri.com/1'
+      }),
+      factory.build('unscored', {
         uri: 'http://some.other.uri.com/1'
       })
     ]).then(data => {
-      event1 = data[3]
-      event2 = data[5]
+      unscored1 = data[0]
+      unscored2 = data[1]
     })
   })
 
@@ -48,7 +40,7 @@ describe('ContentController', () => {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual({
-            data: [event1.uri],
+            data: [unscored1.uri],
             meta: {
               total: 1
             }
@@ -57,9 +49,8 @@ describe('ContentController', () => {
         }
       }
 
-      jest.spyOn(sequelize(), 'query')
-        .mockImplementationOnce(() => Promise.resolve([{count: 1}]))
-        .mockImplementationOnce(() => Promise.resolve([event1]))
+      jest.spyOn(Unscored, 'findAndCountAll')
+        .mockImplementationOnce(() => Promise.resolve({rows: [unscored1], count: 1}))
 
       ContentController.get(request, response)
     })
@@ -77,7 +68,7 @@ describe('ContentController', () => {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual({
-            data: [event1.uri, event2.uri],
+            data: [unscored1.uri, unscored2.uri],
             meta: {
               total: 2
             }
@@ -86,9 +77,8 @@ describe('ContentController', () => {
         }
       }
 
-      jest.spyOn(sequelize(), 'query')
-        .mockImplementationOnce(() => Promise.resolve([{count: 2}]))
-        .mockImplementationOnce(() => Promise.resolve([event1, event2]))
+      jest.spyOn(Unscored, 'findAndCountAll')
+        .mockImplementationOnce(() => Promise.resolve({rows: [unscored1, unscored2], count: 2}))
 
       ContentController.get(request, response)
     })
@@ -115,9 +105,7 @@ describe('ContentController', () => {
         }
       }
 
-      jest.spyOn(sequelize(), 'query')
-        .mockImplementationOnce(() => Promise.resolve([{count: 0}]))
-        .mockImplementationOnce(() => Promise.resolve([]))
+      jest.spyOn(Unscored, 'findAndCountAll').mockImplementationOnce(() => Promise.resolve({rows: [], count: 0}))
 
       ContentController.get(request, response)
     })
@@ -137,15 +125,14 @@ describe('ContentController', () => {
       const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
-          expect(jsonToSet.data).toEqual([event1.uri])
+          expect(jsonToSet.data).toEqual([unscored1.uri])
           expect(jsonToSet.meta.total).toEqual(2)
           done()
         }
       }
 
-      jest.spyOn(sequelize(), 'query')
-        .mockImplementationOnce(() => Promise.resolve([{count: 2}]))
-        .mockImplementationOnce(() => Promise.resolve([event1]))
+      jest.spyOn(Unscored, 'findAndCountAll')
+        .mockImplementationOnce(() => Promise.resolve({rows: [unscored1], count: 2}))
 
       ContentController.get(request, response)
     })
