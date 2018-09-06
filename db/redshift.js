@@ -113,7 +113,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
       `COPY ${STAGING_PREFIX}${table}
       FROM 's3://${process.env.REDSHIFT_S3_BUCKET}/${s3Key}'
       IAM_ROLE '${process.env.REDSHIFT_IAM_ROLE}'
-      CSV BLANKSASNULL EMPTYASNULL TRUNCATECOLUMNS COMPUPDATE OFF STATUPDATE OFF`
+      CSV BLANKSASNULL EMPTYASNULL TRUNCATECOLUMNS COMPUPDATE OFF STATUPDATE OFF GZIP`
     const DELETE_QUERY =
       `DELETE FROM scale_of_belief.${table}
       USING ${STAGING_PREFIX}${table}
