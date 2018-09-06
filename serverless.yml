@@ -50,6 +50,11 @@ functions:
     timeout: 300
     events:
       - schedule: rate(5 minutes)
+  refresh-materialized:
+    handler: db/refresh-materialized.handler
+    timeout: 300
+    events:
+      - schedule: rate(2 hours)
 
 package:
   exclude:
