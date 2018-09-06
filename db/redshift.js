@@ -4,251 +4,174 @@
  * Lambda handler to move data into Redshift.
  */
 
-const { Client } = require('pg')
-const copyTo = require('pg-copy-streams').to
+const {Client} = require('pg')
+const copyToSteam = require('pg-copy-streams').to
 const rollbar = require('../config/rollbar')
-const concat = require('concat-stream')
 const AWS = require('aws-sdk')
 const dateUtil = require('./util/date-util')
 const redis = require('redis')
+const zlib = require('zlib')
 
-const LAST_SUCCESS_KEY = 'scale-of-belief-redshift-lambda-last-success'
+const LAST_SUCCESS_PREFIX = 'scale-of-belief-lambda:redshift-last-success:'
+const STAGING_PREFIX = 'staging_'
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
+  // Configure AWS and S3
   AWS.config.update({region: 'us-east-1'})
   const s3 = new AWS.S3({apiVersion: '2006-03-01'})
-  const bucketDate = dateUtil.buildFormattedDate(new Date())
 
-  const redshiftClient = new Client({
-    user: process.env.REDSHIFT_DB_ENV_POSTGRESQL_USER,
-    password: process.env.REDSHIFT_DB_ENV_POSTGRESQL_PASS,
-    database: process.env.REDSHIFT_DB_ENV_POSTGRESQL_DB,
-    host: process.env.REDSHIFT_DB_PORT_5432_TCP_ADDR,
-    port: process.env.REDSHIFT_DB_PORT_5432_TCP_PORT
+  // Configure redis client
+  const redisClient = redis.createClient(
+    process.env.REDIS_PORT_6379_TCP_ADDR_PORT,
+    process.env.REDIS_PORT_6379_TCP_ADDR
+  )
+  redisClient.on('error', err => {
+    throw err
   })
 
-  const redisClient = redis.createClient(process.env.REDIS_PORT_6379_TCP_ADDR_PORT, process.env.REDIS_PORT_6379_TCP_ADDR)
-
-  const shouldAbort = (error) => {
-    if (error) {
-      rollbar.error('Error in transaction: ', error)
-      redshiftClient.query('ROLLBACK', (error) => {
-        if (error) {
-          rollbar.error('Error rolling back: ', error)
+  /**
+   * Gets last success for given table
+   * @param {String} table
+   * @returns {Promise<*>}
+   */
+  const getLastSuccess = async (table) => {
+    return new Promise(resolve => {
+      redisClient.get(LAST_SUCCESS_PREFIX + table, (err, value) => {
+        if (err instanceof Error) {
+          throw err
+        }
+        if (value === null) {
+          // key missing, default to 10 minutes ago
+          resolve(new Date(Date.now() - (10 * 60 * 1000)).toISOString())
+        } else {
+          resolve(value)
         }
       })
+    })
+  }
+
+  /**
+   * Set last success for given table
+   * @param {String} table
+   * @param {Date} date
+   * @returns {Promise<*>}
+   */
+  const setLastSuccess = async (table, date) => {
+    return new Promise(resolve => {
+      redisClient.set(LAST_SUCCESS_PREFIX + table, date.toISOString(), (err, res) => {
+        if (err instanceof Error) {
+          throw err
+        }
+        resolve()
+      })
+    })
+  }
+
+  /**
+   * Copy data from postgres to s3
+   * @param {String} table
+   * @param {String} s3Key
+   * @returns {Promise<boolean>} true if data was copied, false otherwise
+   */
+  const copyToS3 = async (table, s3Key) => {
+    const lastSuccess = await getLastSuccess(table)
+    const QUERY =
+      `COPY (SELECT * FROM ${table} WHERE updated_at >= '${lastSuccess}') TO STDOUT WITH(FORMAT CSV, HEADER false);`
+    const postgresClient = new Client({
+      user: process.env.DB_ENV_POSTGRESQL_USER,
+      password: process.env.DB_ENV_POSTGRESQL_PASS,
+      database: process.env.DB_ENV_POSTGRESQL_DB,
+      host: process.env.DB_PORT_5432_TCP_ADDR || 'localhost',
+      port: process.env.DB_PORT_5432_TCP_PORT || 5432
+    })
+    await postgresClient.connect()
+    try {
+      let body = await postgresClient.query(copyToSteam(QUERY)).pipe(zlib.createGzip())
+      await s3.upload({
+        Bucket: process.env.REDSHIFT_S3_BUCKET,
+        Key: s3Key,
+        Body: body
+      }).promise()
+      return body.bytesRead !== 0
+    } finally {
+      // Always disconnect from postgres
+      await postgresClient.end()
     }
-    return !!error
   }
 
-  const commit = async () => {
-    return new Promise((resolve, reject) => {
-      redshiftClient.query('COMMIT').then(() => {
-        resolve()
-      })
-      .catch((error) => {
-        throw new Error('Error committing transaction: ' + error)
-      })
-    })
-  }
-
-  const createStagingTable = async (stagingTable, permanentTable) => {
-    return new Promise((resolve, reject) => {
-      const createQuery = `CREATE TEMP TABLE ${stagingTable} (LIKE scale_of_belief.${permanentTable})`
-      redshiftClient.query(createQuery).then(() => {
-        resolve()
-      })
-      .catch((error) => {
-        if (shouldAbort(error)) {
-          throw new Error(error)
-        }
-      })
-    })
-  }
-
-  const copyDataFromS3 = async (stagingTable, bucketFolder) => {
-    const copyFromS3 =
-      `COPY ${stagingTable}
-      FROM '${process.env.REDSHIFT_S3_BUCKET}/${bucketFolder}/${bucketDate}.csv'
+  /**
+   * Copy data from S3 into redshift
+   * @param {String} table
+   * @param {String} idColumn
+   * @param {String} s3Key
+   * @returns {Promise<void>}
+   */
+  const copyToRedshift = async (table, idColumn, s3Key) => {
+    const CREATE_TABLE_QUERY =
+      `CREATE TEMP TABLE ${STAGING_PREFIX}${table} (LIKE scale_of_belief.${table})`
+    const COPY_FROM_QUERY =
+      `COPY ${STAGING_PREFIX}${table}
+      FROM 's3://${process.env.REDSHIFT_S3_BUCKET}/${s3Key}'
       IAM_ROLE '${process.env.REDSHIFT_IAM_ROLE}'
-      CSV IGNOREHEADER 1 BLANKSASNULL EMPTYASNULL TRUNCATECOLUMNS COMPUPDATE OFF STATUPDATE OFF`
-
-    return new Promise((resolve, reject) => {
-      redshiftClient.query(copyFromS3).then(() => {
-        resolve()
-      })
-      .catch((error) => {
-        if (shouldAbort(error)) {
-          throw new Error(error)
-        }
-      })
+      CSV BLANKSASNULL EMPTYASNULL TRUNCATECOLUMNS COMPUPDATE OFF STATUPDATE OFF`
+    const DELETE_QUERY =
+      `DELETE FROM scale_of_belief.${table}
+      USING ${STAGING_PREFIX}${table}
+      WHERE scale_of_belief.${table}.${idColumn} = ${STAGING_PREFIX}${table}.${idColumn}`
+    const INSERT_QUERY =
+      `INSERT INTO scale_of_belief.${table} SELECT * FROM ${STAGING_PREFIX}${table}`
+    const DROP_TABLE_QUERY = `DROP TABLE IF EXISTS ${STAGING_PREFIX}${table}`
+    const redshiftClient = new Client({
+      user: process.env.REDSHIFT_DB_ENV_POSTGRESQL_USER,
+      password: process.env.REDSHIFT_DB_ENV_POSTGRESQL_PASS,
+      database: process.env.REDSHIFT_DB_ENV_POSTGRESQL_DB,
+      host: process.env.REDSHIFT_DB_PORT_5432_TCP_ADDR,
+      port: process.env.REDSHIFT_DB_PORT_5432_TCP_PORT
     })
-  }
-
-  const mergeDataIntoPermanentTable = async (stagingTable, permanentTable, primaryKey) => {
-    const deleteQuery =
-      `DELETE FROM scale_of_belief.${permanentTable}
-      USING ${stagingTable}
-      WHERE scale_of_belief.${permanentTable}.${primaryKey} = ${stagingTable}.${primaryKey}`
-
-    const insertQuery =
-      `INSERT INTO scale_of_belief.${permanentTable}
-      SELECT * FROM ${stagingTable}`
-
-    return new Promise((resolve, reject) => {
-      redshiftClient.query(deleteQuery).then(() => {
-        redshiftClient.query(insertQuery).then(() => {
-          resolve()
-        })
-        .catch((error) => {
-          if (shouldAbort(error)) {
-            throw new Error(error)
-          }
-        })
-      })
-      .catch((error) => {
-        if (shouldAbort(error)) {
-          throw new Error(error)
-        }
-      })
-    })
-  }
-
-  const dropTable = async (tableName) => {
-    return new Promise((resolve, reject) => {
-      redshiftClient.query('DROP TABLE ' + tableName).then(() => {
-        resolve()
-      })
-      .catch((error) => {
-        if (shouldAbort(error)) {
-          throw new Error(error)
-        }
-      })
-    })
-  }
-
-  const moveData = async (tableName, stagingTable, primaryKey) => {
-    const now = Date.now()
-    let lowerThreshold = new Date(now - (10 * 60 * 1000)).toISOString() // default to 10 minutes ago
-
-    return new Promise((resolve, reject) => {
-      redisClient.on('error', (error) => {
-        throw new Error('Error connecting to Redis: ' + error)
-      })
-
-      redisClient.get(LAST_SUCCESS_KEY, (error, response) => {
-        if (error) {
-          throw new Error(`Error retrieving ${LAST_SUCCESS_KEY}: ${error}`)
-        }
-
-        if (response) {
-          lowerThreshold = response
-        }
-      })
-
-      const copyQuery = `COPY (
-        SELECT *
-        FROM ${tableName}
-        WHERE updated_at >= '${lowerThreshold}')
-        TO STDOUT WITH(FORMAT CSV, HEADER);`
-
-      const localDbClient = new Client({
-        user: process.env.DB_ENV_POSTGRESQL_USER,
-        password: process.env.DB_ENV_POSTGRESQL_PASS,
-        database: process.env.DB_ENV_POSTGRESQL_DB,
-        host: process.env.DB_PORT_5432_TCP_ADDR || 'localhost',
-        port: process.env.DB_PORT_5432_TCP_PORT || 5432
-      })
-
-      localDbClient.connect()
-
-      let stream = localDbClient.query(copyTo(copyQuery))
-      let response
-
-      stream.pipe(concat((buffer) => {
-        response = buffer.toString('utf8')
-      }))
-
-      stream.on('error', (error) => {
-        throw new Error('Stream error: ' + error)
-      })
-      stream.on('end', () => {
-        localDbClient.end()
-        s3.putObject({
-          Bucket: 'scale-of-belief-lambda-' + process.env.ENVIRONMENT,
-          Key: tableName + '/' + bucketDate + '.csv',
-          Body: response
-        }, function (error, data) {
-          if (error) {
-            throw new Error('Failed to send CSV to S3: ' + error)
-          } else {
-            // Move data from S3 to Redshift
-            redshiftClient.query('BEGIN').then(async () => {
-              try {
-                // Create temporary staging table with the CSV data from S3
-                await createStagingTable(stagingTable, tableName)
-                await copyDataFromS3(stagingTable, tableName)
-
-                // Merge data from temporary table into the permanent table
-                await mergeDataIntoPermanentTable(stagingTable, tableName, primaryKey)
-
-                // Drop the temporary table
-                await dropTable(stagingTable)
-
-                await commit()
-                resolve()
-              } catch (error) {
-                throw new Error('Failed to get data into Redshift: ' + error)
-              }
-            })
-          }
-        })
-      })
-    })
-  }
-
-  const updateLastSuccess = async () => {
-    return new Promise((resolve, reject) => {
-      redisClient.on('error', (error) => {
-        throw new Error('Error connecting to Redis: ' + error)
-      })
-
-      redisClient.set(LAST_SUCCESS_KEY, new Date(Date.now()).toISOString())
-      resolve()
-    })
-  }
-
-  const workingFunction = async () => {
+    await redshiftClient.connect()
     try {
-      await redshiftClient.connect()
-    } catch (error) {
-      throw new Error('Error connecting to Redshift client: ' + error)
+      await redshiftClient.query('BEGIN')
+      await redshiftClient.query(CREATE_TABLE_QUERY)
+      await redshiftClient.query(COPY_FROM_QUERY)
+      await redshiftClient.query(DELETE_QUERY)
+      await redshiftClient.query(INSERT_QUERY)
+      await redshiftClient.query(DROP_TABLE_QUERY)
+      await redshiftClient.query('COMMIT')
+    } catch (err) {
+      await redshiftClient.query('ROLLBACK')
+      throw err
+    } finally {
+      await redshiftClient.end()
     }
-
-    try {
-      await moveData('scores', 'score_staging', 'uri')
-      await moveData('events', 'event_staging', 'id')
-      await updateLastSuccess()
-    } catch (error) {
-      throw new Error(error)
-    }
-
-    redshiftClient.end().then(() => {
-      redisClient.quit()
-      lambdaCallback(null, 'Move to Redshift successful')
-    })
-    .catch((error) => {
-      throw new Error('Failed to disconnect from Redshift client: ' + error)
-    })
   }
 
-  workingFunction().catch((error) => {
-    redshiftClient.end().then(() => {
-      redisClient.quit()
-      lambdaCallback('Failed to move data to Redshift: ' + error)
+  /**
+   * Initiate a delta from postgres to redshift
+   * @param table
+   * @param idColumn
+   * @returns {Promise<void>}
+   */
+  const redshiftDelta = async (table, idColumn) => {
+    const now = new Date()
+    let s3Key = `${table}/${dateUtil.buildFormattedDate(now)}.csv.gz`
+    let result = await copyToS3(table, s3Key)
+    if (result) {
+      await copyToRedshift(table, idColumn, s3Key)
+    }
+    await setLastSuccess(table, now)
+  }
+
+  // Fire delta for each table
+  try {
+    Promise.all([
+      redshiftDelta('events', 'id'),
+      redshiftDelta('scores', 'uri')
+    ]).then(deltas => {
+      lambdaCallback(null, 'Redshift deltas successful.')
     })
-    .catch((redshiftDisconnectError) => {
-      lambdaCallback('Failed to disconnect from Redshift client: ' + redshiftDisconnectError)
-    })
-  })
+  } catch (err) {
+    lambdaCallback(err)
+  } finally {
+    redisClient.quit()
+  }
 })
