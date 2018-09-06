@@ -50,7 +50,7 @@ functions:
     timeout: 300
     events:
       - schedule: rate(5 minutes)
-  refresh-materialized:
+  refresh-unscored:
     handler: db/refresh-materialized.handler
     timeout: 300
     events:
