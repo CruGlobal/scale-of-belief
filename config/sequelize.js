@@ -8,6 +8,7 @@ const requiredModels = [
   '../models/event',
   '../models/user',
   '../models/score',
+  '../models/unscored',
   '../models/api-user',
   '../models/api-key',
   './papertrail'
