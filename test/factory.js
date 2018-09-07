@@ -4,6 +4,7 @@ const factory = require('factory-girl').factory
 const User = require('../models/user')
 const Event = require('../models/event')
 const Score = require('../models/score')
+const Unscored = require('../models/unscored')
 const ApiUser = require('../models/api-user')
 const chance = require('chance').Chance()
 const path = require('path')
@@ -145,6 +146,10 @@ factory.extend('api_user', 'created_user', {
   api_pattern: ['.*'],
   contact_email: 'frank.test@cru.org',
   type: null
+})
+
+factory.define('unscored', Unscored, {
+  uri: 'http://some.uri.com'
 })
 
 module.exports = factory
