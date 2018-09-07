@@ -28,10 +28,10 @@
     "coveralls": "^3.0.0",
     "factory-girl": "^5.0.2",
     "jest": "^22.3.0",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.10",
     "sequelize-cli": "^4.0.0",
-    "serverless": "^1.27.2",
-    "serverless-offline": "^3.18.0",
+    "serverless": "^1.30.3",
+    "serverless-offline": "^3.25.11",
     "serverless-plugin-bind-deployment-id": "^1.0.1",
     "serverless-plugin-scripts": "^1.0.2",
     "standard": "^10.0.3"
