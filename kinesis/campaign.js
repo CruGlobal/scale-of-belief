@@ -9,7 +9,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
   let message = lambdaEvent.Records[0].Sns.Message
   message = JSON.parse(message)
   const placement = message.placement
-  const grMasterPersonId = message.grMasterPersonId
+  const grMasterPersonIds = message.grMasterPersonIds
 
   const asyncHandler = async () => {
     let accessToken = await retrieveAccessToken()
@@ -17,9 +17,14 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     if (accessToken instanceof Error) {
       throw new Error(accessToken)
     }
-    let matchedUsers = await AdobeCampaign.retrieveCampaignUser(grMasterPersonId, accessToken)
 
     let promises = []
+    let matchedUsers = []
+    for (let grMasterPersonId of grMasterPersonIds) {
+      const campaignUsers = await AdobeCampaign.retrieveCampaignUser(grMasterPersonId, accessToken)
+      matchedUsers = matchedUsers.concat(campaignUsers)
+    }
+
     forEach(matchedUsers, (user) => {
       promises.push(AdobeCampaign.updateCampaignUserPlacement(user['PKey'], placement, accessToken))
     })
