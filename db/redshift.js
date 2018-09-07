@@ -165,11 +165,11 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     redshiftDelta('events', 'id'),
     redshiftDelta('scores', 'uri')
   ]).then(deltas => {
+    redisClient.quit()
     lambdaCallback(null, 'Redshift deltas successful.')
-  }).catch(err => {
+  }, err => {
+    redisClient.quit()
     rollbar.error('Redshift: ' + err)
     lambdaCallback(err)
-  }).finally(() => {
-    redisClient.quit()
   })
 })
