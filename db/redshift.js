@@ -161,17 +161,15 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     await setLastSuccess(table, now)
   }
 
-  // Fire delta for each table
-  try {
-    Promise.all([
-      redshiftDelta('events', 'id'),
-      redshiftDelta('scores', 'uri')
-    ]).then(deltas => {
-      lambdaCallback(null, 'Redshift deltas successful.')
-    })
-  } catch (err) {
+  Promise.all([
+    redshiftDelta('events', 'id'),
+    redshiftDelta('scores', 'uri')
+  ]).then(deltas => {
+    lambdaCallback(null, 'Redshift deltas successful.')
+  }).catch(err => {
+    rollbar.error('Redshift: ' + err)
     lambdaCallback(err)
-  } finally {
+  }).finally(() => {
     redisClient.quit()
-  }
+  })
 })
