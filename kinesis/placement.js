@@ -53,7 +53,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
                           new Placement(user).calculate().then(placement => {
                             const sns = new AWS.SNS({ region: 'us-east-1' })
                             const payload = {
-                              placement: placement,
+                              placement: placement.placement,
                               grMasterPersonId: user.gr_master_person_id
                             }
                             const params = {

@@ -21,7 +21,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
 
     let promises = []
     forEach(matchedUsers, (user) => {
-      promises.push(AdobeCampaign.updateCampaignUserPlacement(user['PKey'], placement.placement, accessToken))
+      promises.push(AdobeCampaign.updateCampaignUserPlacement(user['PKey'], placement, accessToken))
     })
 
     return Promise.all(promises).then((results) => {
