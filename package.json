@@ -39,7 +39,6 @@
   "dependencies": {
     "aws-sdk": "^2.230.1",
     "body-parser": "^1.18.2",
-    "concat-stream": "^1.6.2",
     "diff": "^3.5.0",
     "dotenv": "^5.0.0",
     "express": "^4.16.2",
@@ -51,9 +50,9 @@
     "pg": "^7.4.1",
     "pg-copy-streams": "^1.2.0",
     "pg-hstore": "^2.3.2",
-    "request": "^2.85.0",
     "promise-retry": "^1.1.1",
     "redis": "^2.8.0",
+    "request": "^2.85.0",
     "rollbar": "^2.3.9",
     "sequelize": "^4.37.7",
     "sequelize-paper-trail": "^2.0.0",
