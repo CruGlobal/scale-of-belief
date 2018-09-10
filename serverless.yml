@@ -57,7 +57,7 @@ functions:
       - schedule: rate(2 hours)
   campaign:
     handler: sns/campaign.handler
-    timeout: 300
+    timeout: 60
     events:
       - sns: ${env:SNS_TOPIC_ARN}
   global-registry:
