@@ -11,10 +11,10 @@ class GlobalRegistryClient {
     this.apiKey = apiKey
   }
 
-  updatePlacement (placement) {
+  updatePlacement (masterPersonIds, placement) {
     const requests = []
 
-    forEach(placement.user.gr_master_person_id, (masterPersonId) => {
+    forEach(masterPersonIds, (masterPersonId) => {
       const promise = new Promise(resolve => {
         let options = {
           url: `${this.baseUrl}/entities`,
@@ -38,7 +38,7 @@ class GlobalRegistryClient {
     return {
       entity: {
         scale_of_belief: {
-          placement: placement.placement,
+          placement: placement,
           client_integration_id: masterPersonId,
           'master_person:relationship': {
             master_person: masterPersonId,
