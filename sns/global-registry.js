@@ -9,7 +9,7 @@ module.exports.handler = async (lambdaEvent) => {
     const snsMessage = lambdaEvent.Records[0].Sns.Message
     const message = JSON.parse(snsMessage)
     // Update Global Registry
-    await GlobalRegistry.updatePlacement(message.grMasterPersonId, message.placement)
+    await GlobalRegistry.updatePlacement(message.grMasterPersonIds, message.placement)
   } catch (err) {
     rollbar.error('Global Registry update error: ' + err)
     throw err
