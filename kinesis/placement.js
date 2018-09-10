@@ -70,17 +70,6 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
                                 resolve(event)
                               }
                             })
-                    //         // Update Global Registry
-                    //         GlobalRegistry.updatePlacement(placement).then(() => {
-                    //           // Resolve this event
-                    //           resolve(event)
-                    //         }, error => {
-                    //           rollbar.error(error, {record: record})
-                    //           resolve(error)
-                    //         })
-                    //       }, error => {
-                    //         rollbar.error(error, {record: record})
-                    //         resolve(error)
                           })
                         } else {
                           // Event isn't scored, resolve it

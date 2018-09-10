@@ -1,8 +1,6 @@
 'use strict'
 
 const GlobalRegistryClient = require('./global-registry-client')
-const Placement = require('./placement')
-const factory = require('../test/factory')
 const request = require('request')
 
 describe('GlobalRegistryClient', () => {
@@ -26,37 +24,14 @@ describe('GlobalRegistryClient', () => {
       client = new GlobalRegistryClient('https://example.com', 'abc123')
     })
 
-    describe('user without \'gr_master_person_id\'', () => {
-      let user
-      beforeEach(() => {
-        requestMock.mockReset()
-        return factory.build('web_user').then(webUser => { user = webUser })
-      })
-
-      it('should do nothing', () => {
-        let placement = new Placement(user)
-        return client.updatePlacement(placement).then(() => {
-          expect(requestMock).not.toHaveBeenCalled()
-        })
-      })
-    })
-
     describe('user with multiple \'gr_master_person_id\'', () => {
-      let user
       beforeEach(() => {
         requestMock.mockReset()
-        return Promise.all([
-          factory.build('authenticated_web_user'),
-          factory.build('authenticated_web_user')
-        ]).then(users => {
-          user = users[0].merge(users[1])
-        })
       })
 
       it('should POST both to Global Registry', () => {
         requestMock.mockReturnThis()
-        let placement = new Placement(user)
-        let promise = client.updatePlacement(placement)
+        let promise = client.updatePlacement(['abc123', 'zyx987'], 6)
         expect(requestMock).toHaveBeenCalledTimes(2)
         requestMock.mock.calls[0][1](undefined, '', '')
         requestMock.mock.calls[1][1](undefined, '', '')
@@ -65,16 +40,13 @@ describe('GlobalRegistryClient', () => {
     })
 
     describe('user with a \'gr_master_person_id\'', () => {
-      let user
       beforeEach(() => {
         requestMock.mockReset()
-        return factory.build('authenticated_web_user').then(webUser => { user = webUser })
       })
 
       it('should POST to Global Registry', () => {
         requestMock.mockReturnThis()
-        let placement = new Placement(user)
-        let promise = client.updatePlacement(placement)
+        let promise = client.updatePlacement(['def456'], 3)
         expect(requestMock).toHaveBeenCalledTimes(1)
         requestMock.mock.calls[0][1](undefined, '', '')
         return promise
@@ -90,8 +62,7 @@ describe('GlobalRegistryClient', () => {
 
     describe('placement with value', () => {
       it('build the correct POST body', () => {
-        let placement = new Placement({})
-        placement._placement = 6
+        let placement = 6
 
         expect(client.placementBody('1234567890', placement)).toMatchObject({
           entity: {
@@ -109,9 +80,7 @@ describe('GlobalRegistryClient', () => {
 
     describe('placement without value', () => {
       it('build the correct POST body', () => {
-        let placement = new Placement({})
-
-        expect(client.placementBody('0987654321', placement)).toMatchObject({
+        expect(client.placementBody('0987654321', null)).toMatchObject({
           entity: {
             scale_of_belief: {
               placement: null,
