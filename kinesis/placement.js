@@ -3,9 +3,10 @@
 const rollbar = require('../config/rollbar')
 const logger = require('../config/logger')
 const {forEach, chunk} = require('lodash')
-// const Placement = require('../models/placement')
+const Placement = require('../models/placement')
 // const GlobalRegistry = require('../config/global-registry')
 const promiseRetry = require('promise-retry')
+const AWS = require('aws-sdk')
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
   const sequelize = require('../config/sequelize')
@@ -46,10 +47,29 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
                   // IdentityStitcher returns a saved user, but we still need to save the event
                   event.replace().then(event => {
                     // If the user has master_person identities and current event is scored, calculate placement
-                    // if (user.has_gr_master_person_id) {
-                    //   event.isScored().then(isScored => {
-                    //     if (isScored) {
-                    //       new Placement(user).calculate().then(placement => {
+                    if (user.has_gr_master_person_id) {
+                      event.isScored().then(isScored => {
+                        if (isScored) {
+                          new Placement(user).calculate().then(placement => {
+                            const sns = new AWS.SNS({ region: 'us-east-1' })
+                            const payload = {
+                              placement: placement.placement,
+                              grMasterPersonIds: user.gr_master_person_id
+                            }
+                            const params = {
+                              Message: JSON.stringify(payload),
+                              TopicArn: process.env.SNS_TOPIC_ARN
+                            }
+
+                            sns.publish(params, (error, data) => {
+                              if (error) {
+                                rollbar.error(error, error.stack)
+                                resolve(error)
+                              }
+                              if (data) {
+                                resolve(event)
+                              }
+                            })
                     //         // Update Global Registry
                     //         GlobalRegistry.updatePlacement(placement).then(() => {
                     //           // Resolve this event
@@ -61,16 +81,16 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
                     //       }, error => {
                     //         rollbar.error(error, {record: record})
                     //         resolve(error)
-                    //       })
-                    //     } else {
-                    //       // Event isn't scored, resolve it
-                    //       resolve(event)
-                    //     }
-                    //   })
-                    // } else {
-                    // Resolve this event
-                    resolve(event)
-                    // }
+                          })
+                        } else {
+                          // Event isn't scored, resolve it
+                          resolve(event)
+                        }
+                      })
+                    } else {
+                      // Resolve this event
+                      resolve(event)
+                    }
                   }, error => {
                     rollbar.error('event.save() error', error, {record: record})
                     resolve(error)
