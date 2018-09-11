@@ -156,7 +156,6 @@ module.exports.handler = async (lambdaEvent) => {
     })
 
     const scoreStream = await getScoreStream()
-    // scoreStream.pipe(scoreTransform).pipe(csvStringify).pipe(addStreamHeader(csvHeader)).pipe(process.stdout)
     await s3.upload({
       Bucket: 'scale-of-belief-lambda-production', // process.env[''],
       Key: 'cru-org-feed/feed.csv',
