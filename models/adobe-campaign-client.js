@@ -37,9 +37,13 @@ class AdobeCampaignClient {
 
           const accessToken = JSON.parse(body).access_token
 
-          redisClient.set(ACCESS_TOKEN, accessToken)
-          redisClient.quit()
-          resolve(accessToken)
+          redisClient.set(ACCESS_TOKEN, accessToken, (error, response) => {
+            if (error) {
+              console.warn('Failed to set the new access token:', error)
+            }
+            redisClient.quit()
+            resolve(accessToken)
+          })
         } else {
           reject(new Error('Failed to retrieve access token: ' + body))
         }
