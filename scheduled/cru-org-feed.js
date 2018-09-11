@@ -144,7 +144,7 @@ module.exports.handler = async (lambdaEvent) => {
           subcats.pop()
           record['entity.language'] = language
           record['entity.sub_categories'] = JSON.stringify(subcats)
-          record['entity.categoryId'] = 'article'
+          record['entity.categoryId'] = 'cru.org'
           callback(null, record)
         }
       }
