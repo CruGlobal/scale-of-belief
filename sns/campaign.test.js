@@ -299,5 +299,17 @@ describe('Campaign lambda', () => {
         }
       })
     })
+
+    it('Should successfully send 0 updates when user not found', done => {
+      jest.spyOn(AdobeCampaign, 'retrieveCampaignUser').mockImplementationOnce(() => {
+        return Promise.resolve([])
+      })
+
+      campaign.handler(snsMessage, null, (error, message) => {
+        expect(error).toBeNull()
+        expect(message).toEqual('Successfully sent placement data for 0 matched users to Adobe Campaign')
+        done()
+      })
+    })
   })
 })
