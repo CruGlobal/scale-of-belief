@@ -157,7 +157,7 @@ module.exports.handler = async (lambdaEvent) => {
 
     const scoreStream = await getScoreStream()
     await s3.upload({
-      Bucket: 'scale-of-belief-lambda-production', // process.env[''],
+      Bucket: process.env.REDSHIFT_S3_BUCKET, // re-use redshift bucket, no need for new bucket for 1 file
       Key: 'cru-org-feed/feed.csv',
       Body: scoreStream.pipe(scoreTransform).pipe(csvStringify).pipe(addStreamHeader(csvHeader)),
       ACL: 'public-read'
