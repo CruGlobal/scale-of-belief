@@ -46,7 +46,7 @@ functions:
     handler: db/migrate.handler
     timeout: 120
   redshift:
-    handler: db/redshift.handler
+    handler: scheduled/redshift.handler
     timeout: 300
     events:
       - schedule: rate(5 minutes)
@@ -65,6 +65,11 @@ functions:
     timeout: 30
     events:
       - sns: ${env:SNS_TOPIC_ARN}
+  cru-org-feed:
+    handler: scheduled/cru-org-feed.handler
+    timeout: 300
+    events:
+      - schedule: rate(4 hours)
 
 package:
   exclude:

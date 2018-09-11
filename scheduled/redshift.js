@@ -8,12 +8,24 @@ const {Client} = require('pg')
 const copyToSteam = require('pg-copy-streams').to
 const rollbar = require('../config/rollbar')
 const AWS = require('aws-sdk')
-const dateUtil = require('./util/date-util')
 const redis = require('redis')
 const zlib = require('zlib')
 
 const LAST_SUCCESS_PREFIX = 'scale-of-belief-lambda:redshift-last-success:'
 const STAGING_PREFIX = 'staging_'
+
+const buildFormattedDate = (date) => {
+  return date.getUTCFullYear() + '-' +
+    getZeroPaddedValue(date.getUTCMonth() + 1) + '-' +
+    getZeroPaddedValue(date.getUTCDate()) + '-' +
+    getZeroPaddedValue(date.getUTCHours()) + '-' +
+    getZeroPaddedValue(date.getUTCMinutes()) + '-' +
+    getZeroPaddedValue(date.getUTCSeconds())
+}
+
+const getZeroPaddedValue = (original) => {
+  return ('0' + original).slice(-2)
+}
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
   // Configure AWS and S3
@@ -153,7 +165,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
    */
   const redshiftDelta = async (table, idColumn) => {
     const now = new Date()
-    let s3Key = `${table}/${dateUtil.buildFormattedDate(now)}.csv.gz`
+    let s3Key = `${table}/${buildFormattedDate(now)}.csv.gz`
     let result = await copyToS3(table, s3Key)
     if (result) {
       await copyToRedshift(table, idColumn, s3Key)
