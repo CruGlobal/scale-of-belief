@@ -63,7 +63,7 @@ module.exports.handler = async (lambdaEvent) => {
       }
       return new Promise(resolve => {
         request(assign({}, options, {url: `http://${hosts[0]}/bin/querybuilder.json`}))
-          .then(resolve, err => {
+          .then(resolve, () => {
             request(assign({}, options, {url: `http://${hosts[1]}/bin/querybuilder.json`})).then(resolve, err => {
               throw err
             })
