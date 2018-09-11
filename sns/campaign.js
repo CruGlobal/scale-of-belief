@@ -21,10 +21,6 @@ const retrieveAccessToken = () => {
       })
     })
 
-    redisClient.on('end', () => {
-      console.log('Disconnected from Redis')
-    })
-
     redisClient.get(ACCESS_TOKEN, (error, response) => {
       if (error) {
         rollbar.warn(`Error retrieving ACCESS_TOKEN: ${error}`)
