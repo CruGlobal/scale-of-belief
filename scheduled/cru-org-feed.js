@@ -7,7 +7,7 @@ const QueryStream = require('pg-query-stream')
 const CSV = require('csv')
 const AWS = require('aws-sdk')
 const request = require('request-promise-native')
-const {find, map, zipObject} = require('lodash')
+const {assign, find, map, zipObject} = require('lodash')
 const prefixMatch = new RegExp('^https?://(www\\.)?cru\\.org(/content/cru)?', 'i')
 const feedColumns = [
   'entity.id',
@@ -45,9 +45,9 @@ module.exports.handler = async (lambdaEvent) => {
      * @returns {Promise<void>}
      */
     const getCruOrgJson = async () => {
-      return request({
+      const hosts = ['prodpub1.aws.cru.org:4503', 'prodpub2.aws.cru.org:4503']
+      const options = {
         method: 'GET',
-        url: 'http://prodpub1.aws.cru.org:4503/bin/querybuilder.json',
         qs: {
           path: '/content/cru/',
           'p.limit': '-1',
@@ -60,6 +60,14 @@ module.exports.handler = async (lambdaEvent) => {
           'User-Agent': 'Request-Promise'
         },
         json: true
+      }
+      return new Promise(resolve => {
+        request(assign({}, options, {url: `http://${hosts[0]}/bin/querybuilder.json`}))
+          .then(resolve, err => {
+            request(assign({}, options, {url: `http://${hosts[1]}/bin/querybuilder.json`})).then(resolve, err => {
+              throw err
+            })
+          })
       })
     }
 
