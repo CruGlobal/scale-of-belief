@@ -8,7 +8,7 @@ const {Client} = require('pg')
 const copyToSteam = require('pg-copy-streams').to
 const rollbar = require('../config/rollbar')
 const AWS = require('aws-sdk')
-const dateUtil = require('./util/date-util')
+const dateUtil = require('../db/util/date-util')
 const redis = require('redis')
 const zlib = require('zlib')
 

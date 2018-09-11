@@ -46,7 +46,7 @@ functions:
     handler: db/migrate.handler
     timeout: 120
   redshift:
-    handler: db/redshift.handler
+    handler: scheduled/redshift.handler
     timeout: 300
     events:
       - schedule: rate(5 minutes)
