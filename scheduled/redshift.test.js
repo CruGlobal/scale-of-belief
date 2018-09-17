@@ -19,37 +19,34 @@ describe('Redshift lambda', () => {
     expect(redshift).toBeDefined()
   })
 
+  const pgClientConstructor = (params) => {
+    this.user = params.user
+    this.password = params.password
+    this.database = params.database
+    this.host = params.host
+    this.port = params.port
+  }
+
+  const pgSuccessfulQuery = (queryToRun) => {
+    if (typeof queryToRun === 'object' && queryToRun.text) { // this is the COPY TO query
+      if (queryToRun.text.indexOf(EVENTS_TABLE) !== -1) {
+        return Promise.resolve(fs.createReadStream(path.join(__fixturesDir, 'db', EVENTS_TABLE, `${EVENTS_TABLE}.csv`)))
+      }
+      return Promise.resolve(fs.createReadStream(path.join(__fixturesDir, 'db', SCORES_TABLE, `${SCORES_TABLE}.csv`)))
+    }
+    // The Redshift queries will come here and don't care about return values
+    return Promise.resolve()
+  }
+
   describe('Successful lambda calls', () => {
     beforeEach(() => {
       jest.clearAllMocks()
       Client.mockImplementation(() => {
         return {
-          constructor: (params) => {
-            this.user = params.user
-            this.password = params.password
-            this.database = params.database
-            this.host = params.host
-            this.port = params.port
-          },
-
-          connect: () => {
-            return Promise.resolve()
-          },
-
-          query: (queryToRun) => {
-            if (typeof queryToRun === 'object' && queryToRun.text) { // this is the COPY TO query
-              if (queryToRun.text.indexOf(EVENTS_TABLE) !== -1) {
-                return Promise.resolve(fs.createReadStream(path.join(__fixturesDir, 'db', EVENTS_TABLE, `${EVENTS_TABLE}.csv`)))
-              }
-              return Promise.resolve(fs.createReadStream(path.join(__fixturesDir, 'db', SCORES_TABLE, `${SCORES_TABLE}.csv`)))
-            }
-            // The Redshift queries will come here and don't care about return values
-            return Promise.resolve()
-          },
-
-          end: () => {
-            return Promise.resolve()
-          }
+          constructor: pgClientConstructor,
+          connect: () => Promise.resolve(),
+          query: pgSuccessfulQuery,
+          end: () => Promise.resolve()
         }
       })
     })
@@ -69,32 +66,10 @@ describe('Redshift lambda', () => {
       jest.clearAllMocks()
       Client.mockImplementation(() => {
         return {
-          constructor: (params) => {
-            this.user = params.user
-            this.password = params.password
-            this.database = params.database
-            this.host = params.host
-            this.port = params.port
-          },
-
-          connect: () => {
-            return Promise.resolve()
-          },
-
-          query: (queryToRun) => {
-            if (typeof queryToRun === 'object' && queryToRun.text) { // this is the COPY TO query
-              if (queryToRun.text.indexOf(EVENTS_TABLE) !== -1) {
-                return Promise.resolve(fs.createReadStream(path.join(__fixturesDir, 'db', EVENTS_TABLE, `${EVENTS_TABLE}.csv`)))
-              }
-              return Promise.resolve(fs.createReadStream(path.join(__fixturesDir, 'db', SCORES_TABLE, `${SCORES_TABLE}.csv`)))
-            }
-            // The Redshift queries will come here and don't care about return values
-            return Promise.resolve()
-          },
-
-          end: () => {
-            return Promise.resolve()
-          }
+          constructor: pgClientConstructor,
+          connect: () => Promise.resolve(),
+          query: pgSuccessfulQuery,
+          end: () => Promise.resolve()
         }
       })
     })
@@ -165,17 +140,8 @@ describe('Redshift lambda', () => {
       jest.clearAllMocks()
       Client.mockImplementation(() => {
         return {
-          constructor: (params) => {
-            this.user = params.user
-            this.password = params.password
-            this.database = params.database
-            this.host = params.host
-            this.port = params.port
-          },
-
-          connect: () => {
-            return Promise.resolve()
-          },
+          constructor: pgClientConstructor,
+          connect: () => Promise.resolve(),
 
           query: (queryToRun) => {
             if (typeof queryToRun === 'object' && queryToRun.text) { // this is the COPY TO query
@@ -190,9 +156,7 @@ describe('Redshift lambda', () => {
             throw new Error('Some error occurred')
           },
 
-          end: () => {
-            return Promise.resolve()
-          }
+          end: () => Promise.resolve()
         }
       })
     })
@@ -216,23 +180,10 @@ describe('Redshift lambda', () => {
 
       Client.mockImplementation(() => {
         return {
-          constructor: (params) => {
-            this.user = params.user
-            this.password = params.password
-            this.database = params.database
-            this.host = params.host
-            this.port = params.port
-          },
-
-          connect: () => {
-            return Promise.resolve()
-          },
-
+          constructor: pgClientConstructor,
+          connect: () => Promise.resolve(),
           query: mockQuery,
-
-          end: () => {
-            return Promise.resolve()
-          }
+          end: () => Promise.resolve()
         }
       })
 
@@ -263,25 +214,12 @@ describe('Redshift lambda', () => {
     it('Should fail if copy to S3 fails', done => {
       Client.mockImplementation(() => {
         return {
-          constructor: (params) => {
-            this.user = params.user
-            this.password = params.password
-            this.database = params.database
-            this.host = params.host
-            this.port = params.port
-          },
-
-          connect: () => {
-            return Promise.resolve()
-          },
-
+          constructor: pgClientConstructor,
+          connect: () => Promise.resolve(),
           query: () => {
             throw new Error('Some error occurred')
           },
-
-          end: () => {
-            return Promise.resolve()
-          }
+          end: () => Promise.resolve()
         }
       })
 
