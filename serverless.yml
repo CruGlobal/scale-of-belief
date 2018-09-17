@@ -23,7 +23,7 @@ functions:
     timeout: 300
     events:
       - stream:
-          arn: arn:aws:kinesis:us-east-1:056154071827:stream/snowplow_enrich
+          arn: ${env:KINESIS_SNOWPLOW_ENRICH_ARN}
           batchSize: 25
           startingPosition: LATEST
           enabled: ${self:custom.placementEnabled.${opt:stage}, self:custom.placementEnabled.other}
