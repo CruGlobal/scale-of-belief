@@ -14,6 +14,10 @@ jest.mock('pg', () => ({
   Client: jest.fn()
 }))
 
+const context = {
+  getRemainingTimeInMillis: jest.fn()
+}
+
 describe('Redshift lambda', () => {
   it('Should be defined', () => {
     expect(redshift).toBeDefined()
@@ -52,7 +56,7 @@ describe('Redshift lambda', () => {
     })
 
     it('Should successfully send data to Redshift', done => {
-      redshift.handler(null, null, (error, message) => {
+      redshift.handler(null, context, (error, message) => {
         expect(error).toBeNull()
         expect(message).toBeDefined()
         expect(message).toEqual('Redshift deltas successful.')
@@ -85,7 +89,7 @@ describe('Redshift lambda', () => {
           quit: () => {}
         }
       })
-      redshift.handler(null, null, (error, message) => {
+      redshift.handler(null, context, (error, message) => {
         expect(error).not.toBeNull()
         expect(error).toEqual(new Error('Failed to retrieve'))
         done()
@@ -105,7 +109,7 @@ describe('Redshift lambda', () => {
           quit: () => {}
         }
       })
-      redshift.handler(null, null, (error, message) => {
+      redshift.handler(null, context, (error, message) => {
         expect(error).not.toBeNull()
         expect(error).toEqual(new Error('Failed to set'))
         done()
@@ -126,7 +130,7 @@ describe('Redshift lambda', () => {
         }
       })
       try {
-        redshift.handler(null, null, () => {})
+        redshift.handler(null, context, () => {})
       } catch (error) {
         expect(error).not.toBeNull()
         expect(error).toEqual(new Error('Failed to connect'))
@@ -161,7 +165,7 @@ describe('Redshift lambda', () => {
       })
     })
     it('Should fail if a Redshift query fails', done => {
-      redshift.handler(null, null, (error, message) => {
+      redshift.handler(null, context, (error, message) => {
         expect(error).not.toBeNull()
         expect(error).toEqual(new Error('Some error occurred'))
         done()
@@ -204,7 +208,7 @@ describe('Redshift lambda', () => {
         return Promise.resolve()
       })
 
-      redshift.handler(null, null, (error, message) => {
+      redshift.handler(null, context, (error, message) => {
         expect(error).toBeNull()
         expect(mockQuery).not.toHaveBeenCalledWith('BEGIN')
         done()
@@ -223,7 +227,7 @@ describe('Redshift lambda', () => {
         }
       })
 
-      redshift.handler(null, null, (error, message) => {
+      redshift.handler(null, context, (error, message) => {
         expect(error).not.toBeNull()
         expect(error).toEqual(new Error('Some error occurred'))
         done()

@@ -4,6 +4,10 @@ const campaign = require('./campaign')
 const AdobeCampaign = require('../config/adobe-campaign')
 const redis = require('redis')
 
+const context = {
+  getRemainingTimeInMillis: jest.fn()
+}
+
 describe('Campaign lambda', () => {
   it('Should be defined', () => {
     expect(campaign).toBeDefined()
@@ -185,7 +189,7 @@ describe('Campaign lambda', () => {
         })
       })
 
-      campaign.handler(snsMessage, null, (error, message) => {
+      campaign.handler(snsMessage, context, (error, message) => {
         if (error) {
           done.fail(new Error(error))
         } else {
@@ -208,7 +212,7 @@ describe('Campaign lambda', () => {
         return Promise.reject(new Error('Error!'))
       })
 
-      campaign.handler(snsMessage, null, (error, message) => {
+      campaign.handler(snsMessage, context, (error, message) => {
         if (error) {
           expect(error).toEqual('Failed to send placement to Campaign: Error: Error!')
           done()
@@ -262,7 +266,7 @@ describe('Campaign lambda', () => {
         })
       })
 
-      campaign.handler(multiSnsMessage, null, (error, message) => {
+      campaign.handler(multiSnsMessage, context, (error, message) => {
         if (error) {
           done.fail(new Error(error))
         } else {
@@ -290,7 +294,7 @@ describe('Campaign lambda', () => {
         return Promise.reject(new Error('Failed to retrieve access token: Some Error'))
       })
 
-      campaign.handler(snsMessage, null, (error, message) => {
+      campaign.handler(snsMessage, context, (error, message) => {
         if (error) {
           expect(error).toEqual('Failed to send placement to Campaign: Error: Failed to retrieve access token: Some Error')
           done()
@@ -305,7 +309,7 @@ describe('Campaign lambda', () => {
         return Promise.resolve([])
       })
 
-      campaign.handler(snsMessage, null, (error, message) => {
+      campaign.handler(snsMessage, context, (error, message) => {
         expect(error).toBeNull()
         expect(message).toEqual('Successfully sent placement data for 0 matched users to Adobe Campaign')
         done()
