@@ -29,6 +29,7 @@ module.exports = () => {
     ACS_CLIENT_SECRET: process.env['ACS_CLIENT_SECRET'] || 'secret',
     ACS_API_KEY: process.env['ACS_API_KEY'] || '',
     ACS_URL: process.env['ACS_URL'] || 'https://mc.adobe.io/cru/campaign/',
-    SNS_TOPIC_ARN: process.env['SNS_TOPIC_ARN'] || ''
+    SNS_TOPIC_ARN: process.env['SNS_TOPIC_ARN'] || '',
+    KINESIS_SNOWPLOW_ENRICH_ARN: process.env['KINESIS_SNOWPLOW_ENRICH_ARN'] || ''
   }
 }

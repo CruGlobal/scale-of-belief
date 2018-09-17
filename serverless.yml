@@ -5,9 +5,6 @@ custom:
     hooks:
       # Run database migrations
       'aws:deploy:finalize:cleanup': './node_modules/.bin/serverless --stage $ENVIRONMENT invoke --function migrate'
-  placementEnabled:
-    staging: false
-    other: true
 
 provider:
   name: aws
@@ -23,15 +20,10 @@ functions:
     timeout: 300
     events:
       - stream:
-          arn: arn:aws:kinesis:us-east-1:056154071827:stream/snowplow_enrich
+          arn: ${env:KINESIS_SNOWPLOW_ENRICH_ARN}
           batchSize: 25
           startingPosition: LATEST
-          enabled: ${self:custom.placementEnabled.${opt:stage}, self:custom.placementEnabled.other}
-      - stream:
-          arn: arn:aws:kinesis:us-east-1:056154071827:stream/scale-of-belief-retry
-          batchSize: 25
-          startingPosition: TRIM_HORIZON
-          enabled: ${self:custom.placementEnabled.${opt:stage}, self:custom.placementEnabled.other}
+          enabled: true
   api:
     handler: api/index.handler
     timeout: 30
