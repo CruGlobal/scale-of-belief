@@ -20,7 +20,13 @@ AWS.S3.prototype = {
   ...AWS.S3.prototype,
 
   upload (params) {
-    params['Body'].bytesRead = 1
+    // this value is 0 by default in the tests
+    if (params['Body'].bytesRead === 0) {
+      params['Body'].bytesRead = 1
+    } else if (params['Body'].bytesRead === -1) {
+      params['Body'].bytesRead = 0
+    }
+
     return {
       promise: () => Promise.resolve()
     }
