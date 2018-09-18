@@ -98,7 +98,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     })
     await postgresClient.connect()
     try {
-      let body = await postgresClient.query(copyToSteam(QUERY)).pipe(zlib.createGzip())
+      let body = (await postgresClient.query(copyToSteam(QUERY))).pipe(zlib.createGzip())
       await s3.upload({
         Bucket: process.env.REDSHIFT_S3_BUCKET,
         Key: s3Key,
