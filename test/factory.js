@@ -6,6 +6,7 @@ const Event = require('../models/event')
 const Score = require('../models/score')
 const Unscored = require('../models/unscored')
 const ApiUser = require('../models/api-user')
+const RecentlyScored = require('../models/recently-scored')
 const chance = require('chance').Chance()
 const path = require('path')
 const fs = require('fs')
@@ -150,6 +151,22 @@ factory.extend('api_user', 'created_user', {
 
 factory.define('unscored', Unscored, {
   uri: 'http://some.uri.com'
+})
+
+factory.define('blank_recent_score', RecentlyScored, {})
+
+factory.extend('blank_recent_score', 'existing_recent_score', {
+  uri: 'http://some.uri.com',
+  score: 5
+})
+
+factory.extend('blank_recent_score', 'created_recent_score', {
+  uri: 'http://somewhere.com/1',
+  score: 1
+})
+
+factory.extend('existing_recent_score', 'updated_recent_score', {
+  score: 2
 })
 
 module.exports = factory
