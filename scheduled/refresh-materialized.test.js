@@ -12,10 +12,6 @@ jest.mock('../config/sequelize', () => {
   }
 })
 
-const context = {
-  getRemainingTimeInMillis: jest.fn()
-}
-
 describe('Refresh Materialized lambda', () => {
   it('Should be defined', () => {
     expect(lambda).toBeDefined()
@@ -25,11 +21,10 @@ describe('Refresh Materialized lambda', () => {
     jest.clearAllMocks()
     mockQuery.mockImplementation(() => Promise.resolve())
 
-    lambda.handler(null, context, (error, message) => {
-      expect(error).toBeNull()
-      expect(message).toBeDefined()
-      expect(message).toEqual('Successfully refreshed the materialized view: unscored')
+    lambda.handler(null).then(() => {
       done()
+    }).catch((error) => {
+      done.fail(error)
     })
   })
 
@@ -39,9 +34,11 @@ describe('Refresh Materialized lambda', () => {
     mockQuery.mockImplementation(() => Promise.reject(new Error('No materialized view exists with the name "unscored"'))
     )
 
-    lambda.handler(null, context, (error, message) => {
+    lambda.handler(null).then((message) => {
+      done.fail()
+    }).catch((error) => {
       expect(error).not.toBeNull()
-      expect(error).toEqual('Error refreshing the materialized view: unscored: Error: No materialized view exists with the name "unscored"')
+      expect(error).toEqual(new Error('No materialized view exists with the name "unscored"'))
       done()
     })
   })
