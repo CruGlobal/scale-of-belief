@@ -1,6 +1,7 @@
 'use strict'
 
 const lambda = require('./refresh-materialized')
+const RecentlyScored = require('../models/recently-scored')
 
 const mockQuery = jest.fn()
 
@@ -17,8 +18,11 @@ describe('Refresh Materialized lambda', () => {
     expect(lambda).toBeDefined()
   })
 
+  const mockTruncate = jest.fn()
+
   beforeEach(() => {
     jest.clearAllMocks()
+    jest.spyOn(RecentlyScored, 'destroy').mockImplementation(mockTruncate)
   })
 
   it('Should successfully refresh the materialized view', done => {
@@ -42,6 +46,17 @@ describe('Refresh Materialized lambda', () => {
       expect(error).not.toBeNull()
       expect(error).toEqual(new Error('No materialized view exists with the name "unscored"'))
       done()
+    })
+  })
+
+  it('Should truncate the recently_scored table', done => {
+    mockQuery.mockImplementation(() => Promise.resolve())
+
+    lambda.handler(null).then(() => {
+      expect(mockTruncate).toHaveBeenCalled()
+      done()
+    }).catch((error) => {
+      done.fail(error)
     })
   })
 })
