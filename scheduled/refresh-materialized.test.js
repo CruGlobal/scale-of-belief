@@ -17,8 +17,11 @@ describe('Refresh Materialized lambda', () => {
     expect(lambda).toBeDefined()
   })
 
-  it('Should successfully refresh the materialized view', done => {
+  beforeEach(() => {
     jest.clearAllMocks()
+  })
+
+  it('Should successfully refresh the materialized view', done => {
     mockQuery.mockImplementation(() => Promise.resolve())
 
     lambda.handler(null).then(() => {
@@ -29,10 +32,9 @@ describe('Refresh Materialized lambda', () => {
   })
 
   it('Should fail to refresh the materialized view', done => {
-    jest.clearAllMocks()
-    mockQuery.mockClear()
-    mockQuery.mockImplementation(() => Promise.reject(new Error('No materialized view exists with the name "unscored"'))
-    )
+    mockQuery.mockImplementation(() => {
+      return Promise.reject(new Error('No materialized view exists with the name "unscored"'))
+    })
 
     lambda.handler(null).then((message) => {
       done.fail()
