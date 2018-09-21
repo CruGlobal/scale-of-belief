@@ -150,7 +150,8 @@ factory.extend('api_user', 'created_user', {
 })
 
 factory.define('unscored', Unscored, {
-  uri: 'http://some.uri.com'
+  uri: 'http://some.uri.com',
+  last_refreshed: new Date()
 })
 
 factory.define('blank_recent_score', RecentlyScored, {})
