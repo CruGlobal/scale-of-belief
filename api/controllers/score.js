@@ -1,6 +1,7 @@
 'use strict'
 
 const Score = require('../../models/score')
+const RecentlyScored = require('../../models/recently-scored')
 const util = require('../util/util')
 const {pick} = require('lodash')
 
@@ -20,7 +21,12 @@ const get = (request, response) => {
 
 const post = (request, response) => {
   var requestBody = request.body
-  Score.save(util.sanitizeUri(requestBody.uri), pick(requestBody, ['score', 'weight'])).then(function (result) {
+  const sanitizedUri = util.sanitizeUri(requestBody.uri)
+
+  Score.save(sanitizedUri, pick(requestBody, ['score', 'weight'])).then(function (result) {
+    // This can be asynchronous
+    RecentlyScored.save(sanitizedUri, requestBody.score)
+
     // On update, we will have a multi-dimensional array (first element being the version), on create we won't
     if (Array.isArray(result)) {
       response.json(Score.toApiScore(result[1][0].dataValues))
