@@ -23,9 +23,8 @@ const post = (request, response) => {
   var requestBody = request.body
   const sanitizedUri = util.sanitizeUri(requestBody.uri)
 
-  Score.save(sanitizedUri, pick(requestBody, ['score', 'weight'])).then(function (result) {
-    // This can be asynchronous
-    RecentlyScored.save(sanitizedUri, requestBody.score)
+  Score.save(sanitizedUri, pick(requestBody, ['score', 'weight'])).then(async (result) => {
+    await RecentlyScored.save(sanitizedUri, requestBody.score)
 
     // On update, we will have a multi-dimensional array (first element being the version), on create we won't
     if (Array.isArray(result)) {
