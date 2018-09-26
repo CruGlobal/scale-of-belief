@@ -12,6 +12,7 @@ const requiredModels = [
   '../models/api-user',
   '../models/api-key',
   '../models/recently-scored',
+  '../models/recommendation',
   './papertrail'
 ]
 let database
