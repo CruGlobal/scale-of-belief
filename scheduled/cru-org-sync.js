@@ -1,14 +1,14 @@
 'use strict'
 
-const sequelize = require('../config/sequelize')
-const Recommendation = require('../models/recommendation')
-
+const rollbar = require('../config/rollbar')
 const request = require('request-promise-native')
 const {assign, find, forEach} = require('lodash')
 const prefixMatch = new RegExp('^https?://(www\\.)?cru\\.org(/content/cru)?', 'i')
 const scoresQuery = `SELECT MD5(lower(uri)) AS id, uri AS url, score FROM scores WHERE uri ~* $1`
 
 module.exports.handler = async (lambdaEvent) => {
+  const sequelize = require('../config/sequelize')
+  const Recommendation = require('../models/recommendation')
   /**
    * Fetches cru.org json information through querybuilder
    * @returns {Promise<void>}
@@ -99,6 +99,7 @@ module.exports.handler = async (lambdaEvent) => {
     return `Successfully synced ${recommendations.length} recommendations.`
   } catch (err) {
     await transaction.rollback()
+    rollbar.error('cru-org-sync error: ' + err, err)
     throw err
   }
 }
