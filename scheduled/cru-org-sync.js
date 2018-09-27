@@ -2,7 +2,7 @@
 
 const rollbar = require('../config/rollbar')
 const request = require('request-promise-native')
-const {assign, find, forEach} = require('lodash')
+const {assign, chunk, find, forEach, map} = require('lodash')
 const prefixMatch = new RegExp('^https?://(www\\.)?cru\\.org(/content/cru)?', 'i')
 const scoresQuery = `SELECT MD5(lower(uri)) AS id, uri AS url, score FROM scores WHERE uri ~* $1`
 
@@ -94,7 +94,9 @@ module.exports.handler = async (lambdaEvent) => {
         recommendations.push(rec)
       }
     })
-    await Recommendation.bulkCreate(recommendations, {transaction: transaction})
+    await Promise.all(map(chunk(recommendations, 50), (batch) => {
+      return Recommendation.bulkCreate(batch, {transaction: transaction})
+    }))
     await transaction.commit()
     return `Successfully synced ${recommendations.length} recommendations.`
   } catch (err) {
