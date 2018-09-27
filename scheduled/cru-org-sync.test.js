@@ -1,6 +1,7 @@
 'use strict'
 
 const lambda = require('./cru-org-sync')
+const sequelize = require('../config/sequelize')()
 const factory = require('../test/factory')
 const requestMock = require('request-promise-native')
 const path = require('path')
@@ -28,7 +29,9 @@ describe('Cru.org Recommendations Sync', () => {
         factory.create('existing_score', {uri: 'missionhub://action/value'}),
         factory.create('existing_score', {uri: 'https://example.com/foo'}),
         factory.create('existing_score', {uri: 'https://www.cru.org/us/en/opportunities/mission-trips/summer/learn/why-cru-summer-missions.html'}),
-        factory.create('existing_score', {uri: 'https://www.cru.org/us/en/how-to-know-god/prayer-request-form/prayer.html'})
+        factory.create('existing_score', {uri: 'https://www.cru.org/us/en/how-to-know-god/prayer-request-form/prayer.html'}),
+        factory.create('existing_score', {uri: 'https://www.cru.org/baz.js'}),
+        factory.create('existing_score', {uri: 'https://www.cru.org/unknown.html'})
       ])
     })
 
@@ -57,7 +60,7 @@ describe('Cru.org Recommendations Sync', () => {
         id: '8085a00d57d8a816965c529ea38a3452',
         score: 5,
         title: 'What\'s Involved in Preparing for STINT?',
-        message: 'Find out how to prepare for serving on a Short-Term International (STINT) assignment.',
+        message: '(Short Term International)',
         language: 'fr',
         thumbnail_url: null
       })
@@ -92,5 +95,18 @@ describe('Cru.org Recommendations Sync', () => {
       const result = await lambda.handler()
       expect(result).toEqual('Successfully synced 4 recommendations.')
     })
+  })
+
+  it('should throw an error', async () => {
+    const transactionMock = {
+      connection: sequelize.connectionManager.getConnection(),
+      rollback: jest.fn().mockImplementation(() => Promise.resolve())
+    }
+    jest.spyOn(sequelize, 'transaction').mockImplementation(() => Promise.resolve(transactionMock))
+    requestMock.mockResolvedValueOnce({hits: []})
+    jest.spyOn(Recommendation, 'truncate').mockImplementation(() => Promise.reject(new Error('Database Error')))
+    expect.assertions(2)
+    await expect(lambda.handler()).rejects.toThrow('Database Error')
+    expect(transactionMock.rollback).toHaveBeenCalledTimes(1)
   })
 })

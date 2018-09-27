@@ -52,8 +52,10 @@ module.exports.handler = async (lambdaEvent) => {
       let page = find(cruOrgJson.hits, {'jcr:path': path})
       if (typeof page !== 'undefined') {
         let [language, ...categories] = path.split('/').slice(4, -1)
+        /* istanbul ignore else */
         if (typeof page['jcr:content'] !== 'undefined') {
           let content = page['jcr:content']
+          /* istanbul ignore else */
           if (typeof content['jcr:title'] !== 'undefined') {
             recommendation.title = content['jcr:title'].trim()
           }
