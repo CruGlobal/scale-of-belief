@@ -11,7 +11,7 @@ const jsonErrorHandler = require(path.join(__dirname, 'errors/jsonHandler'))
 const jwt = require('express-jwt')
 
 api.use(jwt({ secret: process.env.JWT_SECRET }).unless((request) => {
-  if (request.headers['x-api-key'] || request.path.endsWith('/login')) {
+  if (request.headers['x-api-key'] || request.path.endsWith('/login') || request.query['apiKey']) {
     return true
   }
 }))
@@ -30,5 +30,7 @@ api.use(swaggerizeExpress({
   handlers: path.join(__dirname, 'controllers')
 }))
 api.use(jsonErrorHandler)
+api.set('view engine', 'pug')
+api.set('views', path.join(__dirname, 'views'))
 
 module.exports.handler = rollbar.lambdaHandler(serverless(api))

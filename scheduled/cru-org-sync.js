@@ -68,8 +68,6 @@ module.exports.handler = async (lambdaEvent) => {
             recommendation.thumbnail_url = recommendation.url.replace(/\.html$/i, '/_jcr_content/image.transform/CruHalf432x243/img.png')
           }
         }
-        // drop last category as it's the article name
-        categories.pop()
         recommendation.categories = categories
         recommendation.language = language
         return recommendation.toJSON()

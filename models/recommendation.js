@@ -2,6 +2,23 @@
 
 const {DataTypes} = require('sequelize')
 const sequelize = require('../config/sequelize')
+const titleCaps = require('../vendor/title-caps')
+const {last} = require('lodash')
+const DEFAULT_CATEGORY = 'Cru.org'
+const RECOMMENDED_QUERY = `WITH recommended AS (
+  SELECT *, array_length(ARRAY (
+    SELECT UNNEST(categories)
+    INTERSECT
+    SELECT UNNEST(ARRAY[:categories]::VARCHAR(255)[])
+    ), 1) as overlap,
+    random() as rand
+  FROM recommendations
+  WHERE categories && ARRAY[:categories]::VARCHAR(255)[] AND message IS NOT NULL
+)
+(SELECT * FROM recommended WHERE score = :placement ORDER BY overlap DESC NULLS LAST, rand LIMIT 1)
+UNION ALL
+(SELECT * FROM recommended WHERE score = (:placement + 1) ORDER BY overlap DESC NULLS LAST, rand LIMIT 2)`
+
 const Recommendation = sequelize().define('Recommendation', {
   id: {
     allowNull: false,
@@ -13,6 +30,7 @@ const Recommendation = sequelize().define('Recommendation', {
       return this.getDataValue('url').toLowerCase()
     },
     set (val) {
+      /* istanbul ignore else */
       if (val) {
         this.setDataValue('url', val.toLowerCase())
       } else {
@@ -42,5 +60,18 @@ const Recommendation = sequelize().define('Recommendation', {
   underscored: true,
   timestamps: false
 })
+
+Recommendation.prototype.__defineGetter__('category', function () {
+  const category = last(this.categories) || DEFAULT_CATEGORY
+  return titleCaps(category.replace(/-/gi, ' '))
+})
+
+Recommendation.prototype.findRecommended = function (placement) {
+  return sequelize().query(RECOMMENDED_QUERY, {
+    replacements: {categories: this.categories, placement: placement},
+    type: sequelize().QueryTypes.SELECT,
+    model: Recommendation
+  })
+}
 
 module.exports = Recommendation

@@ -1,0 +1,14 @@
+html
+  head
+  body
+    div(class='container at-element-marker')
+      div(class='pt3')
+        h3(class='heading-underline pv4') Recommended Stories in <em>#{current.category}</em>
+      div(class='row')
+        each recommendation in recommendations
+          div(class='col-4 ph3')
+            div(class='bg-white pa4 h-100')
+              h5(class='tracked ttu f6')= recommendation.category
+              h3
+                a(class='lh-copy' href=recommendation.url)= recommendation.title
+              p(class='mt3')= recommendation.message

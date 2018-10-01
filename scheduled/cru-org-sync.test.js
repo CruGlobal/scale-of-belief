@@ -66,7 +66,7 @@ describe('Cru.org Recommendations Sync', () => {
       })
       expect(missions.toJSON()).toEqual({
         url: 'https://www.cru.org/us/en/opportunities/mission-trips/summer/learn/why-cru-summer-missions.html',
-        categories: ['opportunities', 'mission-trips', 'summer'],
+        categories: ['opportunities', 'mission-trips', 'summer', 'learn'],
         id: '026791dbc4182de901368532db286881',
         score: 5,
         title: 'Why Summer Missions with Cru?',
@@ -76,7 +76,7 @@ describe('Cru.org Recommendations Sync', () => {
       })
       expect(prayer.toJSON()).toEqual({
         url: 'https://www.cru.org/us/en/how-to-know-god/prayer-request-form/prayer.html',
-        categories: ['how-to-know-god'],
+        categories: ['how-to-know-god', 'prayer-request-form'],
         id: '9a898e56445dffc08e38720db264d914',
         score: 5,
         title: 'How Can We Pray for You?',
