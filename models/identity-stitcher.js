@@ -251,8 +251,8 @@ const userIntersection = (user, other) => {
 }
 
 const isKnownTestUser = (user) => {
-  return intersection(user.sso_guid || [], TestUserGuids).length > 0 ||
-    intersection(user.gr_master_person_id || [], TestUserGRIds).length > 0
+  return intersection(user.sso_guid || /* istanbul ignore next */ [], TestUserGuids).length > 0 ||
+    intersection(user.gr_master_person_id || /* istanbul ignore next */ [], TestUserGRIds).length > 0
 }
 
 class UnknownUserError extends Error {}

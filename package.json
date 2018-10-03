@@ -39,7 +39,6 @@
   "dependencies": {
     "aws-sdk": "^2.315.0",
     "body-parser": "^1.18.3",
-    "csv": "^3.1.0",
     "diff": "^3.5.0",
     "dotenv": "^5.0.0",
     "express": "^4.16.2",
@@ -51,8 +50,8 @@
     "pg": "^7.4.3",
     "pg-copy-streams": "^1.2.0",
     "pg-hstore": "^2.3.2",
-    "pg-query-stream": "^1.1.1",
     "promise-retry": "^1.1.1",
+    "pug": "^2.0.3",
     "redis": "^2.8.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
@@ -83,7 +82,8 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/test/",
-      "/vendor/"
+      "/vendor/",
+      "/config/"
     ]
   }
 }

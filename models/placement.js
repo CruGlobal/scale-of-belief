@@ -37,7 +37,7 @@ class Placement {
       .query(Placement.QUERY, {replacements: {user_id: this.user.id}, type: sequelize().QueryTypes.SELECT})
       .then(results => {
         let result = results[0]
-        self._placement = typeof result === 'undefined' ? null : result.placement
+        self._placement = typeof result === 'undefined' ? /* istanbul ignore next */ null : result.placement
         return self
       })
   }

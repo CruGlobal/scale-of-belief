@@ -7,6 +7,7 @@ const Score = require('../models/score')
 const Unscored = require('../models/unscored')
 const ApiUser = require('../models/api-user')
 const RecentlyScored = require('../models/recently-scored')
+const Recommendation = require('../models/recommendation')
 const chance = require('chance').Chance()
 const path = require('path')
 const fs = require('fs')
@@ -169,5 +170,7 @@ factory.extend('blank_recent_score', 'created_recent_score', {
 factory.extend('existing_recent_score', 'updated_recent_score', {
   score: 2
 })
+
+factory.define('recommendation', Recommendation, {})
 
 module.exports = factory

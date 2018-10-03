@@ -344,6 +344,38 @@ paths:
           $ref: '#/responses/Unauthorized'
         404:
           $ref: '#/responses/NotFound'
+  /recommendations:
+    get:
+      summary: Get templated recommendations for a given uri
+      produces:
+        - text/html
+        - application/json
+      tags:
+        - recommendation
+      parameters:
+        - name: apiKey
+          description: API key
+          in: query
+          required: true
+          type: string
+        - name: 'entity.id'
+          description: "Content ID (md5 of pageUrl)"
+          in: query
+          required: true
+          type: string
+        - name: 'profile.mcid'
+          description: Adobe Marketing Cloud ID
+          in: query
+          type: string
+      security:
+        - RecommendAuth: []
+      responses:
+        200:
+          description: OK
+        401:
+          $ref: '#/responses/Unauthorized'
+        404:
+          $ref: '#/responses/NotFound'
 
 securityDefinitions:
   ApiKeyAuth:
@@ -356,6 +388,11 @@ securityDefinitions:
     name: Authorization
     in: header
     x-authorize: 'security/jwt-authorize.js'
+  RecommendAuth:
+    type: apiKey
+    name: apiKey
+    in: query
+    x-authorize: 'security/recommend-authorize.js'
 
 responses:
   NotFound:

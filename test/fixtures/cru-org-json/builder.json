@@ -1,0 +1,40 @@
+{
+  "success": true,
+  "results": 4,
+  "total": 4,
+  "more": false,
+  "offset": 0,
+  "hits": [
+    {
+      "jcr:path": "/content/cru/us/en/foo",
+      "jcr:content": {
+        "jcr:description": "Harry and I retired in 1981 after 28 years of Navy life.",
+        "jcr:title": "Volunteer Profiles",
+        "image": {}
+      }
+    },
+    {
+      "jcr:path": "/content/cru/fr/fr/bar",
+      "jcr:content": {
+        "subtitle": "(Short Term International)",
+        "jcr:title": "What's Involved in Preparing for STINT?",
+        "image": {}
+      }
+    },
+    {
+      "jcr:path": "/content/cru/us/en/how-to-know-god/prayer-request-form/prayer",
+      "jcr:content": {
+        "jcr:title": "How Can We Pray for You?"
+      }
+    },
+    {
+      "jcr:path": "/content/cru/us/en/opportunities/mission-trips/summer/learn/why-cru-summer-missions",
+      "jcr:content": {
+        "jcr:title": "Why Summer Missions with Cru?",
+        "image": {
+          "fileReference": "/content/dam/cru/opportunities/mission-trips/summer2015/summer-tile-7.jpg"
+        }
+      }
+    }
+  ]
+}
