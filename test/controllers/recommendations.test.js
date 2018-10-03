@@ -76,9 +76,11 @@ describe('Recommendations controller', () => {
   })
 
   describe('has recommendations', () => {
-    it('should render recommendations', async () => {
-      const recommendedSpy = jest.fn()
-      const page = {findRecommended: recommendedSpy, category: 'A Category'}
+    let recommendedSpy
+    let page
+    beforeEach(async () => {
+      recommendedSpy = jest.fn()
+      page = {findRecommended: recommendedSpy, category: 'A Category'}
       jest.spyOn(Recommendation, 'findById').mockResolvedValue(page)
       jest.spyOn(User, 'findOne').mockResolvedValue(new User({id: 123456, mcid: ['809xyz']}))
       Placement.mockImplementation(() => {
@@ -86,10 +88,36 @@ describe('Recommendations controller', () => {
           calculate: jest.fn().mockResolvedValue({placement: 6})
         }
       })
+    })
+
+    it('should render recommendations', async () => {
       recommendedSpy.mockImplementation(() => Promise.resolve([1, 2, 3]))
       expect.assertions(1)
       await controller.get({query: {'entity.id': 'abc123', 'profile.mcid': '809xyz'}}, response)
-      expect(response.render).toHaveBeenCalledWith('recommendations', {current: page, recommendations: [1, 2, 3]})
+      expect(response.render).toHaveBeenCalledWith('recommendations', {
+        current: page,
+        recommendations: expect.arrayContaining([1, 2, 3])
+      })
+    })
+
+    it('should render first 3 recommendations if more exist', async () => {
+      recommendedSpy.mockImplementation(() => Promise.resolve([1, 2, 3, 4, 5, 6]))
+      expect.assertions(1)
+      await controller.get({query: {'entity.id': 'abc123', 'profile.mcid': '809xyz'}}, response)
+      expect(response.render).toHaveBeenCalledWith('recommendations', {
+        current: page,
+        recommendations: expect.arrayContaining([1, 2, 3])
+      })
+    })
+
+    it('should render all if less than 3 recommendations were returned', async () => {
+      recommendedSpy.mockImplementation(() => Promise.resolve([4, 5]))
+      expect.assertions(1)
+      await controller.get({query: {'entity.id': 'abc123', 'profile.mcid': '809xyz'}}, response)
+      expect(response.render).toHaveBeenCalledWith('recommendations', {
+        current: page,
+        recommendations: expect.arrayContaining([4, 5])
+      })
     })
   })
 

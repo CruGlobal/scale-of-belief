@@ -17,7 +17,11 @@ const RECOMMENDED_QUERY = `WITH recommended AS (
 )
 (SELECT * FROM recommended WHERE score = :placement ORDER BY overlap DESC NULLS LAST, rand LIMIT 1)
 UNION ALL
-(SELECT * FROM recommended WHERE score = (:placement + 1) ORDER BY overlap DESC NULLS LAST, rand LIMIT 2)`
+(SELECT * FROM recommended WHERE score = (:placement + 1) ORDER BY overlap DESC NULLS LAST, rand LIMIT 1)
+UNION ALL
+(SELECT * FROM recommended WHERE score = (:placement - 1) ORDER BY overlap DESC NULLS LAST, rand LIMIT 1)
+UNION ALL
+(SELECT * FROM recommended WHERE score >= (:placement - 2) ORDER BY overlap DESC NULLS LAST, rand LIMIT 3)`
 
 const Recommendation = sequelize().define('Recommendation', {
   id: {
