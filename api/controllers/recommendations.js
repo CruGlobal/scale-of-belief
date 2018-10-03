@@ -5,6 +5,7 @@ const Recommendation = require('../../models/recommendation')
 const User = require('../../models/user')
 const Placement = require('../../models/placement')
 const {Op} = require('sequelize')
+const {shuffle} = require('lodash')
 
 const get = async (request, response) => {
   try {
@@ -26,7 +27,10 @@ const get = async (request, response) => {
       return render404(response)
     }
 
-    response.render('recommendations', {current: page, recommendations: recommendations})
+    // Take the first 3 and shuffle them, slice returns less than 3 if the array has less.
+    const shuffled = shuffle(recommendations.slice(0, 3))
+
+    response.render('recommendations', {current: page, recommendations: shuffled})
   } catch (err) {
     rollbar.error('Recommendations error: ' + err, err)
     response.status(500)
