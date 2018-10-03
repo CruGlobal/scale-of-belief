@@ -13,7 +13,10 @@ const RECOMMENDED_QUERY = `WITH recommended AS (
     ), 1) as overlap,
     random() as rand
   FROM recommendations
-  WHERE categories && ARRAY[:categories]::VARCHAR(255)[] AND message IS NOT NULL
+  WHERE
+    categories && ARRAY[:categories]::VARCHAR(255)[]
+    AND message IS NOT NULL
+    AND id != :id
 )
 (SELECT * FROM recommended WHERE score = :placement ORDER BY overlap DESC NULLS LAST, rand LIMIT 1)
 UNION ALL
@@ -72,7 +75,7 @@ Recommendation.prototype.__defineGetter__('category', function () {
 
 Recommendation.prototype.findRecommended = function (placement) {
   return sequelize().query(RECOMMENDED_QUERY, {
-    replacements: {categories: this.categories, placement: placement},
+    replacements: {categories: this.categories, placement: placement, id: this.id},
     type: sequelize().QueryTypes.SELECT,
     model: Recommendation
   })
