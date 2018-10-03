@@ -87,9 +87,8 @@ describe('Recommendations controller', () => {
         }
       })
       recommendedSpy.mockImplementation(() => Promise.resolve([1, 2, 3]))
-      expect.assertions(4)
-      await controller.get({query: {'entity.id': 'abc123', 'profile.mcid': '809xyz'}}, response)
       expect.assertions(1)
+      await controller.get({query: {'entity.id': 'abc123', 'profile.mcid': '809xyz'}}, response)
       expect(response.render).toHaveBeenCalledWith('recommendations', {current: page, recommendations: [1, 2, 3]})
     })
   })

@@ -9,7 +9,7 @@ describe('Recommendation', () => {
   })
 
   describe('category', () => {
-    it('should should return last category with title caps applied', () => {
+    it('should return last category with title caps applied', () => {
       let rec = new Recommendation({categories: ['category-one', 'category-two', 'category-three']})
       expect(rec.category).toEqual('Category Three')
     })

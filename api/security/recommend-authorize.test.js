@@ -115,7 +115,7 @@ describe('Recommendation Authorize', () => {
   })
 
   describe('Internal Error', () => {
-    it('should fail with Unauthorized', async () => {
+    it('should fail with Database Error', async () => {
       jest.spyOn(ApiKey, 'findOne').mockImplementation(() => Promise.reject(new Error('Database Error')))
       jest.spyOn(Recommendation, 'findOne').mockImplementation(() => Promise.resolve(null))
       const nextMock = jest.fn()
