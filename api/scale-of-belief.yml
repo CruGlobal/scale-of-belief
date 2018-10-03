@@ -358,12 +358,12 @@ paths:
           in: query
           required: true
           type: string
-        - name: id
+        - name: 'entity.id'
           description: "Content ID (md5 of pageUrl)"
           in: query
           required: true
           type: string
-        - name: mcid
+        - name: 'profile.mcid'
           description: Adobe Marketing Cloud ID
           in: query
           type: string

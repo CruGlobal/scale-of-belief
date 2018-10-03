@@ -9,8 +9,8 @@ const {Op} = require('sequelize')
 const get = async (request, response) => {
   try {
     const [page, user] = await Promise.all([
-      Recommendation.findById(request.query['id']),
-      User.findOne({where: {mcid: {[Op.contains]: [request.query['mcid']]}}})
+      Recommendation.findById(request.query['entity.id']),
+      User.findOne({where: {mcid: {[Op.contains]: [request.query['profile.mcid']]}}})
     ])
     if (page === null || user === null) {
       return render404(response)

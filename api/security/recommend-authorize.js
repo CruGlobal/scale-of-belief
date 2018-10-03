@@ -8,7 +8,7 @@ const util = require('../util/util')
 module.exports = async (request, response, next) => {
   try {
     const key = request.query['apiKey']
-    const id = request.query['id']
+    const id = request.query['entity.id']
     if (!key || !id) throw new Error('Unauthorized')
 
     const [apiKey, recommendation] = await Promise.all([

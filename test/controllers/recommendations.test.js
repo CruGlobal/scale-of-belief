@@ -21,7 +21,7 @@ describe('Recommendations controller', () => {
   })
 
   describe('without query params', () => {
-    describe('without \'id\'', () => {
+    describe('without \'entity.id\'', () => {
       it('should return 404 Not Found', async () => {
         expect.assertions(2)
         await controller.get({query: {}}, response)
@@ -30,11 +30,11 @@ describe('Recommendations controller', () => {
       })
     })
 
-    describe('without \'mcid\'', () => {
+    describe('without \'profile.mcid\'', () => {
       it('should return 404 Not Found', async () => {
         jest.spyOn(Recommendation, 'findById').mockImplementation(() => Promise.resolve(new Recommendation({id: 'abc123'})))
         expect.assertions(2)
-        await controller.get({query: {id: 'abc123'}}, response)
+        await controller.get({query: {'entity.id': 'abc123'}}, response)
         expect(response.status).toHaveBeenCalledWith(404)
         expect(response.json).toHaveBeenCalledWith({message: 'Not Found'})
       })
@@ -51,7 +51,7 @@ describe('Recommendations controller', () => {
         }
       })
       expect.assertions(2)
-      await controller.get({query: {id: 'abc123', mcid: '809xyz'}}, response)
+      await controller.get({query: {'entity.id': 'abc123', 'profile.mcid': '809xyz'}}, response)
       expect(response.status).toHaveBeenCalledWith(404)
       expect(response.json).toHaveBeenCalledWith({message: 'Not Found'})
     })
@@ -69,7 +69,7 @@ describe('Recommendations controller', () => {
       })
       recommendedSpy.mockImplementation(() => Promise.resolve([]))
       expect.assertions(2)
-      await controller.get({query: {id: 'abc123', mcid: '809xyz'}}, response)
+      await controller.get({query: {'entity.id': 'abc123', 'profile.mcid': '809xyz'}}, response)
       expect(response.status).toHaveBeenCalledWith(404)
       expect(response.json).toHaveBeenCalledWith({message: 'Not Found'})
     })
@@ -88,7 +88,7 @@ describe('Recommendations controller', () => {
       })
       recommendedSpy.mockImplementation(() => Promise.resolve([1, 2, 3]))
       expect.assertions(4)
-      await controller.get({query: {id: 'abc123', mcid: '809xyz'}}, response)
+      await controller.get({query: {'entity.id': 'abc123', 'profile.mcid': '809xyz'}}, response)
       expect.assertions(1)
       expect(response.render).toHaveBeenCalledWith('recommendations', {current: page, recommendations: [1, 2, 3]})
     })
