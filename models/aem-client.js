@@ -16,7 +16,7 @@ class AemClient {
    * @param score an integer value representing the score
    */
   updateScore (uri, score) {
-    const path = uri.pathname
+    const path = uri.pathname.replace('.html', '')
     const auth = 'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64')
 
     let options = {
@@ -45,7 +45,7 @@ class AemClient {
   }
 
   publish (uri) {
-    const path = uri.pathname
+    const path = uri.pathname.replace('.html', '')
     const auth = 'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64')
 
     let options = {
