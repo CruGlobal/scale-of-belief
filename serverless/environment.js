@@ -30,6 +30,10 @@ module.exports = () => {
     ACS_API_KEY: process.env['ACS_API_KEY'] || '',
     ACS_URL: process.env['ACS_URL'] || 'https://mc.adobe.io/cru/campaign/',
     SNS_TOPIC_ARN: process.env['SNS_TOPIC_ARN'] || '',
-    KINESIS_SNOWPLOW_ENRICH_ARN: process.env['KINESIS_SNOWPLOW_ENRICH_ARN'] || ''
+    KINESIS_SNOWPLOW_ENRICH_ARN: process.env['KINESIS_SNOWPLOW_ENRICH_ARN'] || '',
+    AEM_URL: process.env['AEM_URL'] || 'http://localhost:4502',
+    AEM_USERNAME: process.env['AEM_USERNAME'] || '',
+    AEM_PASSWORD: process.env['AEM_PASSWORD'] || '',
+    AEM_SNS_TOPIC_ARN: process.env['AEM_SNS_TOPIC_ARN'] || ''
   }
 }
