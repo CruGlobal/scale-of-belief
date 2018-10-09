@@ -34,14 +34,9 @@ AWS.S3.prototype = {
 }
 
 AWS.SNS = function () {}
-
-AWS.SNS.prototype = {
-  ...AWS.SNS.prototype,
-
-  publish (params, callback) {
-    callback(null, 1)
-  }
-}
+AWS.SNS.prototype.publish = jest.fn().mockImplementation((params, callback) => {
+  callback(null, 1)
+})
 
 // Export my AWS function so it can be referenced via requires
 module.exports = AWS
