@@ -62,6 +62,11 @@ functions:
     timeout: 300
     events:
       - schedule: rate(4 hours)
+  sync-score:
+    handler: sns/sync-score.handler
+    timeout: 30
+    events:
+      - sns: ${env:AEM_SNS_TOPIC_ARN}
 
 package:
   exclude:
