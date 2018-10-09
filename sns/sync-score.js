@@ -11,7 +11,9 @@ module.exports.handler = async (lambdaEvent) => {
     const message = JSON.parse(snsMessage)
 
     // Update score in AEM
-    await AemClient.updateScore(url.parse(message.uri), message.score)
+    const resourceUrl = url.parse(message.uri)
+    await AemClient.updateScore(resourceUrl, message.score)
+    await AemClient.publish(resourceUrl)
   } catch (err) {
     rollbar.error('Error syncing score update to AEM' + err)
     throw err

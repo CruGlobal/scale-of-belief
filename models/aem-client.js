@@ -43,6 +43,35 @@ class AemClient {
       './contentScoreLastUpdated': new Date()
     }
   }
+
+  publish (uri) {
+    const path = uri.pathname
+    const auth = 'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64')
+
+    let options = {
+      url: `${this.baseUrl}/bin/replicate.json`,
+      form: this.publishBody(path),
+      headers: {
+        'authorization': auth
+      }
+    }
+    return new Promise((resolve, reject) => {
+      request.post(options, (err, response, body) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(response)
+        }
+      })
+    })
+  }
+
+  publishBody (path) {
+    return {
+      path: path,
+      cmd: 'activate'
+    }
+  }
 }
 
 module.exports = AemClient
