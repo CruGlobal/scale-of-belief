@@ -20,7 +20,7 @@ class AemClient {
     const auth = 'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64')
 
     let options = {
-      url: `${this.baseUrl}/${path}/_jcr_content`,
+      url: `${this.baseUrl}${path}/_jcr_content`,
       form: this.scoreBody(score),
       headers: {
         'authorization': auth
