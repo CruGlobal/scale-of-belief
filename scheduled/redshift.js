@@ -94,8 +94,8 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
       user: process.env.DB_ENV_POSTGRESQL_USER,
       password: process.env.DB_ENV_POSTGRESQL_PASS,
       database: process.env.DB_ENV_POSTGRESQL_DB,
-      host: process.env.DB_PORT_5432_TCP_ADDR || 'localhost',
-      port: process.env.DB_PORT_5432_TCP_PORT || 5432
+      host: process.env.DB_PORT_5432_TCP_ADDR || /* istanbul ignore next */ 'localhost',
+      port: process.env.DB_PORT_5432_TCP_PORT || /* istanbul ignore next */ 5432
     })
     await postgresClient.connect()
     try {
