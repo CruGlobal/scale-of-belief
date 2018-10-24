@@ -3,6 +3,7 @@
 const sequelize = require('../config/sequelize')
 const User = require('./user')
 const Event = require('./event')
+const UserAudit = require('./user-audit')
 const {Op} = require('sequelize')
 const {
   filter,
@@ -131,8 +132,15 @@ const mergeMatches = (user, matches, transaction) => {
     })
 
     // Delete losers or start with a resolved promise
-    let query = (loserIds.length > 0)
-      ? User.destroy({where: {id: {[Op.in]: loserIds}}, transaction: transaction}) : Promise.resolve()
+    let query
+    if (loserIds.length > 0) {
+      query = User.destroy({where: {id: {[Op.in]: loserIds}}, transaction: transaction})
+        .then(() => {
+          return Promise.all(map(loserIds, (oldId) => UserAudit.create({id: winner.id, old_id: oldId})))
+        })
+    } else {
+      query = Promise.resolve()
+    }
 
     // Wait for query (if needed) before
     return query
