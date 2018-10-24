@@ -11,6 +11,7 @@ const factory = require('../test/factory')
 const chance = require('chance').Chance()
 const User = require('./user')
 const Event = require('./event')
+const UserAudit = require('./user-audit')
 const {sortBy, uniq, map} = require('lodash')
 
 describe('IdentityStitcher', () => {
@@ -105,6 +106,7 @@ describe('IdentityStitcher', () => {
 
     it('should merge users and return best match', () => {
       jest.spyOn(User, 'fromEvent').mockImplementation(() => user)
+      let auditSpy = jest.spyOn(UserAudit, 'create').mockImplementation(() => Promise.resolve())
 
       const event = new Event()
       return IdentityStitcher(event).then(identity => {
@@ -113,6 +115,7 @@ describe('IdentityStitcher', () => {
           others[1].gr_master_person_id, others[2].gr_master_person_id))
         expect(identity).toBeInstanceOf(User)
         expect(identity.id).toEqual(others[0].id)
+        expect(auditSpy).toHaveBeenCalledWith({id: identity.id, old_id: others[2].id})
         expect(event.user_id).toEqual(identity.id)
         expect(sortBy(identity.mcid)).toEqual(sortBy(mcids))
         expect(identity.gr_master_person_id).toEqual(expect.arrayContaining(grids))
@@ -133,12 +136,14 @@ describe('IdentityStitcher', () => {
 
     it('should merge users and return best match', () => {
       jest.spyOn(User, 'fromEvent').mockImplementation(() => user)
+      let auditSpy = jest.spyOn(UserAudit, 'create').mockImplementation(() => Promise.resolve())
 
       const event = new Event()
       return IdentityStitcher(event).then(identity => {
         const mcids = uniq([].concat(user.mcid, others[0].mcid, others[2].mcid))
         expect(identity).toBeInstanceOf(User)
         expect(identity.id).toEqual(others[0].id)
+        expect(auditSpy).toHaveBeenCalledWith({id: identity.id, old_id: others[2].id})
         expect(event.user_id).toEqual(identity.id)
         expect(sortBy(identity.mcid)).toEqual(sortBy(mcids))
         expect(identity.gr_master_person_id).not.toEqual(expect.arrayContaining(others[1].gr_master_person_id))
@@ -160,12 +165,14 @@ describe('IdentityStitcher', () => {
 
     it('should reject ambiguous and not merge', () => {
       jest.spyOn(User, 'fromEvent').mockImplementation(() => user)
+      let auditSpy = jest.spyOn(UserAudit, 'create').mockImplementation(() => Promise.resolve())
 
       const event = new Event()
       return IdentityStitcher(event).then(identity => {
         const ids = map(others, 'id')
         expect(identity).toBe(user)
         expect(identity.id).toBeDefined()
+        expect(auditSpy).toHaveBeenCalledTimes(2)
         expect(event.user_id).toEqual(identity.id)
         expect(identity).toBe(user)
         expect(ids).not.toEqual(expect.arrayContaining([identity.id]))
