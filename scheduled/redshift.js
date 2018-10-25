@@ -10,6 +10,7 @@ const rollbar = require('../config/rollbar')
 const AWS = require('aws-sdk')
 const redis = require('redis')
 const zlib = require('zlib')
+const {castArray, map} = require('lodash')
 
 const LAST_SUCCESS_PREFIX = 'scale-of-belief-lambda:redshift-last-success:'
 const STAGING_PREFIX = 'staging_'
@@ -93,8 +94,8 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
       user: process.env.DB_ENV_POSTGRESQL_USER,
       password: process.env.DB_ENV_POSTGRESQL_PASS,
       database: process.env.DB_ENV_POSTGRESQL_DB,
-      host: process.env.DB_PORT_5432_TCP_ADDR || 'localhost',
-      port: process.env.DB_PORT_5432_TCP_PORT || 5432
+      host: process.env.DB_PORT_5432_TCP_ADDR || /* istanbul ignore next */ 'localhost',
+      port: process.env.DB_PORT_5432_TCP_PORT || /* istanbul ignore next */ 5432
     })
     await postgresClient.connect()
     try {
@@ -126,10 +127,13 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
       FROM 's3://${process.env.REDSHIFT_S3_BUCKET}/${s3Key}'
       IAM_ROLE '${process.env.REDSHIFT_IAM_ROLE}'
       CSV BLANKSASNULL EMPTYASNULL TRUNCATECOLUMNS COMPUPDATE OFF STATUPDATE OFF GZIP`
+    const DELETE_CONDITIONS = map(castArray(idColumn), (column) => {
+      return `scale_of_belief.${table}.${column} = ${STAGING_PREFIX}${table}.${column}`
+    }).join(' AND ')
     const DELETE_QUERY =
       `DELETE FROM scale_of_belief.${table}
       USING ${STAGING_PREFIX}${table}
-      WHERE scale_of_belief.${table}.${idColumn} = ${STAGING_PREFIX}${table}.${idColumn}`
+      WHERE ${DELETE_CONDITIONS}`
     const INSERT_QUERY =
       `INSERT INTO scale_of_belief.${table} SELECT * FROM ${STAGING_PREFIX}${table}`
     const DROP_TABLE_QUERY = `DROP TABLE IF EXISTS ${STAGING_PREFIX}${table}`
@@ -160,7 +164,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
   /**
    * Initiate a delta from postgres to redshift
    * @param table
-   * @param idColumn
+   * @param idColumn(s)
    * @returns {Promise<void>}
    */
   const redshiftDelta = async (table, idColumn) => {
@@ -175,7 +179,8 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
 
   Promise.all([
     redshiftDelta('events', 'id'),
-    redshiftDelta('scores', 'uri')
+    redshiftDelta('scores', 'uri'),
+    redshiftDelta('user_audits', ['id', 'old_id'])
   ]).then(deltas => {
     redisClient.quit()
     lambdaCallback(null, 'Redshift deltas successful.')
