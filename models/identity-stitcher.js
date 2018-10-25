@@ -135,9 +135,7 @@ const mergeMatches = (user, matches, transaction) => {
     let query
     if (loserIds.length > 0) {
       query = User.destroy({where: {id: {[Op.in]: loserIds}}, transaction: transaction})
-        .then(() => {
-          return Promise.all(map(loserIds, (oldId) => UserAudit.create({id: winner.id, old_id: oldId})))
-        })
+        .then(() => UserAudit.bulkCreate(map(loserIds, oldId => { return {id: winner.id, old_id: oldId} }), {transaction: transaction}))
     } else {
       query = Promise.resolve()
     }
