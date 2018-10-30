@@ -174,7 +174,8 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     if (result) {
       await copyToRedshift(table, idColumn, s3Key)
     }
-    await setLastSuccess(table, now)
+    // Set last success to now() - 6 minutes, this will add delta overlap to prevent missing data
+    await setLastSuccess(table, new Date(now - 1000 * 360))
   }
 
   Promise.all([
