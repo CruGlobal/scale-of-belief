@@ -19,7 +19,7 @@ class AemClient {
     const auth = 'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64')
 
     let options = {
-      url: `${this.baseUrl}/bin/content-scoring/sync`,
+      url: `${this.baseUrl}/bin/cru/content-scoring/sync`,
       form: this.scoreBody(score, uri),
       headers: {
         'authorization': auth
