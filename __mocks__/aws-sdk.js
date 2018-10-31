@@ -33,5 +33,14 @@ AWS.S3.prototype = {
   }
 }
 
+AWS.SNS = function () {}
+AWS.SNS.prototype.publish = jest.fn().mockImplementation((params, callback) => {
+  if (params.Message.indexOf('http://fail.com/') !== -1) {
+    callback(new Error('Failed to send SNS message'))
+  } else {
+    callback(null, 1)
+  }
+})
+
 // Export my AWS function so it can be referenced via requires
 module.exports = AWS

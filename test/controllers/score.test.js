@@ -4,6 +4,14 @@ const ScoreController = require('../../api/controllers/score.js')
 const factory = require('../factory')
 const Score = require('../../models/score')
 const RecentlyScored = require('../../models/recently-scored')
+const AWS = require('aws-sdk')
+const rollbar = require('../../config/rollbar')
+
+jest.mock('../../config/rollbar', () => {
+  return {
+    warn: jest.fn()
+  }
+})
 
 describe('ScoreController', () => {
   let score
@@ -190,6 +198,59 @@ describe('ScoreController', () => {
       const response = {
         json: (jsonToSet) => {
           expect(RecentlyScored.save).toHaveBeenCalledWith(newUri, newScore.score)
+          done()
+        }
+      }
+
+      jest.spyOn(Score, 'save').mockImplementation(() => Promise.resolve(createdScore))
+
+      ScoreController.post(request, response)
+    })
+
+    test('should send SNS message to sync score to AEM', done => {
+      const newUri = 'http://somewhere.com/1'
+      const newScore = {
+        score: 1,
+        weight: 6
+      }
+      const request = {
+        body: Object.assign({uri: newUri}, newScore)
+      }
+
+      const payload = {
+        uri: newUri,
+        score: newScore.score
+      }
+      const params = {
+        Message: JSON.stringify(payload),
+        TopicArn: process.env.AEM_SNS_TOPIC_ARN
+      }
+
+      const response = {
+        json: (jsonToSet) => {
+          expect(AWS.SNS.prototype.publish).toHaveBeenCalledWith(params, expect.any(Function))
+          done()
+        }
+      }
+
+      jest.spyOn(Score, 'save').mockImplementation(() => Promise.resolve(createdScore))
+
+      ScoreController.post(request, response)
+    })
+
+    test('should continue if the SNS message fails to send', done => {
+      const newUri = 'http://fail.com/'
+      const newScore = {
+        score: 1,
+        weight: 6
+      }
+      const request = {
+        body: Object.assign({uri: newUri}, newScore)
+      }
+
+      const response = {
+        json: (jsonToSet) => {
+          expect(rollbar.warn).toHaveBeenCalledWith(new Error('Failed to send SNS message'))
           done()
         }
       }
