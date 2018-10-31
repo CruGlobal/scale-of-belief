@@ -34,7 +34,7 @@ describe('AemClient', () => {
       })
 
       const options = {
-        url: 'http://localhost:4502/bin/content-scoring/sync',
+        url: 'http://localhost:4502/bin/cru/content-scoring/sync',
         form: {
           score: 5,
           resourceUri: url.parse(resourceUrl)
