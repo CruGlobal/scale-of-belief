@@ -83,8 +83,7 @@ const BadHostnames = [
   'ow.ly',
   'aemcommunitysite.com',
   'cruwp.agapefance.fr',
-  'www.waybackmachinedownloader.com',
-  'www.4laws.com'
+  'www.waybackmachinedownloader.com'
 ]
 
 class DerivedEvent {
