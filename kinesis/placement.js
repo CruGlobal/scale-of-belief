@@ -12,6 +12,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
   const sequelize = require('../config/sequelize')
   const {IdentityStitcher, UnknownUserError, KnownTestUserError} = require('../models/identity-stitcher')
   const Event = require('../models/event')
+  const DerivedEvent = require('../models/derived-event')
 
   // Chunk event into 25 records and log
   forEach(chunk(lambdaEvent['Records'], 25), records => logger.info(JSON.stringify(records)))
@@ -93,7 +94,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
             }
           })
         } catch (error) {
-          if (!(error instanceof Event.BotEventError || error instanceof Event.BadAppIdEventError)) {
+          if (!(error instanceof DerivedEvent.InvalidDerivedEventError)) {
             rollbar.error('Event.fromRecord(record) error', error, {record: record})
           }
           resolve(error)
