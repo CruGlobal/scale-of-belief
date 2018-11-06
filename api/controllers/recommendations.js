@@ -5,18 +5,19 @@ const Recommendation = require('../../models/recommendation')
 const User = require('../../models/user')
 const Placement = require('../../models/placement')
 const {Op} = require('sequelize')
-const {shuffle} = require('lodash')
+const {isEmpty, shuffle} = require('lodash')
 
 const get = async (request, response) => {
   try {
-    const [page, user] = await Promise.all([
+    const [page, users] = await Promise.all([
       Recommendation.findById(request.query['entity.id']),
-      User.findOne({where: {mcid: {[Op.contains]: [request.query['profile.mcid']]}}})
+      User.findAll({where: {mcid: {[Op.contains]: [request.query['profile.mcid']]}}, attributes: ['id']})
     ])
-    if (page === null || user === null) {
+    if (page === null || isEmpty(users)) {
       return render404(response)
     }
 
+    const user = users[0]
     const placement = await (new Placement(user).calculate())
     if (placement.placement === null) {
       return render404(response)

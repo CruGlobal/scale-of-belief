@@ -3,7 +3,7 @@
 const User = require('../../models/user')
 const Placement = require('../../models/placement')
 const {Op} = require('sequelize')
-const {identity, isEmpty, isNull, mapValues, pickBy} = require('lodash')
+const {identity, isEmpty, mapValues, pickBy} = require('lodash')
 
 const get = (request, response) => {
   let params = mapValues(pickBy(request.query, identity), (value) => {
@@ -18,14 +18,14 @@ const get = (request, response) => {
     return
   }
 
-  User.findOne({where: params}).then(user => {
-    if (isNull(user)) {
+  User.findAll({where: params, attributes: ['id']}).then(users => {
+    if (isEmpty(users)) {
       response.status(404)
       response.json({
         message: 'Not Found'
       })
     } else {
-      new Placement(user).calculate().then(placement => {
+      new Placement(users[0]).calculate().then(placement => {
         response.json({placement: placement.placement})
       }, error => {
         response.status(400)
