@@ -44,7 +44,7 @@ describe('Recommendations controller', () => {
   describe('user has no placement', () => {
     it('should return 404 Not Found', async () => {
       jest.spyOn(Recommendation, 'findById').mockResolvedValue(new Recommendation({id: 'abc123'}))
-      jest.spyOn(User, 'findAll').mockResolvedValue([new User({id: 123456, mcid: ['809xyz']})])
+      jest.spyOn(User, 'findAll').mockResolvedValue([new User({id: 123456})])
       Placement.mockImplementation(() => {
         return {
           calculate: jest.fn().mockResolvedValue({placement: null})
@@ -61,7 +61,7 @@ describe('Recommendations controller', () => {
     it('should return 404 Not Found', async () => {
       const recommendedSpy = jest.fn()
       jest.spyOn(Recommendation, 'findById').mockResolvedValue({findRecommended: recommendedSpy})
-      jest.spyOn(User, 'findAll').mockResolvedValue([new User({id: 123456, mcid: ['809xyz']})])
+      jest.spyOn(User, 'findAll').mockResolvedValue([new User({id: 123456})])
       Placement.mockImplementation(() => {
         return {
           calculate: jest.fn().mockResolvedValue({placement: 6})
@@ -82,7 +82,7 @@ describe('Recommendations controller', () => {
       recommendedSpy = jest.fn()
       page = {findRecommended: recommendedSpy, category: 'A Category'}
       jest.spyOn(Recommendation, 'findById').mockResolvedValue(page)
-      jest.spyOn(User, 'findAll').mockResolvedValue([new User({id: 123456, mcid: ['809xyz']})])
+      jest.spyOn(User, 'findAll').mockResolvedValue([new User({id: 123456})])
       Placement.mockImplementation(() => {
         return {
           calculate: jest.fn().mockResolvedValue({placement: 6})
