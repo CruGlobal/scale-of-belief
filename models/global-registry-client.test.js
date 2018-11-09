@@ -1,7 +1,7 @@
 'use strict'
 
 const GlobalRegistryClient = require('./global-registry-client')
-const request = require('request')
+const requestMock = require('request-promise-native')
 
 describe('GlobalRegistryClient', () => {
   it('should be defined', () => {
@@ -18,60 +18,46 @@ describe('GlobalRegistryClient', () => {
   })
 
   describe('updatePlacement()', () => {
-    let requestMock, client
+    let client
     beforeEach(() => {
-      requestMock = jest.spyOn(request, 'post')
       client = new GlobalRegistryClient('https://example.com', 'abc123')
+      requestMock.post.mockReset()
     })
 
     describe('user with multiple \'gr_master_person_id\'', () => {
-      beforeEach(() => {
-        requestMock.mockReset()
-      })
-
       it('should POST both to Global Registry', () => {
-        requestMock.mockReturnThis()
         let promise = client.updatePlacement(['abc123', 'zyx987'], 6)
-        expect(requestMock).toHaveBeenCalledTimes(2)
-        requestMock.mock.calls[0][1](undefined, '', '')
-        requestMock.mock.calls[1][1](undefined, '', '')
+        expect(requestMock.post).toHaveBeenCalledTimes(2)
+        expect(requestMock.post.mock.calls[0]).toEqual(
+          ['/entities/', { body: { entity: GlobalRegistryClient.placementBody('abc123', 6) } }])
+        expect(requestMock.post.mock.calls[1]).toEqual(
+          ['/entities/', { body: { entity: GlobalRegistryClient.placementBody('zyx987', 6) } }])
         return promise
       })
     })
 
     describe('user with a \'gr_master_person_id\'', () => {
-      beforeEach(() => {
-        requestMock.mockReset()
-      })
-
       it('should POST to Global Registry', () => {
-        requestMock.mockReturnThis()
         let promise = client.updatePlacement(['def456'], 3)
-        expect(requestMock).toHaveBeenCalledTimes(1)
-        requestMock.mock.calls[0][1](undefined, '', '')
+        expect(requestMock.post).toHaveBeenCalledTimes(1)
+        expect(requestMock.post.mock.calls[0]).toEqual(
+          ['/entities/', { body: { entity: GlobalRegistryClient.placementBody('def456', 3) } }])
         return promise
       })
     })
   })
 
   describe('placementBody', () => {
-    let client
-    beforeEach(() => {
-      client = new GlobalRegistryClient('https://example.com', 'abc123')
-    })
-
     describe('placement with value', () => {
       it('build the correct POST body', () => {
         let placement = 6
 
-        expect(client.placementBody('1234567890', placement)).toMatchObject({
-          entity: {
-            scale_of_belief: {
-              placement: 6,
-              client_integration_id: '1234567890',
-              'master_person:relationship': {
-                master_person: '1234567890', client_integration_id: '1234567890'
-              }
+        expect(GlobalRegistryClient.placementBody('1234567890', placement)).toMatchObject({
+          scale_of_belief: {
+            placement: 6,
+            client_integration_id: '1234567890',
+            'master_person:relationship': {
+              master_person: '1234567890', client_integration_id: '1234567890'
             }
           }
         })
@@ -80,15 +66,13 @@ describe('GlobalRegistryClient', () => {
 
     describe('placement without value', () => {
       it('build the correct POST body', () => {
-        expect(client.placementBody('0987654321', null)).toMatchObject({
-          entity: {
-            scale_of_belief: {
-              placement: null,
-              client_integration_id: '0987654321',
-              'master_person:relationship': {
-                master_person: '0987654321',
-                client_integration_id: '0987654321'
-              }
+        expect(GlobalRegistryClient.placementBody('0987654321', null)).toMatchObject({
+          scale_of_belief: {
+            placement: null,
+            client_integration_id: '0987654321',
+            'master_person:relationship': {
+              master_person: '0987654321',
+              client_integration_id: '0987654321'
             }
           }
         })
