@@ -13,6 +13,7 @@ class RedisClient extends EventEmitter {
   constructor () {
     super()
     this.connected = true
+    this.withError = false
   }
 
   get (key, callback) {
@@ -20,18 +21,35 @@ class RedisClient extends EventEmitter {
   }
 
   set (key, value, callback) {
-    dataStore[key] = value
-    callback(null, null)
+    if (this.withError) {
+      this.emitError()
+    } else {
+      dataStore[key] = value
+    }
+    callback(this.withError, null)
   }
 
   quit () {
     this.connected = false
     super.emit('end')
   }
+
+  emitError () {
+    super.emit('error', new Error('whoops!'))
+  }
+}
+
+function buildMock (withError) {
+  const mock = new RedisClient()
+  if (withError) {
+    mock.withError = true
+  }
+  return mock
 }
 
 module.exports = {
   createClient: (port, address) => {
-    return new RedisClient()
+    const withError = address === '192.168.1.0'
+    return buildMock(withError)
   }
 }
