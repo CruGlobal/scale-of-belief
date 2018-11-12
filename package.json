@@ -44,7 +44,7 @@
     "express": "^4.16.2",
     "express-jwt": "^5.3.1",
     "glob": "^7.1.3",
-    "global-registry-nodejs-client": "github:CruGlobal/global-registry-nodejs-client",
+    "global-registry-nodejs-client": "github:CruGlobal/global-registry-nodejs-client#1.0.0",
     "hoek": "~> 4.2.1",
     "https": "^1.0.0",
     "jsonwebtoken": "^8.3.0",
