@@ -58,6 +58,50 @@ describe('AdobeCampaignClient', () => {
       })
     })
 
+    describe('with errored Redis', () => {
+      let console = null
+      beforeEach(() => {
+        process.env.REDIS_PORT_6379_TCP_ADDR = '192.168.1.0'
+        console = global.console
+        global.console = { warn: jest.fn() }
+      })
+      afterEach(() => {
+        process.env.REDIS_PORT_6379_TCP_ADDR = '127.0.0.1'
+        global.console = console
+      })
+      it('should retrieve a new access token, but then redis fails', done => {
+        const options = {
+          url: 'https://ims-na1.adobelogin.com/ims/exchange/jwt/',
+          formData: {
+            client_id: exampleApiKey,
+            client_secret: exampleSecret,
+            jwt_token: exampleJwt
+          },
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        }
+        const mockResponse = { statusCode: 200 }
+        const mockBody = {
+          token_type: 'bearer',
+          access_token: 'access-token',
+          expires_in: 86399992
+        }
+
+        const requestMock = jest.spyOn(request, 'post').mockImplementation((options, callback) => {
+          callback(null, mockResponse, JSON.stringify(mockBody))
+        })
+
+        client.retrieveAccessToken().then((accessToken) => {
+          expect(requestMock).toHaveBeenCalledWith(options, expect.anything())
+          expect(accessToken).toEqual('access-token')
+          requestMock.mockReset()
+          expect(global.console.warn).toHaveBeenCalled()
+          done()
+        })
+      })
+    })
+
     it('should fail to retrieve a new access token', done => {
       const mockResponse = { statusCode: 400 }
       const mockBody = {
