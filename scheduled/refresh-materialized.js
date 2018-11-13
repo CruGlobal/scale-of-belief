@@ -12,7 +12,7 @@ module.exports.handler = async (lambdaEvent) => {
     await sequelize().query('REFRESH MATERIALIZED VIEW unscored')
     return await RecentlyScored.destroy({truncate: true})
   } catch (error) {
-    rollbar.error('Error refreshing the materialized view: unscored: ' + error)
+    rollbar.error('Error refreshing the materialized view: unscored: ' + error, error)
     throw error
   }
 }

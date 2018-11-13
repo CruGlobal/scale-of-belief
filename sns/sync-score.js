@@ -13,7 +13,7 @@ module.exports.handler = async (lambdaEvent) => {
     // Update score in AEM
     await AemClient.updateScore(url.parse(message.uri), message.score)
   } catch (err) {
-    rollbar.error('Error syncing score update to AEM: ' + err)
+    rollbar.error('Error syncing score update to AEM: ' + err, err)
     throw err
   }
 }

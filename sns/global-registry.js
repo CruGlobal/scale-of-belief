@@ -11,7 +11,7 @@ module.exports.handler = async (lambdaEvent) => {
     // Update Global Registry
     await GlobalRegistry.updatePlacement(message.grMasterPersonIds, message.placement)
   } catch (err) {
-    rollbar.error('Global Registry update error: ' + err)
+    rollbar.error('Global Registry update error: ' + err, err)
     throw err
   }
 }

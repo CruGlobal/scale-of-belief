@@ -187,7 +187,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     lambdaCallback(null, 'Redshift deltas successful.')
   }, err => {
     redisClient.quit()
-    rollbar.error('Redshift: ' + err)
+    rollbar.error('Redshift: ' + err, err)
     lambdaCallback(err)
   })
 })
