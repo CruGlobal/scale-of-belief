@@ -78,7 +78,7 @@ module.exports = {
     asyncHandler(JSON.parse(snsMessage)).then((message) => {
       lambdaCallback(null, message)
     }).catch((error) => {
-      rollbar.error('Something went wrong while sending the placement to Campaign: ' + error)
+      rollbar.error('Something went wrong while sending the placement to Campaign: ' + error, error)
       lambdaCallback('Failed to send placement to Campaign: ' + error)
     })
   }),
