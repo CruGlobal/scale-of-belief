@@ -235,10 +235,10 @@ const isSameSame = (user, other) => {
   // If sso_guid exists on both, and is different, it's not the same
   if (user.has_sso_guid && other.has_sso_guid && matches['sso_guid'].length === 0) return false
 
-  // If device_idfa match, then it's the same user
-  if (matches['device_idfa'].length > 0) return true
+  // If device_idfa or mcid match, then it's the same user
+  if (matches['device_idfa'].length > 0 || matches['mcid'].length > 0) return true
 
-  // If device_idfa exists on both and is different, t's not the same
+  // If device_idfa exists on both and is different, it's not the same
   if (user.has_device_idfa && other.has_device_idfa && matches['device_idfa'].length === 0) return false
 
   // If at least 2 fields match, it's the same user
