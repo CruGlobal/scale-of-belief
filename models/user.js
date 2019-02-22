@@ -79,8 +79,8 @@ User.fromEvent = (event) => {
   if (context instanceof Context) {
     if (context.hasSchema(Context.SCHEMA_MOBILE)) {
       const data = context.dataFor(Context.SCHEMA_MOBILE)
-      // Todo: iOS not sending events yet, this is a guess at the property name
-      user.device_idfa = compact(map(['androidIdfa', 'appleIdfa'], field => {
+      // https://github.com/snowplow/iglu-central/blob/master/schemas/com.snowplowanalytics.snowplow/mobile_context/jsonschema/1-0-1
+      user.device_idfa = compact(map(['androidIdfa', 'appleIdfa', 'appleIdfv', 'openIdfa'], field => {
         return data[field]
       }))
     }
