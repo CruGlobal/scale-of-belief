@@ -116,7 +116,8 @@ describe('IdentityStitcher', () => {
           others[1].gr_master_person_id, others[2].gr_master_person_id))
         expect(identity).toBeInstanceOf(User)
         expect(identity.id).toEqual(others[0].id)
-        expect(auditSpy).toHaveBeenCalledWith([{id: identity.id, old_id: others[2].id}], expect.anything())
+        expect(auditSpy).toHaveBeenCalledWith([{id: identity.id, old_id: others[2].id},
+          {id: identity.id, old_id: others[1].id}], expect.anything())
         expect(event.user_id).toEqual(identity.id)
         expect(sortBy(identity.mcid)).toEqual(sortBy(mcids))
         expect(identity.gr_master_person_id).toEqual(expect.arrayContaining(grids))
