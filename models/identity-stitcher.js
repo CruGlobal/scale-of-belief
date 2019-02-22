@@ -23,13 +23,15 @@ const {
 } = require('lodash')
 const TestUserGuids = [
   '49e1f2f9-55cc-6c10-58ff-b9b46ca79579', // test@test.com
-  'fd8c0e67-d19e-49c5-94c2-ff737302d2bc' // bill.test@tester.com
+  'fd8c0e67-d19e-49c5-94c2-ff737302d2bc', // bill.test@tester.com
+  'f51870d2-23d4-4574-94e1-dd12127a7680' // ert.test@cru.org
 ]
 const TestUserGRIds = [
   '6017a717-251c-434f-aa2f-e4279328fa59', // test@test.com
   'f19c4ec2-057d-4b7b-958b-e88452881a28',
   '2c4b60d4-7b21-43f7-836f-4f255330ecd2',
-  '8a9f5933-b4e1-4ec2-a072-f5ff34e349e6' // bill.test@tester.com
+  '8a9f5933-b4e1-4ec2-a072-f5ff34e349e6', // bill.test@tester.com
+  'd067ce6b-4f44-4edd-8a0d-8959ee18cc2b' // ert.test@cru.org
 ]
 
 /**
