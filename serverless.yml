@@ -77,6 +77,15 @@ functions:
     deadLetter:
       targetArn:
         GetResourceArn: UDPEnrichedEventsDLQ
+  udp-events:
+    handler: kinesis/udp-events.handler
+    timeout: 60
+    events:
+      - stream:
+          arn: ${env:KINESIS_SNOWPLOW_ENRICH_ARN}
+          batchSize: 10
+          startingPosition: LATEST
+          enabled: false
 
 package:
   exclude:
