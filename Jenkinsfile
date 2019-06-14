@@ -2,6 +2,6 @@
 @Library('jenkins-jobs@add-cru-udp-pipeline-job') _
 
 serverlessPipeline(
-  defaultEnvironment: 'master',
+  defaultEnvironment: 'production',
   packageManager: 'yarn'
 )
