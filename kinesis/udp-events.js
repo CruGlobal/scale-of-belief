@@ -2,6 +2,7 @@
 
 const rollbar = require('../config/rollbar')
 const AWS = require('aws-sdk')
+const {uniqBy} = require('lodash')
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
   const Event = require('../models/event')
@@ -24,7 +25,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
 
     if (validEvents.length > 0) {
       const sqs = new AWS.SQS({apiVersion: '2012-11-05', region: 'us-east-1'})
-      const entries = validEvents.map(event => ({
+      const entries = uniqBy(validEvents, 'event_id').map((event) => ({
         Id: event.event_id,
         MessageBody: JSON.stringify(event.toJSON())
       }))
