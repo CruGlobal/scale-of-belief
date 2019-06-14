@@ -51,7 +51,7 @@ module.exports = {
       allowNull: false
     }
 
-    queryInterface.createTable(sequelizePaperTrailOptions.revisionModel, attributes)
+    return queryInterface.createTable(sequelizePaperTrailOptions.revisionModel, attributes)
 
     /*
     attributes = {
