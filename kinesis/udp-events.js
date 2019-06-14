@@ -33,6 +33,9 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
         QueueUrl: 'https://sqs.us-east-1.amazonaws.com/056154071827/scale-of-belief-production-UDPEnrichedEventsQueue-1C100YLPZXPHF',
         Entries: entries
       }, (err, data) => {
+        if (err) {
+          rollbar.error('sqs.sendMessageBatch() error', err)
+        }
         lambdaCallback(null, data)
       })
     } else {
