@@ -3,5 +3,6 @@
 
 serverlessPipeline(
   defaultEnvironment: 'production',
+  ecsConfigBranch: 'managed-snowplow-lambda-updates',
   packageManager: 'yarn'
 )
