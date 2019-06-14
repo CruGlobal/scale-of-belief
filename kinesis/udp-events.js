@@ -5,6 +5,7 @@ const AWS = require('aws-sdk')
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
   const Event = require('../models/event')
+  const DerivedEvent = require('../models/derived-event')
 
   // Make sure we have event records
   if (typeof lambdaEvent['Records'] !== 'undefined') {
@@ -15,7 +16,9 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
         // Build an event object from each record, catch any resulting errors (InvalidEventError)
         validEvents.push(Event.fromRecord(record))
       } catch (error) {
-        rollbar.error('Event.fromRecord(record) error', error, {record: record})
+        if (!(error instanceof DerivedEvent.InvalidDerivedEventError)) {
+          rollbar.error('Event.fromRecord(record) error', error, {record: record})
+        }
       }
     })
 
