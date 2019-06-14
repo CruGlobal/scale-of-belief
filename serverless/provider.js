@@ -15,7 +15,7 @@ module.exports = () => {
   } else {
     // local development
     return {
-      runtime: 'nodejs6.10'
+      runtime: 'nodejs10.x'
     }
   }
 }
