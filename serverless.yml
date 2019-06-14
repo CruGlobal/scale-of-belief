@@ -67,6 +67,16 @@ functions:
     timeout: 30
     events:
       - sns: ${env:AEM_SNS_TOPIC_ARN}
+  udp-event:
+    handler: sqs/udp-event.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
+          batchSize: 1
+    deadLetter:
+      targetArn:
+        GetResourceArn: UDPEnrichedEventsDLQ
 
 package:
   exclude:
@@ -80,6 +90,7 @@ plugins:
   - '@cruglobal/serverless-merge-config'
   - serverless-plugin-bind-deployment-id
   - serverless-plugin-scripts
+  - serverless-plugin-lambda-dead-letter
   - serverless-offline
 
 resources:
