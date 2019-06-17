@@ -69,23 +69,17 @@ functions:
       - sns: ${env:AEM_SNS_TOPIC_ARN}
   udp-event:
     handler: sqs/udp-event.handler
+    reservedConcurrency: 10
+    timeout: 30
     events:
       - sqs:
           arn:
             Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
           batchSize: 1
+          enabled: false
     deadLetter:
       targetArn:
         GetResourceArn: UDPEnrichedEventsDLQ
-  udp-events:
-    handler: kinesis/udp-events.handler
-    timeout: 60
-    events:
-      - stream:
-          arn: ${env:KINESIS_SNOWPLOW_ENRICH_ARN}
-          batchSize: 10
-          startingPosition: LATEST
-          enabled: false
 
 package:
   exclude:

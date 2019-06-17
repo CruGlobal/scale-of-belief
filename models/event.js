@@ -201,10 +201,10 @@ forEach(Fields, (index, key) => {
   })
 })
 
-Event.fromRecord = (record) => {
+Event.fromRecord = (base64Data) => {
   let data
   try {
-    data = Buffer.from(record.kinesis.data, 'base64').toString('utf8')
+    data = Buffer.from(base64Data, 'base64').toString('utf8')
   } catch (e) {
     throw new InvalidEventError('Malformed kinesis event: ' + e.message)
   }
@@ -222,7 +222,7 @@ Event.fromRecord = (record) => {
   event.decodedFields = decoded
 
   // Log event_id with encoded data. Will allow re-creating kinesis stream locally for debugging
-  logger.debug(JSON.stringify({event_id: event.event_id, kinesis: {data: record.kinesis.data}}))
+  logger.debug(JSON.stringify({event_id: event.event_id, kinesis: {data: base64Data}}))
   // Log mapped fields for easier visual debugging
   logger.info(JSON.stringify(mapValues(Fields, value => decoded[value])))
 
