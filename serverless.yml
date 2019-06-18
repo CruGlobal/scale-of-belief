@@ -21,7 +21,7 @@ functions:
     events:
       - stream:
           arn: ${env:KINESIS_SNOWPLOW_ENRICH_ARN}
-          batchSize: 25
+          batchSize: 10
           startingPosition: LATEST
           enabled: true
   api:
@@ -69,17 +69,14 @@ functions:
       - sns: ${env:AEM_SNS_TOPIC_ARN}
   udp-event:
     handler: sqs/udp-event.handler
-    reservedConcurrency: 10
-    timeout: 30
+    reservedConcurrency: 1
+    timeout: 300
     events:
       - sqs:
           arn:
             Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
-          batchSize: 1
-          enabled: false
-    deadLetter:
-      targetArn:
-        GetResourceArn: UDPEnrichedEventsDLQ
+          batchSize: 10
+          enabled: true
 
 package:
   exclude:
@@ -93,7 +90,6 @@ plugins:
   - '@cruglobal/serverless-merge-config'
   - serverless-plugin-bind-deployment-id
   - serverless-plugin-scripts
-  - serverless-plugin-lambda-dead-letter
   - serverless-offline
 
 resources:
