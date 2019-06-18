@@ -34,6 +34,7 @@ module.exports = () => {
     AEM_URL: process.env['AEM_URL'] || 'http://localhost:4502',
     AEM_USERNAME: process.env['AEM_USERNAME'] || '',
     AEM_PASSWORD: process.env['AEM_PASSWORD'] || '',
-    AEM_SNS_TOPIC_ARN: process.env['AEM_SNS_TOPIC_ARN'] || ''
+    AEM_SNS_TOPIC_ARN: process.env['AEM_SNS_TOPIC_ARN'] || '',
+    LOG_LEVEL: process.env['LOG_LEVEL'] || 'error'
   }
 }
