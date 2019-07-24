@@ -8,7 +8,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   stage: dev
   region: us-east-1
   environment: ${file(serverless/environment.js)}
@@ -21,7 +21,7 @@ functions:
     events:
       - stream:
           arn: ${env:KINESIS_SNOWPLOW_ENRICH_ARN}
-          batchSize: 25
+          batchSize: 10
           startingPosition: LATEST
           enabled: true
   api:
@@ -67,6 +67,16 @@ functions:
     timeout: 30
     events:
       - sns: ${env:AEM_SNS_TOPIC_ARN}
+  udp-event:
+    handler: sqs/udp-event.handler
+    reservedConcurrency: 1
+    timeout: 300
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
+          batchSize: 10
+          enabled: true
 
 package:
   exclude:

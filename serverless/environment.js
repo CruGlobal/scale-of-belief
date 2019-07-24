@@ -11,7 +11,6 @@ module.exports = () => {
     DB_PORT_5432_TCP_ADDR: process.env['DB_PORT_5432_TCP_ADDR'] || 'localhost',
     DB_PORT_5432_TCP_PORT: process.env['DB_PORT_5432_TCP_PORT'] || 5432,
     ROLLBAR_ACCESS_TOKEN: process.env['ROLLBAR_ACCESS_TOKEN'] || '',
-    LOG_LEVEL: process.env['LOG_LEVEL'] || 'info',
     JWT_SECRET: process.env['JWT_SECRET'] || 'secret',
     THE_KEY_SERVICE_URL: process.env['THE_KEY_SERVICE_URL'] || 'http://localhost:3000/api/login',
     THE_KEY_API_KEY: process.env['THE_KEY_API_KEY'],
@@ -35,6 +34,7 @@ module.exports = () => {
     AEM_URL: process.env['AEM_URL'] || 'http://localhost:4502',
     AEM_USERNAME: process.env['AEM_USERNAME'] || '',
     AEM_PASSWORD: process.env['AEM_PASSWORD'] || '',
-    AEM_SNS_TOPIC_ARN: process.env['AEM_SNS_TOPIC_ARN'] || ''
+    AEM_SNS_TOPIC_ARN: process.env['AEM_SNS_TOPIC_ARN'] || '',
+    LOG_LEVEL: process.env['LOG_LEVEL'] || 'error'
   }
 }

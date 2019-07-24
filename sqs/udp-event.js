@@ -27,7 +27,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
       const eventCompleted = new Promise((resolve) => {
         try {
           // Build an event object from each record, catch any resulting errors (InvalidEventError)
-          const event = Event.fromRecord(record.kinesis.data)
+          const event = Event.fromRecord(record.body)
           Event.findOne({where: {event_id: event.event_id}}).then(existing => {
             if (existing !== null) {
               // Event with event_id already exists in the database, ignore it and resolve

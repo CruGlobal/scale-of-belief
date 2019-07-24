@@ -11,14 +11,14 @@ Clone the repository and install dependencies:
 ```bash
 git clone git@github.com:CruGlobal/scale-of-belief-lambda.git
 cd scale-of-belief-lambda
-npm install
+yarn install
 ```
 
 Create `.env` file and add any ENV overrides ([defaults](https://github.com/CruGlobal/scale-of-belief-lambda/blob/master/config/environment.js))
 Create the database and run migrations (including test):
 ```bash
-npm run db:create
-npm run db:migrate
+yarn run db:create
+yarn run db:migrate
 ```
 
 ## Running
@@ -41,15 +41,15 @@ npx serverless offline start
 Scale of Belief is using [Standard](https://standardjs.com/) style and [jest](https://facebook.github.io/jest/docs/en/getting-started.html) for testing.
 ```bash
 # Create and setup test database
-npm run db:create:test
-npm run db:migrate:test
+yarn run db:create:test
+yarn run db:migrate:test
 
 # Run lint, optionally auto fix issues
-npm run lint
-npm run lint:fix
+yarn run lint
+yarn run lint:fix
 
 # Run tests
-npm test
+yarn test
 ```
 
 ## Deployment (without jenkins)
