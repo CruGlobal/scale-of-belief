@@ -11,7 +11,6 @@ const requiredModels = [
   '../models/unscored',
   '../models/api-user',
   '../models/api-key',
-  '../models/recently-scored',
   '../models/recommendation',
   './papertrail'
 ]

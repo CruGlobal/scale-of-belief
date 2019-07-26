@@ -3,9 +3,6 @@
 const ContentController = require('../../api/controllers/content.js')
 const factory = require('../factory')
 const Unscored = require('../../models/unscored')
-const RecentlyScored = require('../../models/recently-scored')
-const Event = require('../../models/event')
-const sequelize = require('../../config/sequelize')
 
 describe('ContentController', () => {
   let unscored1, unscored2
@@ -138,58 +135,6 @@ describe('ContentController', () => {
         .mockImplementationOnce(() => Promise.resolve({rows: [unscored1], count: 2}))
 
       ContentController.get(request, response)
-    })
-  })
-
-  describe('checks recently_scored', () => {
-    const setupDb = async () => {
-      await RecentlyScored.destroy({truncate: true})
-      await factory.cleanUp()
-
-      // Try/catch on these because sometimes the db is out of sync and we get a unique constraint error
-      try {
-        await factory.create('existing_recent_score')
-      } catch (err) {}
-
-      try {
-        await factory.create('web_event', { uri: 'http://some.other.uri.com' })
-      } catch (err) {}
-
-      return sequelize().query('REFRESH MATERIALIZED VIEW unscored')
-    }
-
-    it('should not returned a recently scored event as unscored', async (done) => {
-      await setupDb()
-
-      const request = {
-        query: {
-          uri: 'http',
-          page: '1',
-          per_page: '1',
-          order: 'ASC'
-        }
-      }
-
-      const response = {
-        json: (jsonToSet) => {
-          try {
-            expect(jsonToSet).toBeDefined()
-            expect(jsonToSet.data).toEqual([unscored2.uri])
-            expect(jsonToSet.meta.total).toEqual(1)
-            done()
-          } catch (err) {
-            done.fail(err)
-          }
-        }
-      }
-
-      ContentController.get(request, response)
-    })
-
-    afterEach(async () => {
-      return RecentlyScored.destroy({truncate: true})
-        .then(() => { Event.destroy({truncate: true}) })
-        .then(() => { sequelize().query('REFRESH MATERIALIZED VIEW unscored') })
     })
   })
 })

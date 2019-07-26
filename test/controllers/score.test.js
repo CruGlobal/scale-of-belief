@@ -3,7 +3,6 @@
 const ScoreController = require('../../api/controllers/score.js')
 const factory = require('../factory')
 const Score = require('../../models/score')
-const RecentlyScored = require('../../models/recently-scored')
 const AWS = require('aws-sdk')
 const rollbar = require('../../config/rollbar')
 
@@ -16,7 +15,6 @@ jest.mock('../../config/rollbar', () => {
 describe('ScoreController', () => {
   let score
   beforeEach(() => {
-    jest.spyOn(RecentlyScored, 'save').mockImplementationOnce(() => Promise.resolve())
     return factory.build('existing_score').then(existingScore => { score = existingScore })
   })
 
@@ -183,28 +181,6 @@ describe('ScoreController', () => {
 
       ScoreController.post(request, response)
       expect(Score.save).toHaveBeenCalledWith(newUri, newScore)
-    })
-
-    test('should save to recently_scored as well', done => {
-      const newUri = 'http://somewhere.com/1'
-      const newScore = {
-        score: 1,
-        weight: 6
-      }
-      const request = {
-        body: Object.assign({uri: newUri}, newScore)
-      }
-
-      const response = {
-        json: (jsonToSet) => {
-          expect(RecentlyScored.save).toHaveBeenCalledWith(newUri, newScore.score)
-          done()
-        }
-      }
-
-      jest.spyOn(Score, 'save').mockImplementation(() => Promise.resolve(createdScore))
-
-      ScoreController.post(request, response)
     })
 
     test('should send SNS message to sync score to AEM', done => {

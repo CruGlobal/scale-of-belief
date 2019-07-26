@@ -4,7 +4,6 @@ const {forEach} = require('lodash')
 const util = require('../util/util')
 const Unscored = require('../../models/unscored')
 const {Op} = require('sequelize')
-const sequelize = require('../../config/sequelize')
 
 const get = (request, response) => {
   let uri = util.sanitizeUri(request.query['uri'])
@@ -23,21 +22,11 @@ const get = (request, response) => {
 
   const offset = (page - 1) * perPage
 
-  const subQuery = sequelize().dialect.QueryGenerator.selectQuery('recently_scored', {attributes: ['uri']})
-    .slice(0, -1) // to remove the ';' from the end of the SQL
-
   Unscored.findAndCountAll({
     where: {
       uri: {
         [Op.like]: uri + '%'
-      },
-      [Op.and]: [
-        {
-          uri: {
-            [Op.notIn]: sequelize().literal('(' + subQuery + ')')
-          }
-        }
-      ]
+      }
     },
     limit: perPage,
     offset: offset,
