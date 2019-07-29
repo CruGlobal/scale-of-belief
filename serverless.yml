@@ -42,11 +42,6 @@ functions:
     timeout: 300
     events:
       - schedule: rate(5 minutes)
-  refresh-unscored:
-    handler: scheduled/refresh-materialized.handler
-    timeout: 300
-    events:
-      - schedule: rate(2 hours)
   campaign:
     handler: sns/campaign.handler
     timeout: 60

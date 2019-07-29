@@ -1,7 +1,6 @@
 'use strict'
 
 const Score = require('../../models/score')
-const RecentlyScored = require('../../models/recently-scored')
 const util = require('../util/util')
 const {pick} = require('lodash')
 const AWS = require('aws-sdk')
@@ -26,8 +25,6 @@ const post = (request, response) => {
   const sanitizedUri = util.sanitizeUri(requestBody.uri)
 
   Score.save(sanitizedUri, pick(requestBody, ['score', 'weight'])).then(async (result) => {
-    await RecentlyScored.save(sanitizedUri, requestBody.score)
-
     try {
       await sendSns(sanitizedUri, requestBody.score)
     } catch (err) {
