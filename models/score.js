@@ -49,6 +49,20 @@ Score.toApiScore = (score) => {
   }
 }
 
+Score.toUriScore = (score) => {
+  return {
+    uri: score.uri,
+    score: score.score
+  }
+}
+
+Score.toUnscored = (uri) => {
+  return {
+    uri: uri,
+    score: -1
+  }
+}
+
 Score.retrieve = (uri) => {
   return Score.findOne({
     where: {
