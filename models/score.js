@@ -49,6 +49,34 @@ Score.toApiScore = (score) => {
   }
 }
 
+//get all scores from database
+//jonah, oct 24, 2019
+Score.getAllScores = () => {
+  const scoreArray = []
+  // find multiple entries
+  return Score.findAll({
+    attributes: ['uri','score','weight']
+  }).then(scores => {
+    scores.forEach(element => {
+      scoreArray.push(Score.toScoreObject(element))
+    });
+    // projects will be an array of all Project instances
+    console.log(Array.from(scoreArray));
+    // console.log(Array.isArray(scoreArray));
+    return Array.from(scoreArray);
+  })
+}
+
+//return new object with chosen attributes
+//jonah, october 24
+Score.toScoreObject = (element) => {
+  return{
+    uri: element.uri,
+    weight: element.weight,
+    score: element.score
+  }
+}
+
 Score.toUriScore = (score) => {
   return {
     uri: score.uri,
