@@ -60,9 +60,6 @@ Score.getAllScores = () => {
     scores.forEach(element => {
       scoreArray.push(Score.toScoreObject(element))
     });
-    // projects will be an array of all Project instances
-    console.log(Array.from(scoreArray));
-    // console.log(Array.isArray(scoreArray));
     return Array.from(scoreArray);
   })
 }
