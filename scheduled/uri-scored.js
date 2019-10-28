@@ -1,24 +1,35 @@
 'use strict'
 
+const AWS = require('aws-sdk');
 const Score = require('../models/score')
-const ObjectsToCsv = require('objects-to-csv');
+var awsConfig = require('aws-config');
+
+//load configuration file from path
+const awsConfigJson = require('../config/s3-config.json');
+const s3bucket = new AWS.S3(awsConfig(awsConfigJson));
 
 /**
  * a function to get all URI scored and unscored from the database
  */
 module.exports.handler = async (lambdaEvent) => {
-  console.log(Score.getAllScores());
-  // console.log(data);
-  var data = [ { uri: 'movementlife.org', weight: 0, score: 2 },
-  { uri: 'boilingwaters.ph', weight: 2, score: 2 } ];
-  const csv = new ObjectsToCsv(data);
-  // Save to file:
-  await csv.toDisk('test.csv');
-  // Return the CSV file as string:
-  console.log(await csv.toString());
+  const path = lambdaEvent.queryStringParameters.path;
+  const bucketName = lambdaEvent.queryStringParameters.bucketName;
+  await Score.getAllScores().then( (response) => {
+    
+    var data = Buffer.from(response);
+    var param = {
+      Bucket: bucketName,
+      Key: path,
+      Body: data
+    };
 
-  // console.log(data);
-  // csvWriter
-  // .writeRecords(data)
-  // .then(()=> console.log('The CSV file was written successfully'));
+    s3bucket.putObject(param, function(err, response) {
+      if(err) {
+        console.error(err);
+      } else {
+        console.log(response)
+      }
+    });
+
+  })  
 }
