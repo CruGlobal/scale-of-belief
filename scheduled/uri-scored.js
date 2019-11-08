@@ -3,7 +3,6 @@
 const AWS = require('aws-sdk');
 const Score = require('../models/score')
 const Unscored = require('../models/unscored')
-var awsConfig = require('aws-config');
 const ObjectsToCsv = require('objects-to-csv');
 
 //load configuration file from path
