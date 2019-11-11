@@ -35,6 +35,7 @@ module.exports = () => {
     AEM_USERNAME: process.env['AEM_USERNAME'] || '',
     AEM_PASSWORD: process.env['AEM_PASSWORD'] || '',
     AEM_SNS_TOPIC_ARN: process.env['AEM_SNS_TOPIC_ARN'] || '',
-    LOG_LEVEL: process.env['LOG_LEVEL'] || 'error'
+    LOG_LEVEL: process.env['LOG_LEVEL'] || 'error',
+    URI_S3_BUCKET: process.env['URI_S3_BUCKET']
   }
 }
