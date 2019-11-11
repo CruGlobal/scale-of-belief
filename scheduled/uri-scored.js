@@ -13,7 +13,7 @@ const ObjectsToCsv = require('objects-to-csv');
  */
 module.exports.handler = async (lambdaEvent) => {
   const path = "scores";
-  const bucketName = process.env.URI_S3_BUCKET;
+  const bucketName = process.env.S3_SCORED_URIS_BUCKET;
   const s3bucket = new AWS.S3({apiVersion: '2006-03-01'})
   
   var unscored = [];
