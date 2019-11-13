@@ -1,7 +1,7 @@
 'use strict'
 
 const AWS = require('aws-sdk');
-const rollbar = require('../../config/rollbar')
+const rollbar = require('../config/rollbar')
 const Score = require('../models/score')
 const Unscored = require('../models/unscored')
 const ObjectsToCsv = require('objects-to-csv');
@@ -12,7 +12,7 @@ const ObjectsToCsv = require('objects-to-csv');
  * author: jonahkjala
  */
 module.exports.handler = async (lambdaEvent) => {
-  const path = "scores";
+  const path = "scores.csv";
   const bucketName = process.env.S3_SCORED_URIS_BUCKET;
   const s3bucket = new AWS.S3({apiVersion: '2006-03-01'})
   
@@ -39,9 +39,10 @@ module.exports.handler = async (lambdaEvent) => {
     s3bucket.putObject(param, function(err, response) {
       if(err) {
         rollbar.error('Upload csv error: ' + err, err)
-        // console.error(err);
+        throw err
       } else {
-        rollbar.warn(response)
+        rollbar.warn(response);
+        return response
       }
     });  
   }) 
