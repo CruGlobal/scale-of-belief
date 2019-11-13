@@ -31,6 +31,53 @@ describe('Score', () => {
     })
   })
 
+  //created by: jonahktjala
+  describe('Score.toScoreObject()', () => {
+    it('should create a json object', () => {
+      const scoreObject = {
+        uri: 'http://somewhere.com',
+        score: 2,
+        weight: 3,
+        revision: 1
+      }
+
+      const expectedApiScore = {
+        uri: scoreObject.uri,
+        score: scoreObject.score,
+        weight: scoreObject.weight
+      }
+
+      return Score.toScoreObject(scoreObject).then((result)=> {
+        expect(result).toBeDefined();
+        expect(result).toEqual(expectedApiScore);
+      })
+    })
+  })
+
+  //created by: jonahktjala
+  describe('Score.getAllScores()', () => {
+    let score
+    beforeEach(() => {
+      return factory.create('existing_score').then(existingScore => { score = existingScore })
+    })
+
+    it('should not return a null array of scored objects', () => {
+      expect.assertions(5);
+      return Score.getAllScores().then((result)=>{
+        //make sure that output is not null
+        expect (result).not.toBeNull();
+        expect (result).toBeDefined();
+        let oneEntry = result[0];
+        
+        //check that property values are not null
+        const exclude = ['revision']
+        expect (oneEntry).toBeDefined();
+        expect (oneEntry).not.toBeNull();
+        expect (oneEntry).toHaveProperty(omit(score.dataValues,exclude).keys());
+      })
+    })
+  })
+
   describe('Score.retrieve()', () => {
     let score
     beforeEach(() => {
