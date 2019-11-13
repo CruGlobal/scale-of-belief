@@ -22,7 +22,7 @@ describe('Unscored', () => {
         score: -1,
         weight: 0
       }
-    return Score.toScoreObject(scoreObject).then((result)=> {
+    return Unscored.toScoreObject(scoreObject).then((result)=> {
         const exclude = ['last_refreshed']
         expect (result).toBeDefined()
         expect (result).not.toBeNull()
@@ -38,8 +38,7 @@ describe('Unscored', () => {
     })
 
     it('should not return a null array of scored objects', () => {
-      expect.assertions(5)
-      return Score.getAllUris().then((result)=>{
+      return Unscored.getAllUris().then((result)=>{
         //make sure that output is not null
         expect (result).not.toBeNull()
         expect (result).toBeDefined()
