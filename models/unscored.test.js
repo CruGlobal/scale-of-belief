@@ -24,9 +24,9 @@ describe('Unscored', () => {
       }
     return Score.toScoreObject(scoreObject).then((result)=> {
         const exclude = ['last_refreshed']
-        expect (result).toBeDefined();
-        expect (result).not.toBeNull();
-        expect (omit(result,exclude)).toEqual(expectedApiScore);
+        expect (result).toBeDefined()
+        expect (result).not.toBeNull()
+        expect (omit(result,exclude)).toEqual(expectedApiScore)
       })
   })
 
@@ -41,15 +41,15 @@ describe('Unscored', () => {
       expect.assertions(5);
       return Score.getAllUris().then((result)=>{
         //make sure that output is not null
-        expect (result).not.toBeNull();
-        expect (result).toBeDefined();
-        let oneEntry = result[0];
+        expect (result).not.toBeNull()
+        expect (result).toBeDefined()
+        let oneEntry = result[0]
         
         //check that property values are not null
         const exclude = ['revision']
-        expect (oneEntry).toBeDefined();
-        expect (oneEntry).not.toBeNull();
-        expect (oneEntry).toHaveProperty(omit(score.dataValues,exclude).keys());
+        expect (oneEntry).toBeDefined()
+        expect (oneEntry).not.toBeNull()
+        expect (oneEntry).toHaveProperty(omit(score.dataValues,exclude).keys())
       })
     })
   })
