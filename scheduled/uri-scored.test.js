@@ -12,11 +12,11 @@ describe('uri-scored', () => {
     it('should succeed', async () => {
       requestMock.mockResolvedValueOnce({hits: []})
       expect.assertions(1)
-      await expect(lambda.handler()).toHaveProperty('ETag');
+      await expect(lambda.handler()).toHaveProperty('ETag')
     })
   })
   
   test('the fetch fails with an error', async () => {
-    await expect(lambda.handler()).rejects.toThrow('error');
-  });
+    await expect(lambda.handler()).rejects.toThrow('error')
+  })
 })
