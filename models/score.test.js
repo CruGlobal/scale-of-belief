@@ -31,7 +31,7 @@ describe('Score', () => {
     })
   })
 
-  //created by: jonahktjala
+  // created by: jonahktjala
   describe('Score.toScoreObject()', () => {
     it('should create a json object', () => {
       const scoreObject = {
@@ -54,7 +54,7 @@ describe('Score', () => {
     })
   })
 
-  //created by: jonahktjala
+  // created by: jonahktjala
   describe('Score.getAllScores()', () => {
     let score
     beforeEach(() => {
