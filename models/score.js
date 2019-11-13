@@ -59,8 +59,8 @@ Score.getAllScores = () => {
   }).then(scores => {
     scores.forEach(element => {
       scoreArray.push(Score.toScoreObject(element))
-    });
-    return Array.from(scoreArray);
+    })
+    return Array.from(scoreArray)
   })
 }
 

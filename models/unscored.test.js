@@ -38,7 +38,7 @@ describe('Unscored', () => {
     })
 
     it('should not return a null array of scored objects', () => {
-      expect.assertions(5);
+      expect.assertions(5)
       return Score.getAllUris().then((result)=>{
         //make sure that output is not null
         expect (result).not.toBeNull()

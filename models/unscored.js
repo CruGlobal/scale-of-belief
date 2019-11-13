@@ -27,8 +27,8 @@ Unscored.getAllUris = () => {
   }).then(unscored => {
     unscored.forEach(element => {
       unscoredArray.push(Unscored.toScoreObject(element))
-    });
-    return Array.from(unscoredArray);
+    })
+    return Array.from(unscoredArray)
   })
 }
 
