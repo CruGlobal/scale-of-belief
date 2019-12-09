@@ -14,7 +14,7 @@
     "db:migrate": "sequelize db:migrate",
     "db:migrate:test": "sequelize --env test db:migrate",
     "db:create": "sequelize db:create",
-    "db:create:test": "sequelize --env test db:migrate"
+    "db:create:test": "sequelize --env test db:create"
   },
   "engines": {
     "node": "> 10.0.0"
