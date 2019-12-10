@@ -48,8 +48,8 @@ provider:
       Action:
         - s3:PutObject
       Resource:
-        - arn:aws:s3::056154071827:uri-scoring
-        - arn:aws:s3::056154071827:uri-scoring/*
+        - arn:aws:s3:::uri-scoring
+        - arn:aws:s3:::uri-scoring/*
   environment: ${file(serverless/environment.js)}
 
 functions:
