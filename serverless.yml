@@ -5,6 +5,11 @@ custom:
     hooks:
       # Run database migrations
       'aws:deploy:finalize:cleanup': './node_modules/.bin/serverless --stage $ENVIRONMENT invoke --function migrate'
+  environmentMap:
+    production: prod
+    staging: stage
+    development: dev
+    lab: lab
 
 provider:
   runtime: nodejs10.x
