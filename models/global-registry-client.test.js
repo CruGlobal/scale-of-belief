@@ -29,9 +29,9 @@ describe('GlobalRegistryClient', () => {
         let promise = client.updatePlacement(['abc123', 'zyx987'], 6)
         expect(requestMock.post).toHaveBeenCalledTimes(2)
         expect(requestMock.post.mock.calls[0]).toEqual(
-          ['/entities/', { body: { entity: GlobalRegistryClient.placementBody('abc123', 6) } }])
+          ['/entities/', { body: { entity: GlobalRegistryClient.placementBody('abc123', 6) }, qs: {} }])
         expect(requestMock.post.mock.calls[1]).toEqual(
-          ['/entities/', { body: { entity: GlobalRegistryClient.placementBody('zyx987', 6) } }])
+          ['/entities/', { body: { entity: GlobalRegistryClient.placementBody('zyx987', 6) }, qs: {} }])
         return promise
       })
     })
@@ -41,7 +41,7 @@ describe('GlobalRegistryClient', () => {
         let promise = client.updatePlacement(['def456'], 3)
         expect(requestMock.post).toHaveBeenCalledTimes(1)
         expect(requestMock.post.mock.calls[0]).toEqual(
-          ['/entities/', { body: { entity: GlobalRegistryClient.placementBody('def456', 3) } }])
+          ['/entities/', { body: { entity: GlobalRegistryClient.placementBody('def456', 3) }, qs: {} }])
         return promise
       })
     })

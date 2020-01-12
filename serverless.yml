@@ -4,26 +4,55 @@ custom:
   scripts:
     hooks:
       # Run database migrations
-      'aws:deploy:finalize:cleanup': './node_modules/.bin/serverless --stage $ENVIRONMENT invoke --function migrate'
+      'aws:deploy:finalize:cleanup': 'npx serverless --stage $ENVIRONMENT invoke --function migrate --aws-profile serverless'
+  environmentMap:
+    production: prod
+    staging: stage
+    development: dev
+    lab: lab
 
 provider:
   name: aws
   runtime: nodejs10.x
-  stage: dev
+  stage: ${env:ENVIRONMENT}
   region: us-east-1
+  vpc:
+    securityGroupIds:
+      - ${file(${env:ECS_CONFIG}/bin/vars.yml):us-east-1.webapp_elb_sg}
+    subnetIds: ${file(${env:ECS_CONFIG}/bin/vars.yml):us-east-1.prod_apps_1_all}
+  stackTags:
+    Name: ${env:PROJECT_NAME}-${self:custom.environmentMap.${env:ENVIRONMENT}}
+    owner: udp-support@cru.org
+    application: ${env:PROJECT_NAME}
+    env: ${self:custom.environmentMap.${env:ENVIRONMENT}}
+    managed_by: serverless-framework
+    function: lambda
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - SNS:Publish
+        - SNS:Subscribe
+      Resource:
+        - ${env:SNS_TOPIC_ARN}
+        - ${env:AEM_SNS_TOPIC_ARN}
+    - Effect: Allow
+      Action:
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueAttributes
+        - sqs:ChangeMessageVisibility
+        - sqs:SendMessage
+      Resource:
+        Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+      Resource:
+        - arn:aws:s3:::uri-scoring
+        - arn:aws:s3:::uri-scoring/*
   environment: ${file(serverless/environment.js)}
-  $<<: ${file(serverless/provider.js)}
 
 functions:
-  placement:
-    handler: kinesis/placement.handler
-    timeout: 300
-    events:
-      - stream:
-          arn: ${env:KINESIS_SNOWPLOW_ENRICH_ARN}
-          batchSize: 10
-          startingPosition: LATEST
-          enabled: true
   api:
     handler: api/index.handler
     timeout: 30
@@ -82,10 +111,141 @@ package:
     - .deployment/**
 
 plugins:
-  - '@cruglobal/serverless-merge-config'
   - serverless-plugin-bind-deployment-id
   - serverless-plugin-scripts
   - serverless-offline
 
 resources:
-  $<<: ${file(serverless/resources.js)}
+  Resources:
+    IamRoleLambdaExecution:
+      Properties:
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess
+
+    S3BucketAppPublic:
+      Type: 'AWS::S3::Bucket'
+      Properties:
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+        BucketName:
+          Fn::Join: ['', [Ref: AWS::StackName, "-app-public"]]
+
+    ApiGatewayRestApi:
+      Properties:
+        Name:
+          Ref: AWS::StackName
+        BinaryMediaTypes:
+          - 'image/*'
+
+    ApiGatewayMethodAppGet:
+      Type: 'AWS::ApiGateway::Method'
+      Properties:
+        HttpMethod: GET
+        ResourceId:
+          Fn::GetAtt:
+            - ApiGatewayRestApi
+            - RootResourceId
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ApiKeyRequired: false
+        AuthorizationType: NONE
+        Integration:
+          Type: HTTP_PROXY
+          Uri:
+            Fn::Join: ['', [Fn::GetAtt: [S3BucketAppPublic, WebsiteURL], '/index.html']]
+          PassthroughBehavior: WHEN_NO_MATCH
+          IntegrationHttpMethod: GET
+      DependsOn:
+        - S3BucketAppPublic
+
+    ApiGatewayResourceAppProxy:
+      Type: 'AWS::ApiGateway::Resource'
+      Properties:
+        ParentId:
+          Fn::GetAtt:
+            - ApiGatewayRestApi
+            - RootResourceId
+        PathPart: '{proxy+}'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+
+    ApiGatewayMethodAppProxyAny:
+      Type: 'AWS::ApiGateway::Method'
+      Properties:
+        HttpMethod: ANY
+        ResourceId:
+          Ref: ApiGatewayResourceAppProxy
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ApiKeyRequired: false
+        AuthorizationType: NONE
+        RequestParameters:
+          method.request.path.proxy: true
+        Integration:
+          Type: HTTP_PROXY
+          Uri:
+            Fn::Join: ['', [Fn::GetAtt: [S3BucketAppPublic, WebsiteURL], '/{proxy}']]
+          PassthroughBehavior: WHEN_NO_MATCH
+          IntegrationHttpMethod: GET
+          RequestParameters:
+            integration.request.path.proxy: method.request.path.proxy
+      DependsOn:
+        - S3BucketAppPublic
+
+    ApiGatewayResourcePathMapping:
+      Type: 'AWS::ApiGateway::BasePathMapping'
+      Properties:
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        DomainName: 'content-scoring.cru.org'
+        Stage: ${opt:stage}
+      DependsOn:
+        - __deployment__
+
+    __deployment__:
+      DependsOn:
+        - ApiGatewayMethodApiAnyVarAny
+        - ApiGatewayMethodAppGet
+        - ApiGatewayMethodAppProxyAny
+
+    UDPEnrichedEventsDLQ:
+      Type: AWS::SQS::Queue
+
+    UDPEnrichedEventsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        # See https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-queueconfig
+        MessageRetentionPeriod: 604800 # 7 days
+        VisibilityTimeout: 2100 # 300s lambda timeout * 6
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt: [ UDPEnrichedEventsDLQ, Arn ]
+          maxReceiveCount: 5
+
+    # This policy grants SQS:SendMessage to the snowplow sub-account
+    SnowplowEventsQueuePolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        PolicyDocument:
+          Id: SnowplowEventsQueuePolicy
+          Version: '2012-10-17'
+          Statement:
+            - Sid: Allow-Snowplow-SendMessage
+              Effect: Allow
+              Principal:
+                AWS:
+                  - 699385956789
+                  - 056154071827
+              Action:
+                - sqs:SendMessage
+              Resource: "*"
+        Queues:
+          - Ref: UDPEnrichedEventsQueue
+
+  Outputs:
+    AppBucket:
+      Value:
+        Ref: S3BucketAppPublic
+
