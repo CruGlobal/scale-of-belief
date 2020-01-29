@@ -4,9 +4,8 @@ const {forEach} = require('lodash')
 const util = require('../util/util')
 const Unscored = require('../../models/unscored')
 const Score = require('../../models/score')
-const {Op} = require('sequelize')
 
-const get = (frequest, response) => {
+const get = (request, response) => {
   let page = request.query['page']
   let perPage = request.query['per_page']
   let order = request.query['order']
@@ -36,7 +35,7 @@ const get = (frequest, response) => {
   Score.findAndCountAll({
     limit: perPage,
     offset: offset,
-    order: [[orderBy, order]]
+    order: [['uri', order]]
   }).then((scores) => {
     forEach(scores.rows, (score) => {
       urisList.push(Score.toUriScore(score))
