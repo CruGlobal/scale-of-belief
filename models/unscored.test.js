@@ -39,12 +39,12 @@ describe('Unscored', () => {
 
     it('should not return a null array of scored objects', () => {
       return Unscored.getAllUris().then((result)=>{
-        //make sure that output is not null
+        //make sure that output is not null 
         expect (result).not.toBeNull()
         expect (result).toBeDefined()
         let oneEntry = result[0]
         
-        //check that property values are not null
+        //check that property values are not null 
         const exclude = ['revision']
         expect (oneEntry).toBeDefined()
         expect (oneEntry).not.toBeNull()

@@ -26,7 +26,8 @@ module.exports.handler = async (lambdaEvent) => {
   await Score.getAllScores().then( (response) => {
     scored = response
     allUris = scored.concat(unscored)
-  }) 
+  })
+
 
   await new ObjectsToCsv(allUris).toString().then((response) => {
     var csv = response
