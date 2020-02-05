@@ -13,20 +13,25 @@ describe('Unscored', () => {
 
   // created by: jonahktjala
   describe('Unscored.toScoreObject()', () => {
-    let unscored
+    let unscoredUri
     beforeEach(() => {
-      return factory.create('unscored').then(existingScore => { unscored = existingScore })
+      return factory.create('existing_unscored').then(existingUnscored => { unscoredUri = existingUnscored })
     })
-    const expectedApiScore = {
-      uri: unscored.uri,
-      score: -1,
-      weight: 0
-    }
-    return Unscored.toScoreObject(unscored).then((result) => {
-      const exclude = ['last_refreshed']
-      expect(result).toBeDefined()
-      expect(result).not.toBeNull()
-      expect(omit(result, exclude)).toEqual(expectedApiScore)
+
+    test('should return formatted object', () => {
+      const expectedApiScore = {
+        uri: unscoredUri.uri,
+        score: -1,
+        weight: 0
+      }
+      expect.assertions(3)
+      expect(unscoredUri).toBeDefined()
+      return Unscored.toScoreObject(unscoredUri).then((result) => {
+        const exclude = ['last_refreshed']
+        expect(result).toBeDefined()
+        expect(result).not.toBeNull()
+        expect(omit(result, exclude)).toEqual(expectedApiScore)
+      })
     })
   })
 

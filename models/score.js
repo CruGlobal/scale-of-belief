@@ -2,6 +2,7 @@
 
 const {DataTypes} = require('sequelize')
 const sequelize = require('../config/sequelize')
+const {Op} = require('sequelize')
 require('../config/papertrail')
 const Score = sequelize().define('Score', {
   uri: {
@@ -55,7 +56,12 @@ Score.getAllScores = () => {
   const scoreArray = []
   // find multiple entries
   return Score.findAll({
-    attributes: ['uri', 'score', 'weight']
+    attributes: ['uri', 'score', 'weight'],
+    where: {
+      uri: {
+        [Op.regexp]: '^(http|https)://'
+      }
+    }
   }).then(scores => {
     scores.forEach(element => {
       scoreArray.push(Score.toScoreObject(element))

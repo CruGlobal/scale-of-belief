@@ -2,7 +2,7 @@
 
 const {DataTypes} = require('sequelize')
 const sequelize = require('../config/sequelize')
-
+const {Op} = require('sequelize')
 const Unscored = sequelize().define('Unscored', {
   uri: {
     type: DataTypes.STRING(2048),
@@ -23,7 +23,12 @@ Unscored.getAllUris = () => {
   const unscoredArray = []
   // find multiple entries
   return Unscored.findAll({
-    attributes: ['uri']
+    attributes: ['uri'],
+    where: {
+      uri: {
+        [Op.regexp]: '^(http|https)://'
+      }
+    }
   }).then(unscored => {
     unscored.forEach(element => {
       unscoredArray.push(Unscored.toScoreObject(element))
