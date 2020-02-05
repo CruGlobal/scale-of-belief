@@ -12,10 +12,10 @@ const ObjectsToCsv = require('objects-to-csv')
  * author: jonahkjala
  */
 module.exports.handler = async (lambdaEvent) => {
-  const path = "scores.csv"
+  const path = 'scores.csv'
   const bucketName = process.env.S3_SCORED_URIS_BUCKET
   const s3bucket = new AWS.S3({apiVersion: '2006-03-01'})
-  
+
   var unscored = []
   var scored = []
   var allUris = []
@@ -23,11 +23,10 @@ module.exports.handler = async (lambdaEvent) => {
   await Unscored.getAllUris().then((response) => {
     unscored = response
   })
-  await Score.getAllScores().then( (response) => {
+  await Score.getAllScores().then((response) => {
     scored = response
     allUris = scored.concat(unscored)
   })
-
 
   await new ObjectsToCsv(allUris).toString().then((response) => {
     var csv = response
@@ -37,8 +36,8 @@ module.exports.handler = async (lambdaEvent) => {
       Body: csv
     }
 
-    s3bucket.putObject(param, function(err, response) {
-      if(err) {
+    s3bucket.putObject(param, function (err, response) {
+      if (err) {
         rollbar.error('Upload csv error: ' + err, err)
         throw err
       } else {
@@ -46,5 +45,5 @@ module.exports.handler = async (lambdaEvent) => {
         return response
       }
     })
-  }) 
+  })
 }

@@ -47,7 +47,7 @@ describe('Score', () => {
         weight: scoreObject.weight
       }
 
-      return Score.toScoreObject(scoreObject).then((result)=> {
+      return Score.toScoreObject(scoreObject).then((result) => {
         expect(result).toBeDefined()
         expect(result).toEqual(expectedApiScore)
       })
@@ -63,17 +63,17 @@ describe('Score', () => {
 
     it('should not return a null array of scored objects', () => {
       expect.assertions(5)
-      return Score.getAllScores().then((result)=>{
-        //make sure that output is not null
-        expect (result).not.toBeNull()
-        expect (result).toBeDefined()
+      return Score.getAllScores().then((result) => {
+        // make sure that output is not null
+        expect(result).not.toBeNull()
+        expect(result).toBeDefined()
         let oneEntry = result[0]
-        
-        //check that property values are not null
+
+        // check that property values are not null
         const exclude = ['revision']
-        expect (oneEntry).toBeDefined()
-        expect (oneEntry).not.toBeNull()
-        expect (oneEntry).toHaveProperty(omit(score.dataValues,exclude).keys())
+        expect(oneEntry).toBeDefined()
+        expect(oneEntry).not.toBeNull()
+        expect(oneEntry).toHaveProperty(omit(score.dataValues, exclude).keys())
       })
     })
   })

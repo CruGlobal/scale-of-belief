@@ -17,11 +17,11 @@ const Unscored = sequelize().define('Unscored', {
   timestamps: false
 })
 
-//get all scores from database 
-//jonah, oct 24, 2019 
+// get all scores from database
+// jonah, oct 24, 2019
 Unscored.getAllUris = () => {
   const unscoredArray = []
-  // find multiple entries 
+  // find multiple entries
   return Unscored.findAll({
     attributes: ['uri']
   }).then(unscored => {
@@ -32,10 +32,10 @@ Unscored.getAllUris = () => {
   })
 }
 
-//return new object with chosen attributes 
-//jonah, october 24 
+// return new object with chosen attributes
+// jonah, october 24
 Unscored.toScoreObject = (element) => {
-  return{
+  return {
     uri: element.uri,
     weight: 0,
     score: -1

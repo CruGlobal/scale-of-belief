@@ -49,13 +49,13 @@ Score.toApiScore = (score) => {
   }
 }
 
-//get all scores from database 
-//jonah, oct 24, 2019 
+// get all scores from database
+// jonah, oct 24, 2019
 Score.getAllScores = () => {
   const scoreArray = []
   // find multiple entries
   return Score.findAll({
-    attributes: ['uri','score','weight'] 
+    attributes: ['uri', 'score', 'weight']
   }).then(scores => {
     scores.forEach(element => {
       scoreArray.push(Score.toScoreObject(element))
@@ -64,8 +64,8 @@ Score.getAllScores = () => {
   })
 }
 
-//return new object with chosen attributes 
-//jonah, october 24 
+// return new object with chosen attributes
+// jonah, october 24
 Score.toScoreObject = (element) => {
   return {
     uri: element.uri,

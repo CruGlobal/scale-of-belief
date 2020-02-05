@@ -156,10 +156,8 @@ factory.define('unscored', Unscored, {
 
 factory.define('recommendation', Recommendation, {})
 
-
 factory.define('uri_s3', 's3_result', {
   Etag: '"2530ed87d5aac1f605733610ad21b429"'
 })
-
 
 module.exports = factory
