@@ -15,5 +15,5 @@ test('test for putObject in s3', async () => {
       Body: 'test document'
     }
   })
-  expect(await lambda.lambdaEvent()).toEqual('test document')
+  expect(await lambda.handler()).toEqual('test document')
 })
