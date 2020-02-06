@@ -26,7 +26,9 @@ Unscored.getAllUris = () => {
     attributes: ['uri'],
     where: {
       uri: {
-        [Op.regexp]: '^(http|https)://'
+        [Op.notILike]: {
+          [Op.any]: ['%apply.cru.org%','%mpdx.org%']
+        }
       }
     }
   }).then(unscored => {

@@ -29,17 +29,32 @@ describe('Unscored', () => {
 
   // created by: jonahktjala
   describe('Unscored.getAllUris() matching https', () => {
-    const expected = [
-      expect.stringMatching('^(http|https)://')
-    ]
     test('Unscored.getAllUris valid and not null', () => {
       return Unscored.getAllUris().then(result => {
         // make sure that output is not null
         expect(result).toBeDefined()
-        // make sure it contains https
-        expect(result).toEqual(
-          expect.arrayContaining(expected)
-        )
+        // make sure it does not contain blacklisted items
+        expect.extend({
+          toContainObject(received, argument){
+            const pass = this.equals(received,
+              expect.arrayContaining([
+                expect.objectContaining(argument)
+              ]))
+
+            if (pass) {
+              return{
+                pass: true
+              }
+            }
+            else {
+              return{
+                pass: false
+              }
+            }
+          }
+        })
+        expect(result).not.toContainObject({uri:'%apply.cru.org%'})
+        expect(result).not.toContainObject({uri:'%mpdx.org%'})
       })
     })
   })
