@@ -56,7 +56,7 @@ describe('Score', () => {
   // created by: jonahktjala
   describe('Score.getAllScores()', () => {
     it('should not return a null array of scored objects', () => {
-      expect.assertions(3)
+      expect.assertions(4)
       return Score.getAllScores().then((result) => {
         // make sure that output is not null
         expect(result).not.toBeNull()
