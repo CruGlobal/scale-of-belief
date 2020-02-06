@@ -1,19 +1,19 @@
-'use strict'
-
+const mockS3PutObject = jest.fn()
 const lambda = require('./uri-scored')
 
-jest.mock('pg', () => ({
-  Client: jest.fn()
-}))
+jest.mock('aws-sdk', () => {
+  return {
+    S3: jest.fn(() => ({
+      putObject: mockS3PutObject
+    }))
+  }
+})
 
-describe('uri-scored', () => {
-  it('Should be defined', () => {
-    expect(lambda).toBeDefined()
+test('test for putObject in s3', async () => {
+  mockS3PutObject.mockImplementation(params => {
+    return {
+      Body: 'test document'
+    }
   })
-
-  describe('success in copy to s3', () => {
-    it('should succeed', async () => {
-      await expect(lambda.handler()).resolves.not.toBeNull()
-    })
-  })
+  expect(await lambda.lambdaEvent()).toEqual('test document')
 })

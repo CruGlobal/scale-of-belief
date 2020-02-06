@@ -47,33 +47,42 @@ describe('Score', () => {
         weight: scoreObject.weight
       }
 
-      return Score.toScoreObject(scoreObject).then((result) => {
-        expect(result).toBeDefined()
-        expect(result).toEqual(expectedApiScore)
-      })
+      let toScoreObject = Score.toScoreObject(scoreObject)
+      expect(toScoreObject).toBeDefined()
+      expect(toScoreObject).toEqual(expectedApiScore)
     })
   })
 
   // created by: jonahktjala
   describe('Score.getAllScores()', () => {
-    let score
-    beforeEach(() => {
-      return factory.create('existing_score').then(existingScore => { score = existingScore })
-    })
-
     it('should not return a null array of scored objects', () => {
       expect.assertions(3)
       return Score.getAllScores().then((result) => {
         // make sure that output is not null
         expect(result).not.toBeNull()
         expect(result).toBeDefined()
-        let oneEntry = result[0]
 
-        // check that property values are not null
-        const exclude = ['revision']
-        expect(oneEntry).toBeDefined()
-        expect(oneEntry).not.toBeNull()
-        expect(oneEntry).toHaveProperty(omit(score.dataValues, exclude).keys())
+        // make sure it does not contain blacklisted items
+        expect.extend({
+          toContainObject (received, argument) {
+            const pass = this.equals(received,
+              expect.arrayContaining([
+                expect.objectContaining(argument)
+              ]))
+
+            if (pass) {
+              return {
+                pass: true
+              }
+            } else {
+              return {
+                pass: false
+              }
+            }
+          }
+        })
+        expect(result).not.toContainObject({uri: '%apply.cru.org%'})
+        expect(result).not.toContainObject({uri: '%mpdx.org%'})
       })
     })
   })

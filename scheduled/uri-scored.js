@@ -5,6 +5,7 @@ const rollbar = require('../config/rollbar')
 const Score = require('../models/score')
 const Unscored = require('../models/unscored')
 const ObjectsToCsv = require('objects-to-csv')
+const s3bucket = new AWS.S3({apiVersion: '2006-03-01'})
 
 /**
  * a function to get all URI scored and unscored from the database
@@ -14,7 +15,6 @@ const ObjectsToCsv = require('objects-to-csv')
 module.exports.handler = async (lambdaEvent) => {
   const path = 'scores.csv'
   const bucketName = process.env.S3_SCORED_URIS_BUCKET
-  const s3bucket = new AWS.S3({apiVersion: '2006-03-01'})
 
   var unscored = []
   var scored = []

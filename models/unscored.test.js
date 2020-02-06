@@ -28,7 +28,7 @@ describe('Unscored', () => {
   })
 
   // created by: jonahktjala
-  describe('Unscored.getAllUris() matching https', () => {
+  describe('Unscored.getAllUris() filtered', () => {
     test('Unscored.getAllUris valid and not null', () => {
       return Unscored.getAllUris().then(result => {
         // make sure that output is not null

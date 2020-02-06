@@ -59,7 +59,9 @@ Score.getAllScores = () => {
     attributes: ['uri', 'score', 'weight'],
     where: {
       uri: {
-        [Op.regexp]: '^(http|https)://'
+        [Op.notILike]: {
+          [Op.any]: ['%apply.cru.org%', '%mpdx.org%']
+        }
       }
     }
   }).then(scores => {
