@@ -37,13 +37,16 @@ module.exports.handler = async (lambdaEvent) => {
     }
 
     s3bucket.putObject(param, function (err, response) {
+      let result = ''
       if (err) {
         rollbar.error('Upload csv error: ' + err, err)
+        result = 'error'
         throw err
       } else {
         rollbar.warn(response)
-        return response
+        result = 'success'
       }
+      return result
     })
   })
 }
