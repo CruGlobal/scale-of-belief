@@ -27,7 +27,7 @@ Unscored.getAllUris = () => {
     where: {
       uri: {
         [Op.notILike]: {
-          [Op.any]: ['%apply.cru.org%','%mpdx.org%']
+          [Op.any]: ['%apply.cru.org%', '%mpdx.org%']
         }
       }
     }

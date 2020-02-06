@@ -35,26 +35,25 @@ describe('Unscored', () => {
         expect(result).toBeDefined()
         // make sure it does not contain blacklisted items
         expect.extend({
-          toContainObject(received, argument){
+          toContainObject (received, argument) {
             const pass = this.equals(received,
               expect.arrayContaining([
                 expect.objectContaining(argument)
               ]))
 
             if (pass) {
-              return{
+              return {
                 pass: true
               }
-            }
-            else {
-              return{
+            } else {
+              return {
                 pass: false
               }
             }
           }
         })
-        expect(result).not.toContainObject({uri:'%apply.cru.org%'})
-        expect(result).not.toContainObject({uri:'%mpdx.org%'})
+        expect(result).not.toContainObject({uri: '%apply.cru.org%'})
+        expect(result).not.toContainObject({uri: '%mpdx.org%'})
       })
     })
   })
