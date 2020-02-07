@@ -149,11 +149,9 @@ factory.extend('api_user', 'created_user', {
   type: null
 })
 
-factory.define('unscored', Unscored, {})
-
-factory.extend('unscored', 'existing_unscored', {
+factory.define('unscored', Unscored, {
   uri: 'http://someuri.com',
-  last_refreshed: '2020-02-05'
+  last_refreshed: new Date()
 })
 
 factory.define('recommendation', Recommendation, {})
