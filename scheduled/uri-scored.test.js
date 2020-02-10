@@ -12,7 +12,7 @@ jest.mock('aws-sdk', () => {
 test('test for putObject in s3', async () => {
   mockS3PutObject.mockImplementation(params => {
     return {
-      Body: 'test document'
+      Body: 'success'
     }
   })
   expect(await lambda.handler()).toEqual('test document')
