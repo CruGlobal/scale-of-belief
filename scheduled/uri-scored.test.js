@@ -1,19 +1,14 @@
 const mockS3PutObject = jest.fn()
 
-jest.mock('aws-sdk', () => {
-  return {
-    S3: jest.fn(() => ({
-      putObject: mockS3PutObject
-    }))
-  }
-})
+AWS.S3.prototype = {
+  putObject: jest.fn()
+}
 
 test('test for putObject in s3', async () => {
-  let params = {}
-  mockS3PutObject.mockImplementation(params => {
+  AWS.S3.putObject.mockImplementation(params => {
     return {
       Body: 'success'
     }
   })
-  expect(jest.mock.putObject).toHaveBeenCalledWith(params)
+  expect(AWS.S3.putObject).toHaveBeenCalledWith({aaa:123})
 })
