@@ -15,5 +15,5 @@ test('test for putObject in s3', async () => {
       Body: 'success'
     }
   })
-  expect(await lambda.handler()).toEqual('success')
+  expect(jest.mock.putObject).toHaveBeenCalledWith(params)
 })
