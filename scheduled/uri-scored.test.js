@@ -1,5 +1,4 @@
 const mockS3PutObject = jest.fn()
-const lambda = require('./uri-scored')
 
 jest.mock('aws-sdk', () => {
   return {
@@ -10,6 +9,7 @@ jest.mock('aws-sdk', () => {
 })
 
 test('test for putObject in s3', async () => {
+  let params = {}
   mockS3PutObject.mockImplementation(params => {
     return {
       Body: 'success'
