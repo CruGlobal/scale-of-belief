@@ -10,8 +10,7 @@ const Unscored = sequelize().define('Unscored', {
       return this.getDataValue('uri').toLowerCase()
     },
     primaryKey: true
-  },
-  last_refreshed: DataTypes.DATE
+  }
 }, {
   tableName: 'unscored',
   timestamps: false
