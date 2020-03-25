@@ -21,6 +21,23 @@ tags:
     description: Content Scoring
 
 paths:
+  /uris:
+    get:
+      summary: Get all uris unscored and scored
+      tags:
+        - uris
+      security:
+        - ApiKeyAuth: []
+        - JwtAuth: []
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ContentScore'
+        401:
+          $ref: '#/responses/Unauthorized'
+        404:
+          $ref: '#/responses/NotFound'
   /score:
     get:
       summary: Get single content score by uri

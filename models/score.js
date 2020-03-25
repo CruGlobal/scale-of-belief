@@ -2,6 +2,7 @@
 
 const {DataTypes} = require('sequelize')
 const sequelize = require('../config/sequelize')
+const {Op} = require('sequelize')
 require('../config/papertrail')
 const Score = sequelize().define('Score', {
   uri: {
@@ -46,6 +47,52 @@ Score.toApiScore = (score) => {
     uri: score.uri,
     score: score.score,
     weight: score.weight
+  }
+}
+
+// get all scores from database
+// jonah, oct 24, 2019
+Score.getAllScores = () => {
+  const scoreArray = []
+  // find multiple entries
+  return Score.findAll({
+    attributes: ['uri', 'score', 'weight'],
+    where: {
+      uri: {
+        [Op.notILike]: {
+          [Op.any]: ['%apply.cru.org%', '%mpdx.org%']
+        }
+      }
+    }
+  }).then(scores => {
+    scores.forEach(element => {
+      scoreArray.push(Score.toScoreObject(element))
+    })
+    return Array.from(scoreArray)
+  })
+}
+
+// return new object with chosen attributes
+// jonah, october 24
+Score.toScoreObject = (element) => {
+  return {
+    uri: element.uri,
+    weight: element.weight,
+    score: element.score
+  }
+}
+
+Score.toUriScore = (score) => {
+  return {
+    uri: score.uri,
+    score: score.score
+  }
+}
+
+Score.toUnscored = (uri) => {
+  return {
+    uri: uri,
+    score: -1
   }
 }
 

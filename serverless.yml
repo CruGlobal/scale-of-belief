@@ -86,6 +86,11 @@ functions:
     timeout: 300
     events:
       - schedule: rate(4 hours)
+  uri-scored:
+    handler: scheduled/uri-scored.handler
+    timeout: 300
+    events:
+      - schedule: rate(12 hours)
   sync-score:
     handler: sns/sync-score.handler
     timeout: 30

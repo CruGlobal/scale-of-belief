@@ -150,10 +150,14 @@ factory.extend('api_user', 'created_user', {
 })
 
 factory.define('unscored', Unscored, {
-  uri: 'http://some.uri.com',
+  uri: 'http://someuri.com',
   last_refreshed: new Date()
 })
 
 factory.define('recommendation', Recommendation, {})
+
+factory.define('uri_s3', 's3_result', {
+  Etag: '"2530ed87d5aac1f605733610ad21b429"'
+})
 
 module.exports = factory

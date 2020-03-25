@@ -31,6 +31,62 @@ describe('Score', () => {
     })
   })
 
+  // created by: jonahktjala
+  describe('Score.toScoreObject()', () => {
+    it('should create a json object', () => {
+      const scoreObject = {
+        uri: 'http://somewhere.com',
+        score: 2,
+        weight: 3,
+        revision: 1
+      }
+
+      const expectedApiScore = {
+        uri: scoreObject.uri,
+        score: scoreObject.score,
+        weight: scoreObject.weight
+      }
+
+      let toScoreObject = Score.toScoreObject(scoreObject)
+      expect(toScoreObject).toBeDefined()
+      expect(toScoreObject).toEqual(expectedApiScore)
+    })
+  })
+
+  // created by: jonahktjala
+  describe('Score.getAllScores()', () => {
+    it('should not return a null array of scored objects', () => {
+      expect.assertions(4)
+      return Score.getAllScores().then((result) => {
+        // make sure that output is not null
+        expect(result).not.toBeNull()
+        expect(result).toBeDefined()
+
+        // make sure it does not contain blacklisted items
+        expect.extend({
+          toContainObject (received, argument) {
+            const pass = this.equals(received,
+              expect.arrayContaining([
+                expect.objectContaining(argument)
+              ]))
+
+            if (pass) {
+              return {
+                pass: true
+              }
+            } else {
+              return {
+                pass: false
+              }
+            }
+          }
+        })
+        expect(result).not.toContainObject({uri: '%apply.cru.org%'})
+        expect(result).not.toContainObject({uri: '%mpdx.org%'})
+      })
+    })
+  })
+
   describe('Score.retrieve()', () => {
     let score
     beforeEach(() => {
