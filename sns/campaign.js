@@ -8,7 +8,11 @@ const ACCESS_TOKEN = 'scale-of-belief-lambda-campaign-access-token'
 const retrieveAccessToken = () => {
   return new Promise((resolve, reject) => {
     const redis = require('redis')
-    const redisClient = redis.createClient(process.env.REDIS_PORT_6379_TCP_ADDR_PORT, process.env.REDIS_PORT_6379_TCP_ADDR)
+    const redisClient = redis.createClient({
+      host: process.env.STORAGE_REDIS_HOST,
+      port: process.env.STORAGE_REDIS_PORT,
+      db: process.env.STORAGE_REDIS_DB_INDEX
+    })
 
     redisClient.on('error', (error) => {
       rollbar.warn(`Error connecting to Redis: ${error}`)
