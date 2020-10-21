@@ -4,7 +4,7 @@ custom:
   scripts:
     hooks:
       # Run database migrations
-      'aws:deploy:finalize:cleanup': 'npx serverless --stage $ENVIRONMENT invoke --function migrate --aws-profile serverless'
+      'aws:deploy:finalize:cleanup': 'npx serverless --stage $ENVIRONMENT invoke --function migrate'
   environmentMap:
     production: prod
     staging: stage
