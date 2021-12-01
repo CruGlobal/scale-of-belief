@@ -1,0 +1,73 @@
+name: Test and Lint
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Set up node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: '10'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn install --immutable --immutable-cache
+
+      - name: Run lint
+        run: ./node_modules/.bin/standard
+
+  test:
+    runs-on: ubuntu-latest
+    env:
+      DB_ENV_POSTGRESQL_DB: scale_of_belief
+      DB_ENV_POSTGRESQL_USER: postgres
+      DB_ENV_POSTGRESQL_PASS: postgres
+
+    services:
+      postgres:
+        # Docker Hub image
+        image: postgres:10
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 30s
+          --health-timeout 30s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Set up node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: '10'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn install --immutable --immutable-cache
+
+      - name: Create test database
+        run: ./node_modules/.bin/sequelize --env test db:create
+
+      - name: Populate test database
+        run: ./node_modules/.bin/sequelize --env test db:migrate
+
+      - name: Run tests with coverage
+        run: ./node_modules/.bin/jest --forceExit --coverage
+
+      - name: Print code coverage
+        run: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
