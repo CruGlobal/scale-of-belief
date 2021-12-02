@@ -35,8 +35,8 @@ jobs:
         # Docker Hub image
         image: postgres:10
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: ${{env.DB_ENV_POSTGRESQL_USER}}
+          POSTGRES_PASSWORD: ${{env.DB_ENV_POSTGRESQL_PASS}}
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
