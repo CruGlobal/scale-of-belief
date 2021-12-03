@@ -2,6 +2,8 @@
 
 This repo contains the scale of belief placement, api and admin application lambda functions.
 
+[![codecov](https://codecov.io/gh/CruGlobal/scale-of-belief/branch/master/graph/badge.svg?token=EOFfiP882y)](https://codecov.io/gh/CruGlobal/scale-of-belief)
+
 ## Requirements
 * NodeJS >= 8.10
 * PostgreSQL
