@@ -2,6 +2,8 @@
 
 This repo contains the scale of belief placement, api and admin application lambda functions.
 
+[![codecov](https://codecov.io/gh/CruGlobal/scale-of-belief/branch/master/graph/badge.svg?token=EOFfiP882y)](https://codecov.io/gh/CruGlobal/scale-of-belief)
+
 ## Requirements
 * NodeJS >= 8.10
 * PostgreSQL
@@ -57,25 +59,6 @@ yarn test
 `deploy.sh` is currently hard-coded to deploy to the staging environment. This file can be used to
 deploy to lambda using serverless and is an example of what Jenkins will eventually do when code is merged to the
 `master` or `staging` branches of the github repo.
-
-#### Blackbox
-Make sure ECS_CONFIG environment variable is set to the location where you have [ecs_config](https://github.com/CruGlobal/ecs_config) checked out. You'll
-probably want to add this to your `~/.bash_profile`.
-```bash
-export ECS_CONFIG=/Users/brian/src/other/ecs_config
-```
-```bash
-~$ echo $ECS_CONFIG
-/Users/brian/src/other/ecs_config
-```
-
-Ensure blackbox scale-of-belief-lambda staging files are decrypted.
-```bash
-~$ cd $ECS_CONFIG
-ecs_config$ blackbox_edit_start ecs/scale-of-belief-lambda/env.staging.gpg
-ecs_config$ cd -
-~$
-```
 
 #### Deploy
 From the project folder. This will deploy all the lambda functions as well as run migrations
