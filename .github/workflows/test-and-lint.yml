@@ -69,6 +69,5 @@ jobs:
       - name: Run tests with coverage
         run: yarn test
 
-      - name: Print code coverage
-        run: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
-        continue-on-error: true
+      - name: Codecov
+        uses: codecov/codecov-action@v2
