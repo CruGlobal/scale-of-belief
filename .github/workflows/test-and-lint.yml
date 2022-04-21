@@ -14,11 +14,11 @@ jobs:
       - name: Set up node version
         uses: actions/setup-node@v2
         with:
-          node-version: '10'
+          node-version: '16'
           cache: 'yarn'
 
       - name: Install Dependencies
-        run: yarn install --immutable --immutable-cache
+        run: yarn install --frozen-lockfile
 
       - name: Run lint
         run: yarn standard
@@ -54,11 +54,11 @@ jobs:
       - name: Set up node version
         uses: actions/setup-node@v2
         with:
-          node-version: '10'
+          node-version: '16'
           cache: 'yarn'
 
       - name: Install Dependencies
-        run: yarn install --immutable --immutable-cache
+        run: yarn install --frozen-lockfile
 
       - name: Create test database
         run: yarn db:create:test
