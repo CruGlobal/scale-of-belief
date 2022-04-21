@@ -11,7 +11,7 @@ const {
 const Context = require('./context')
 const Score = require('./score')
 const DerivedEvent = require('./derived-event')
-const {DataTypes, Sequelize} = require('sequelize')
+const { DataTypes, Sequelize } = require('sequelize')
 const sequelize = require('../config/sequelize')
 const Url = require('url')
 const logger = require('../config/logger')
@@ -162,7 +162,7 @@ const Event = sequelize().define('Event', {
   uri: {
     type: DataTypes.STRING(2048),
     get () {
-      let value = this.getDataValue('uri')
+      const value = this.getDataValue('uri')
       if (value) {
         return value.toLowerCase()
       }
@@ -222,7 +222,7 @@ Event.fromRecord = (base64Data) => {
   event.decodedFields = decoded
 
   // Log event_id with encoded data. Will allow re-creating kinesis stream locally for debugging
-  logger.debug(JSON.stringify({event_id: event.event_id, kinesis: {data: base64Data}}))
+  logger.debug(JSON.stringify({ event_id: event.event_id, kinesis: { data: base64Data } }))
   // Log mapped fields for easier visual debugging
   logger.info(JSON.stringify(mapValues(Fields, value => decoded[value])))
 
@@ -251,7 +251,7 @@ function uriFromEvent (event) {
   if (contexts && contexts.hasSchema(Context.SCHEMA_CONTENT_SCORING)) {
     try {
       const contentScoring = contexts.dataFor(Context.SCHEMA_CONTENT_SCORING)
-      const parsed = Url.parse(contentScoring.uri)
+      const parsed = new Url.URL(contentScoring.uri)
       format = {
         protocol: parsed.protocol,
         slashes: true,
@@ -276,11 +276,11 @@ function uriFromEvent (event) {
       protocol: event.app_id,
       slashes: true,
       hostname: event.event_name,
-      pathname: pathname
+      pathname
     }
   } else if (event.page_url) {
     try {
-      const parsed = Url.parse(event.page_url)
+      const parsed = new Url.URL(event.page_url)
       format = {
         protocol: parsed.protocol,
         slashes: true,
@@ -304,7 +304,7 @@ function uriFromEvent (event) {
 }
 
 Event.prototype.replace = function () {
-  let event = this
+  const event = this
   // Save the event, if no errors result, this is the end of the replace() method
   return this
     .save()
@@ -315,7 +315,7 @@ Event.prototype.replace = function () {
         return Event
         // Update every field except id and event_id, these are unique and don't need to be updated
           .update(omit(event.dataValues, ['id', 'event_id']), {
-            where: {event_id: event.event_id},
+            where: { event_id: event.event_id },
             returning: true
           })
           .then(results => {
@@ -332,7 +332,7 @@ Event.prototype.isScored = function () {
   if (typeof this.uri === 'undefined' || this.uri === null) {
     return Promise.resolve(false)
   }
-  return Score.findOne({where: {uri: this.uri}}).then(score => score !== null)
+  return Score.findOne({ where: { uri: this.uri } }).then(score => score !== null)
 }
 
 class InvalidEventError extends Error {}

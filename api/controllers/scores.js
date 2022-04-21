@@ -1,17 +1,17 @@
 'use strict'
 
 const Score = require('../../models/score')
-const {Op} = require('sequelize')
-const {forEach} = require('lodash')
+const { Op } = require('sequelize')
+const { forEach } = require('lodash')
 const util = require('../util/util')
 
 module.exports = {
   get: function (request, response) {
-    var uriPrefix = util.sanitizeUri(request.query['uri'])
-    let page = request.query['page']
-    let perPage = request.query['per_page']
-    let orderBy = request.query['order_by']
-    let order = request.query['order']
+    const uriPrefix = util.sanitizeUri(request.query.uri)
+    let page = request.query.page
+    let perPage = request.query.per_page
+    let orderBy = request.query.order_by
+    let order = request.query.order
 
     if (!util.isInt(page) || !util.isInt(perPage)) {
       page = 1
@@ -35,10 +35,10 @@ module.exports = {
         }
       },
       limit: perPage,
-      offset: offset,
+      offset,
       order: [[orderBy, order]]
     }).then((scores) => {
-      var transformedScores = []
+      const transformedScores = []
       forEach(scores.rows, (score) => {
         transformedScores.push(Score.toApiScore(score))
       })

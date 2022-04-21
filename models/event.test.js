@@ -2,7 +2,7 @@
 
 const Event = require('./event')
 const DerivedEvent = require('./derived-event')
-const {forEach} = require('lodash')
+const { forEach } = require('lodash')
 const path = require('path')
 const fs = require('fs')
 const factory = require('../test/factory')
@@ -23,12 +23,12 @@ describe('Event', () => {
 
   describe('Event.fromRecord()', () => {
     it('should throw InvalidEventError for malformed event', () => {
-      let record = 'Blah Blah Blah'
+      const record = 'Blah Blah Blah'
       expect(() => Event.fromRecord(record)).toThrowError(Event.InvalidEventError)
     })
 
     it('should throw InvalidEventError for event missing fields', () => {
-      let record = 'Blah Blah Blah'
+      const record = 'Blah Blah Blah'
       expect(() => Event.fromRecord(record)).toThrowError(Event.InvalidEventError)
     })
 
@@ -120,7 +120,7 @@ describe('Event', () => {
     describe('event does not exist', () => {
       let event
       beforeEach(() => {
-        return factory.build('web_event', {user_id: 123}).then(webEvent => { event = webEvent })
+        return factory.build('web_event', { user_id: 123 }).then(webEvent => { event = webEvent })
       })
 
       it('should save() the event', () => {
@@ -135,15 +135,15 @@ describe('Event', () => {
       let event1
       let event2
       beforeEach(() => {
-        let eventId = chance.guid()
+        const eventId = chance.guid()
         return Promise.all([
-          factory.create('web_event', {event_id: eventId, user_id: 123}).then(webUser => { event1 = webUser }),
-          factory.build('web_event', {event_id: eventId, user_id: 123}).then(webUser => { event2 = webUser })
+          factory.create('web_event', { event_id: eventId, user_id: 123 }).then(webUser => { event1 = webUser }),
+          factory.build('web_event', { event_id: eventId, user_id: 123 }).then(webUser => { event2 = webUser })
         ])
       })
 
       it('should update() the event', () => {
-        let spy = jest.spyOn(Event, 'update')
+        const spy = jest.spyOn(Event, 'update')
 
         return event2.replace().then(saved => {
           expect(saved.id).toEqual(event1.id)
@@ -155,7 +155,7 @@ describe('Event', () => {
     describe('event causes error', () => {
       let event
       beforeEach(() => {
-        return factory.build('web_event', {user_id: 123}).then(webEvent => { event = webEvent })
+        return factory.build('web_event', { user_id: 123 }).then(webEvent => { event = webEvent })
       })
 
       it('should throw the error', () => {
@@ -183,7 +183,7 @@ describe('Event', () => {
     describe('event with unscored uri', () => {
       let event
       beforeEach(() => {
-        return factory.build('web_event', {uri: 'sample://score'}).then(webEvent => { event = webEvent })
+        return factory.build('web_event', { uri: 'sample://score' }).then(webEvent => { event = webEvent })
       })
 
       it('should resolve \'false\'', () => {
@@ -196,9 +196,9 @@ describe('Event', () => {
     describe('event with scored uri', () => {
       let event
       beforeEach(() => {
-        return factory.build('web_event', {uri: 'sample://score'})
+        return factory.build('web_event', { uri: 'sample://score' })
           .then(webEvent => { event = webEvent })
-          .then(() => factory.create('existing_score', {uri: 'sample://score'}))
+          .then(() => factory.create('existing_score', { uri: 'sample://score' }))
       })
 
       it('should resolve \'true\'', () => {

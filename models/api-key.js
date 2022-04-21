@@ -1,6 +1,6 @@
 'use strict'
 
-const {DataTypes} = require('sequelize')
+const { DataTypes } = require('sequelize')
 const sequelize = require('../config/sequelize')
 const ApiKey = sequelize().define('ApiKey', {
   system: DataTypes.STRING,

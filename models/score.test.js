@@ -4,7 +4,7 @@ const Score = require('./score')
 const factory = require('../test/factory')
 const { omit } = require('lodash')
 const paperTrail = require('../config/papertrail')
-const Revisions = paperTrail['revisions']
+const Revisions = paperTrail.revisions
 
 describe('Score', () => {
   it('should be defined', () => {
@@ -134,6 +134,6 @@ describe('Score', () => {
   })
 
   afterAll(() => {
-    Revisions.destroy({truncate: true})
+    Revisions.destroy({ truncate: true })
   })
 })

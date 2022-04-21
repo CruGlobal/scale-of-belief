@@ -3,7 +3,7 @@
 const Sequelize = require('sequelize')
 const environment = process.env.NODE_ENV === 'test' ? 'test' : 'development'
 const config = require('./database')[environment]
-const {forEach} = require('lodash')
+const { forEach } = require('lodash')
 const requiredModels = [
   '../models/event',
   '../models/user',

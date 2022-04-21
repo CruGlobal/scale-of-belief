@@ -3,7 +3,7 @@
 // This file should be kept up to date with
 // https://github.com/CruGlobal/snowplow-dataflow/blob/master/playbooks/derived-events-model/01-derived-events/02-select-events.sql
 
-const {indexOf, isEmpty} = require('lodash')
+const { indexOf, isEmpty } = require('lodash')
 
 const BotUAFamily = 'Robot/Spider'
 

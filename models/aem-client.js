@@ -18,11 +18,11 @@ class AemClient {
   updateScore (uri, score) {
     const auth = 'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64')
 
-    let options = {
+    const options = {
       url: `${this.baseUrl}/bin/cru/content-scoring/sync`,
       form: this.scoreBody(score, uri),
       headers: {
-        'authorization': auth
+        authorization: auth
       }
     }
     return new Promise((resolve, reject) => {
@@ -38,7 +38,7 @@ class AemClient {
 
   scoreBody (score, uri) {
     return {
-      score: score,
+      score,
       resourceUri: uri
     }
   }

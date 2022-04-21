@@ -22,7 +22,7 @@ module.exports = {
           type: Sequelize.DATE
         }
       })
-      .then(() => queryInterface.addIndex('user_audits', {fields: ['updated_at']}))
+      .then(() => queryInterface.addIndex('user_audits', { fields: ['updated_at'] }))
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('user_audits', {})

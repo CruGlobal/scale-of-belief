@@ -25,7 +25,7 @@ module.exports = {
           defaultValue: []
         }
       })
-      .then(() => queryInterface.addIndex('recommendations', {fields: ['url'], unique: true}))
+      .then(() => queryInterface.addIndex('recommendations', { fields: ['url'], unique: true }))
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('recommendations', {})

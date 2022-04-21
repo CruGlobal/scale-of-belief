@@ -1,9 +1,9 @@
 'use strict'
 
-const {DataTypes} = require('sequelize')
+const { DataTypes } = require('sequelize')
 const sequelize = require('../config/sequelize')
 const titleCaps = require('../vendor/title-caps')
-const {last} = require('lodash')
+const { last } = require('lodash')
 const DEFAULT_CATEGORY = 'Cru.org'
 const RECOMMENDED_QUERY = `WITH recommended AS (
   SELECT *, array_length(ARRAY (
@@ -75,7 +75,7 @@ Recommendation.prototype.__defineGetter__('category', function () {
 
 Recommendation.prototype.findRecommended = function (placement) {
   return sequelize().query(RECOMMENDED_QUERY, {
-    replacements: {categories: this.categories, placement: placement, id: this.id},
+    replacements: { categories: this.categories, placement, id: this.id },
     type: sequelize().QueryTypes.SELECT,
     model: Recommendation
   })

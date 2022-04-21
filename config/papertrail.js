@@ -10,7 +10,7 @@ const Score = require('../models/score')
 const ApiKey = require('../models/api-key')
 const ApiUser = require('../models/api-user')
 
-let db = {}
+const db = {}
 
 const paperTrail = PaperTrail.init(sequelize(), {
   underscored: true,
@@ -19,15 +19,15 @@ const paperTrail = PaperTrail.init(sequelize(), {
   userModel: 'ApiUser', // This has to be defined, but is not being used right now
   revisionModel: 'revisions',
   documentIdType: Sequelize.STRING,
-//  revisionChangeModel: 'revision_changes',
-  debug: process.env['DEBUG'] === '*'
+  //  revisionChangeModel: 'revision_changes',
+  debug: process.env.DEBUG === '*'
 })
 
-db['User'] = User
-db['Event'] = Event
-db['Score'] = Score
-db['ApiKey'] = ApiKey
-db['ApiUser'] = ApiUser
+db.User = User
+db.Event = Event
+db.Score = Score
+db.ApiKey = ApiKey
+db.ApiUser = ApiUser
 
 paperTrail.defineModels(db)
 

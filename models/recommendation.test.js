@@ -10,12 +10,12 @@ describe('Recommendation', () => {
 
   describe('category', () => {
     it('should return last category with title caps applied', () => {
-      let rec = new Recommendation({categories: ['category-one', 'category-two', 'category-three']})
+      const rec = new Recommendation({ categories: ['category-one', 'category-two', 'category-three'] })
       expect(rec.category).toEqual('Category Three')
     })
 
     it('should return default category if categories is empty', () => {
-      let rec = new Recommendation()
+      const rec = new Recommendation()
       expect(rec.category).toEqual('Cru.org')
     })
   })
@@ -32,7 +32,7 @@ describe('Recommendation', () => {
       expect(querySpy).toHaveBeenCalledTimes(1)
       expect(querySpy.mock.calls[0][1]).toEqual({
         model: Recommendation,
-        replacements: {placement: 6, categories: recommendation.categories, id: 'abc123'},
+        replacements: { placement: 6, categories: recommendation.categories, id: 'abc123' },
         type: 'SELECT'
       })
     })

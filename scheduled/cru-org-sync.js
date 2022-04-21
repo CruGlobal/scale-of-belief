@@ -1,10 +1,11 @@
 'use strict'
+/* eslint prefer-regex-literals: "off" */
 
 const rollbar = require('../config/rollbar')
 const request = require('request-promise-native')
-const {assign, chunk, find, forEach, map} = require('lodash')
+const { assign, chunk, find, forEach, map } = require('lodash')
 const prefixMatch = new RegExp('^https?://(www\\.)?cru\\.org(/content/cru)?', 'i')
-const scoresQuery = `SELECT MD5(lower(uri)) AS id, uri AS url, score FROM scores WHERE uri ~* $1`
+const scoresQuery = 'SELECT MD5(lower(uri)) AS id, uri AS url, score FROM scores WHERE uri ~* $1'
 
 module.exports.handler = async (lambdaEvent) => {
   const sequelize = require('../config/sequelize')
@@ -32,8 +33,8 @@ module.exports.handler = async (lambdaEvent) => {
     }
 
     return new Promise((resolve, reject) => {
-      request(assign({}, options, {url: `http://${hosts[0]}/bin/querybuilder.json`})).then(resolve, () => {
-        request(assign({}, options, {url: `http://${hosts[1]}/bin/querybuilder.json`})).then(resolve, reject)
+      request(assign({}, options, { url: `http://${hosts[0]}/bin/querybuilder.json` })).then(resolve, () => {
+        request(assign({}, options, { url: `http://${hosts[1]}/bin/querybuilder.json` })).then(resolve, reject)
       })
     })
   }
@@ -45,26 +46,26 @@ module.exports.handler = async (lambdaEvent) => {
    * @returns {*}
    */
   const scoreTransform = (record, cruOrgJson) => {
-    let recommendation = new Recommendation(record)
+    const recommendation = new Recommendation(record)
 
     const path = recommendation.url.replace(prefixMatch, '/content/cru').replace('.html', '')
     if (path.indexOf('.') === -1) {
-      let page = find(cruOrgJson.hits, {'jcr:path': path})
+      const page = find(cruOrgJson.hits, { 'jcr:path': path })
       if (typeof page !== 'undefined') {
-        let [language, ...categories] = path.split('/').slice(4, -1)
+        const [language, ...categories] = path.split('/').slice(4, -1)
         /* istanbul ignore else */
         if (typeof page['jcr:content'] !== 'undefined') {
-          let content = page['jcr:content']
+          const content = page['jcr:content']
           /* istanbul ignore else */
           if (typeof content['jcr:title'] !== 'undefined') {
             recommendation.title = content['jcr:title'].trim()
           }
           if (typeof content['jcr:description'] !== 'undefined') {
             recommendation.message = content['jcr:description'].replace(new RegExp('[\\r\\n]', 'gi'), ' ').trim()
-          } else if (typeof content['subtitle'] !== 'undefined') {
-            recommendation.message = content['subtitle'].replace(new RegExp('[\\r\\n]', 'gi'), ' ').trim()
+          } else if (typeof content.subtitle !== 'undefined') {
+            recommendation.message = content.subtitle.replace(new RegExp('[\\r\\n]', 'gi'), ' ').trim()
           }
-          if (typeof content['image'] !== 'undefined' && typeof content['image']['fileReference'] !== 'undefined') {
+          if (typeof content.image !== 'undefined' && typeof content.image.fileReference !== 'undefined') {
             recommendation.thumbnail_url = recommendation.url.replace(/\.html$/i, '/_jcr_content/image.transform/CruHalf432x243/img.png')
           }
         }
@@ -83,19 +84,19 @@ module.exports.handler = async (lambdaEvent) => {
       sequelize().query(scoresQuery, {
         type: sequelize().QueryTypes.SELECT,
         bind: [prefixMatch.source],
-        transaction: transaction
+        transaction
       }),
-      Recommendation.truncate({transaction: transaction})
+      Recommendation.truncate({ transaction })
     ])
     const recommendations = []
     forEach(scores, (score) => {
-      let rec = scoreTransform(score, cruOrgJson)
+      const rec = scoreTransform(score, cruOrgJson)
       if (typeof rec !== 'undefined') {
         recommendations.push(rec)
       }
     })
     await Promise.all(map(chunk(recommendations, 50), (batch) => {
-      return Recommendation.bulkCreate(batch, {transaction: transaction})
+      return Recommendation.bulkCreate(batch, { transaction })
     }))
     await transaction.commit()
     return `Successfully synced ${recommendations.length} recommendations.`

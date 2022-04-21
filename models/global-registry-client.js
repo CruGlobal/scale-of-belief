@@ -6,7 +6,7 @@ class GlobalRegistryClient {
   constructor (baseUrl, apiKey) {
     this.baseUrl = baseUrl
     this.apiKey = apiKey
-    this.grClient = new GRClient({ baseUrl: baseUrl, accessToken: apiKey })
+    this.grClient = new GRClient({ baseUrl, accessToken: apiKey })
   }
 
   updatePlacement (masterPersonIds, placement) {
@@ -18,7 +18,7 @@ class GlobalRegistryClient {
   static placementBody (masterPersonId, placement) {
     return {
       scale_of_belief: {
-        placement: placement,
+        placement,
         client_integration_id: masterPersonId,
         'master_person:relationship': {
           master_person: masterPersonId,

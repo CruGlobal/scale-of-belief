@@ -14,7 +14,7 @@ const buildUnauthorizedError = (error) => {
 }
 
 const buildInvalidApiKey = () => {
-  var error = new Error('Unauthorized')
+  const error = new Error('Unauthorized')
   error.status = 401
   return error
 }
@@ -38,19 +38,18 @@ const sanitizeUri = (uri) => {
 }
 
 const isInt = (value) => {
-  let x
   if (isNaN(value)) {
     return false
   }
-  x = parseFloat(value)
+  const x = parseFloat(value)
   return (x | 0) === x
 }
 
 module.exports = {
-  buildUnauthorizedResponse: buildUnauthorizedResponse,
-  buildUnauthorizedError: buildUnauthorizedError,
-  buildInvalidApiKey: buildInvalidApiKey,
-  buildInternalErrorResponse: buildInternalErrorResponse,
-  sanitizeUri: sanitizeUri,
-  isInt: isInt
+  buildUnauthorizedResponse,
+  buildUnauthorizedError,
+  buildInvalidApiKey,
+  buildInternalErrorResponse,
+  sanitizeUri,
+  isInt
 }

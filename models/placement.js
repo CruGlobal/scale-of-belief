@@ -32,11 +32,11 @@ class Placement {
    * @returns {Promise}
    */
   calculate () {
-    let self = this
+    const self = this
     return sequelize()
-      .query(Placement.QUERY, {replacements: {user_id: this.user.id}, type: sequelize().QueryTypes.SELECT})
+      .query(Placement.QUERY, { replacements: { user_id: this.user.id }, type: sequelize().QueryTypes.SELECT })
       .then(results => {
-        let result = results[0]
+        const result = results[0]
         self._placement = typeof result === 'undefined' ? /* istanbul ignore next */ null : result.placement
         return self
       })

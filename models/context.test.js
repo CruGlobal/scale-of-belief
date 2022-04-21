@@ -17,12 +17,12 @@ describe('Context', () => {
 
   it('constructor accepts string', () => {
     const context = new Context('{"sample":{"test":[1,2,3]}}')
-    expect(context.context).toEqual({sample: {test: [1, 2, 3]}})
+    expect(context.context).toEqual({ sample: { test: [1, 2, 3] } })
   })
 
   it('constructor accepts object', () => {
-    const context = new Context({sample: {test: [1, 2, 3]}})
-    expect(context.context).toEqual({sample: {test: [1, 2, 3]}})
+    const context = new Context({ sample: { test: [1, 2, 3] } })
+    expect(context.context).toEqual({ sample: { test: [1, 2, 3] } })
   })
 
   it('throws a ContextError on invalid json string', () => {
