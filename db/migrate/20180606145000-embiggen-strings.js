@@ -2,7 +2,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return Promise.all([
-      queryInterface.changeColumn('events', 'uri', {type: Sequelize.STRING(2048)}),
+      queryInterface.changeColumn('events', 'uri', { type: Sequelize.STRING(2048) }),
       queryInterface.changeColumn('scores', 'uri', {
         type: Sequelize.STRING(2048),
         allowNull: false,

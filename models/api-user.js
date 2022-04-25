@@ -1,6 +1,6 @@
 'use strict'
 
-const {DataTypes} = require('sequelize')
+const { DataTypes } = require('sequelize')
 const sequelize = require('../config/sequelize')
 const ApiUser = sequelize().define('ApiUser', {
   guid: {
@@ -18,7 +18,7 @@ const ApiUser = sequelize().define('ApiUser', {
 ApiUser.retrieve = (guid) => {
   return ApiUser.findOne({
     where: {
-      guid: guid
+      guid
     }
   })
 }

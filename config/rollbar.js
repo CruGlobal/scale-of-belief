@@ -2,22 +2,22 @@
 
 const Rollbar = require('rollbar')
 const logger = require('./logger')
-const {includes} = require('lodash')
-const proxyMap = {critical: 'crit', error: 'error', warning: 'warning', info: 'info', debug: 'debug'}
+const { includes } = require('lodash')
+const proxyMap = { critical: 'crit', error: 'error', warning: 'warning', info: 'info', debug: 'debug' }
 
 const rollbar = new Rollbar({
   // https://rollbar.com/docs/notifier/rollbar.js/#configuration-reference
-  accessToken: process.env['ROLLBAR_ACCESS_TOKEN'],
+  accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
   // Enable rollbar on staging and production
-  enabled: includes(['staging', 'production'], process.env['ENVIRONMENT']),
+  enabled: includes(['staging', 'production'], process.env.ENVIRONMENT),
   payload: {
-    environment: process.env['ENVIRONMENT']
+    environment: process.env.ENVIRONMENT
   }
 })
 
 function errorSerializer (_key, value) {
   if (value instanceof Error) {
-    let error = {}
+    const error = {}
     Object.getOwnPropertyNames(value).forEach(key => {
       if (key === 'stack') {
         error[key] = value[key].split('\n').map(item => item.trim())
@@ -36,7 +36,7 @@ module.exports = new Proxy(rollbar, {
     if (prop in proxyMap) {
       const origFunc = obj[prop]
       return function (...args) {
-        logger[proxyMap[prop]].apply(this, [JSON.stringify(args, errorSerializer, process.env['IS_LOCAL'] ? 2 : 0)])
+        logger[proxyMap[prop]].apply(this, [JSON.stringify(args, errorSerializer, process.env.IS_LOCAL ? 2 : 0)])
         return origFunc.apply(this, args)
       }
     }

@@ -15,8 +15,8 @@ module.exports = {
         'WITH DATA'))
 
       // Now we can re-add the indexes
-      .then(() => queryInterface.addIndex('unscored', {fields: ['uri'], unique: true, name: 'idx_unscored_uri'}))
-      .then(() => queryInterface.addIndex('unscored', {fields: ['uri'], operator: 'text_pattern_ops', name: 'idx_unscored_uri_prefix'}))
+      .then(() => queryInterface.addIndex('unscored', { fields: ['uri'], unique: true, name: 'idx_unscored_uri' }))
+      .then(() => queryInterface.addIndex('unscored', { fields: ['uri'], operator: 'text_pattern_ops', name: 'idx_unscored_uri_prefix' }))
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.removeIndex('unscored', 'idx_unscored_uri')
@@ -28,7 +28,7 @@ module.exports = {
         'FROM events LEFT JOIN scores USING (uri) ' +
         'WHERE scores.uri IS NULL) ' +
         'WITH DATA'))
-      .then(() => queryInterface.addIndex('unscored', {fields: ['uri'], unique: true, name: 'idx_unscored_uri'}))
-      .then(() => queryInterface.addIndex('unscored', {fields: ['uri'], operator: 'text_pattern_ops', name: 'idx_unscored_uri_prefix'}))
+      .then(() => queryInterface.addIndex('unscored', { fields: ['uri'], unique: true, name: 'idx_unscored_uri' }))
+      .then(() => queryInterface.addIndex('unscored', { fields: ['uri'], operator: 'text_pattern_ops', name: 'idx_unscored_uri_prefix' }))
   }
 }

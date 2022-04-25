@@ -2,7 +2,7 @@
 
 const rollbar = require('../config/rollbar')
 const logger = require('../config/logger')
-const {forEach, chunk} = require('lodash')
+const { forEach, chunk } = require('lodash')
 const Placement = require('../models/placement')
 // const GlobalRegistry = require('../config/global-registry')
 const promiseRetry = require('promise-retry')
@@ -10,25 +10,25 @@ const AWS = require('aws-sdk')
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
   const sequelize = require('../config/sequelize')
-  const {IdentityStitcher, UnknownUserError, KnownTestUserError} = require('../models/identity-stitcher')
+  const { IdentityStitcher, UnknownUserError, KnownTestUserError } = require('../models/identity-stitcher')
   const Event = require('../models/event')
   const DerivedEvent = require('../models/derived-event')
 
   // Chunk event into 25 records and log
-  forEach(chunk(lambdaEvent['Records'], 25), records => logger.info(JSON.stringify(records)))
+  forEach(chunk(lambdaEvent.Records, 25), records => logger.info(JSON.stringify(records)))
 
   // Make sure we have event records
-  if (typeof lambdaEvent['Records'] !== 'undefined') {
+  if (typeof lambdaEvent.Records !== 'undefined') {
     // Keep track of all promises
     const completed = []
 
     // Iterate over each record
-    lambdaEvent['Records'].forEach((record) => {
+    lambdaEvent.Records.forEach((record) => {
       const eventCompleted = new Promise((resolve) => {
         try {
           // Build an event object from each record, catch any resulting errors (InvalidEventError)
           const event = Event.fromRecord(record.body)
-          Event.findOne({where: {event_id: event.event_id}}).then(existing => {
+          Event.findOne({ where: { event_id: event.event_id } }).then(existing => {
             if (existing !== null) {
               // Event with event_id already exists in the database, ignore it and resolve
               resolve(event)
@@ -43,7 +43,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
                       throw error
                     }
                   })
-              }, {retries: 3, minTimeout: 100})
+              }, { retries: 3, minTimeout: 100 })
                 .then(user => {
                   // IdentityStitcher returns a saved user, but we still need to save the event
                   event.replace().then(event => {
@@ -82,12 +82,12 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
                       resolve(event)
                     }
                   }, error => {
-                    rollbar.error('event.save() error', error, {record: record})
+                    rollbar.error('event.save() error', error, { record })
                     resolve(error)
                   })
                 }, error => {
                   if (!(error instanceof UnknownUserError || error instanceof KnownTestUserError)) {
-                    rollbar.error('IdentityStitcher(event) error', error, {record: record})
+                    rollbar.error('IdentityStitcher(event) error', error, { record })
                   }
                   resolve(error)
                 })
@@ -95,7 +95,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
           })
         } catch (error) {
           if (!(error instanceof DerivedEvent.InvalidDerivedEventError)) {
-            rollbar.error('Event.fromRecord(record) error', error, {record: record})
+            rollbar.error('Event.fromRecord(record) error', error, { record })
           }
           resolve(error)
         }

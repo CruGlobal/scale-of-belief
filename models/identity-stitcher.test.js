@@ -12,11 +12,11 @@ const chance = require('chance').Chance()
 const User = require('./user')
 const Event = require('./event')
 const UserAudit = require('./user-audit')
-const {sortBy, uniq, map} = require('lodash')
+const { sortBy, uniq, map } = require('lodash')
 
 describe('IdentityStitcher', () => {
   let user
-  let auditSpy = jest.spyOn(UserAudit, 'bulkCreate').mockImplementation(() => Promise.resolve())
+  const auditSpy = jest.spyOn(UserAudit, 'bulkCreate').mockImplementation(() => Promise.resolve())
   beforeEach(() => {
     auditSpy.mockClear()
     return factory.build('authenticated_web_user').then(webUser => { user = webUser })
@@ -59,7 +59,7 @@ describe('IdentityStitcher', () => {
   describe('has one match', () => {
     let other
     beforeEach(() => {
-      return factory.create('web_user', {mcid: user.mcid, domain_userid: user.domain_userid})
+      return factory.create('web_user', { mcid: user.mcid, domain_userid: user.domain_userid })
         .then(webUser => { other = webUser })
     })
 
@@ -80,7 +80,7 @@ describe('IdentityStitcher', () => {
   describe('has one false positive match', () => {
     let other
     beforeEach(() => {
-      return factory.create('authenticated_web_user', {mcid: user.mcid}).then(webUser => { other = webUser })
+      return factory.create('authenticated_web_user', { mcid: user.mcid }).then(webUser => { other = webUser })
     })
 
     it('should create new user and not merge', () => {
@@ -100,9 +100,9 @@ describe('IdentityStitcher', () => {
     let others
     beforeEach(() => {
       return Promise.all([
-        factory.create('web_user', {gr_master_person_id: user.gr_master_person_id}),
-        factory.create('web_user', {mcid: user.mcid}),
-        factory.create('web_user', {sso_guid: user.sso_guid})
+        factory.create('web_user', { gr_master_person_id: user.gr_master_person_id }),
+        factory.create('web_user', { mcid: user.mcid }),
+        factory.create('web_user', { sso_guid: user.sso_guid })
       ]).then((users) => { others = users })
     })
 
@@ -116,8 +116,8 @@ describe('IdentityStitcher', () => {
           others[1].gr_master_person_id, others[2].gr_master_person_id))
         expect(identity).toBeInstanceOf(User)
         expect(identity.id).toEqual(others[0].id)
-        expect(auditSpy).toHaveBeenCalledWith([{id: identity.id, old_id: others[2].id},
-          {id: identity.id, old_id: others[1].id}], expect.anything())
+        expect(auditSpy).toHaveBeenCalledWith([{ id: identity.id, old_id: others[2].id },
+          { id: identity.id, old_id: others[1].id }], expect.anything())
         expect(event.user_id).toEqual(identity.id)
         expect(sortBy(identity.mcid)).toEqual(sortBy(mcids))
         expect(identity.gr_master_person_id).toEqual(expect.arrayContaining(grids))
@@ -129,10 +129,10 @@ describe('IdentityStitcher', () => {
     let others
     beforeEach(() => {
       return Promise.all([
-        factory.create('web_user', {gr_master_person_id: user.gr_master_person_id}),
-        factory.create('authenticated_web_user', {mcid: user.mcid, domain_userid: user.domain_userid}), // false positive
-        factory.create('web_user', {sso_guid: user.sso_guid}),
-        factory.create('web_user', {mcid: user.mcid, sso_guid: [chance.guid()]}) // false positive
+        factory.create('web_user', { gr_master_person_id: user.gr_master_person_id }),
+        factory.create('authenticated_web_user', { mcid: user.mcid, domain_userid: user.domain_userid }), // false positive
+        factory.create('web_user', { sso_guid: user.sso_guid }),
+        factory.create('web_user', { mcid: user.mcid, sso_guid: [chance.guid()] }) // false positive
       ]).then((users) => { others = users })
     })
 
@@ -144,7 +144,7 @@ describe('IdentityStitcher', () => {
         const mcids = uniq([].concat(user.mcid, others[0].mcid, others[2].mcid))
         expect(identity).toBeInstanceOf(User)
         expect(identity.id).toEqual(others[0].id)
-        expect(auditSpy).toHaveBeenCalledWith([{id: identity.id, old_id: others[2].id}], expect.anything())
+        expect(auditSpy).toHaveBeenCalledWith([{ id: identity.id, old_id: others[2].id }], expect.anything())
         expect(event.user_id).toEqual(identity.id)
         expect(sortBy(identity.mcid)).toEqual(sortBy(mcids))
         expect(identity.gr_master_person_id).not.toEqual(expect.arrayContaining(others[1].gr_master_person_id))
@@ -156,12 +156,12 @@ describe('IdentityStitcher', () => {
     let others
     beforeEach(() => {
       return Promise.all([
-        factory.create('authenticated_web_user', {domain_userid: ['1234567890']}),
-        factory.create('authenticated_web_user', {domain_userid: ['1234567890']})
+        factory.create('authenticated_web_user', { domain_userid: ['1234567890'] }),
+        factory.create('authenticated_web_user', { domain_userid: ['1234567890'] })
       ]).then((users) => { others = users })
     })
     beforeEach(() => {
-      return factory.build('web_user', {domain_userid: ['1234567890']}).then(webUser => { user = webUser })
+      return factory.build('web_user', { domain_userid: ['1234567890'] }).then(webUser => { user = webUser })
     })
 
     it('should reject ambiguous and not merge', () => {
@@ -268,8 +268,8 @@ describe('IdentityStitcher', () => {
     let matches
     beforeEach(() => {
       return Promise.all([
-        factory.create('web_user', {sso_guid: [chance.guid().toLowerCase()]}),
-        factory.create('web_user', {mcid: user.mcid, domain_userid: user.domain_userid})
+        factory.create('web_user', { sso_guid: [chance.guid().toLowerCase()] }),
+        factory.create('web_user', { mcid: user.mcid, domain_userid: user.domain_userid })
       ]).then(users => { matches = users })
     })
 

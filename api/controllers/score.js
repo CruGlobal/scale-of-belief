@@ -2,12 +2,12 @@
 
 const Score = require('../../models/score')
 const util = require('../util/util')
-const {pick} = require('lodash')
+const { pick } = require('lodash')
 const AWS = require('aws-sdk')
 const rollbar = require('../../config/rollbar')
 
 const get = (request, response) => {
-  var uri = util.sanitizeUri(request.query['uri'])
+  const uri = util.sanitizeUri(request.query.uri)
   Score.retrieve(uri).then((score) => {
     if (score) {
       response.json(Score.toApiScore(score))
@@ -21,7 +21,7 @@ const get = (request, response) => {
 }
 
 const post = (request, response) => {
-  var requestBody = request.body
+  const requestBody = request.body
   const sanitizedUri = util.sanitizeUri(requestBody.uri)
 
   Score.save(sanitizedUri, pick(requestBody, ['score', 'weight'])).then(async (result) => {
@@ -45,7 +45,7 @@ const sendSns = async (sanitizedUri, score) => {
   const sns = new AWS.SNS({ region: 'us-east-1' })
   const payload = {
     uri: sanitizedUri,
-    score: score
+    score
   }
   const params = {
     Message: JSON.stringify(payload),
@@ -63,6 +63,6 @@ const sendSns = async (sanitizedUri, score) => {
 }
 
 module.exports = {
-  get: get,
-  post: post
+  get,
+  post
 }

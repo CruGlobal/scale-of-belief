@@ -1,25 +1,22 @@
 service: scale-of-belief
-
-custom:
-  scripts:
-    hooks:
-      # Run database migrations
-      'aws:deploy:finalize:cleanup': 'npx serverless --stage $ENVIRONMENT invoke --function migrate'
-  environmentMap:
-    production: prod
-    staging: stage
-    development: dev
-    lab: lab
+frameworkVersion: '3'
+configValidationMode: error
+plugins:
+  - serverless-plugin-bind-deployment-id
+  - serverless-plugin-scripts
+  - serverless-offline
 
 provider:
   name: aws
-  runtime: nodejs10.x
   stage: ${env:ENVIRONMENT}
   region: us-east-1
   vpc:
     securityGroupIds:
-      - ${file(${env:ECS_CONFIG}/bin/vars.yml):us-east-1.webapp_elb_sg}
-    subnetIds: ${file(${env:ECS_CONFIG}/bin/vars.yml):us-east-1.prod_apps_1_all}
+      - sg-888294ed
+    subnetIds:
+      - subnet-f2c2dfda # us-east-1a
+      - subnet-1508db62 # us-east-1b
+      - subnet-3fd94266 # us-east-1c
   stackTags:
     Name: ${env:PROJECT_NAME}-${self:custom.environmentMap.${env:ENVIRONMENT}}
     owner: udp-support@cru.org
@@ -27,30 +24,54 @@ provider:
     env: ${self:custom.environmentMap.${env:ENVIRONMENT}}
     managed_by: serverless-framework
     function: lambda
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - SNS:Publish
-        - SNS:Subscribe
-      Resource:
-        - ${env:SNS_TOPIC_ARN}
-        - ${env:AEM_SNS_TOPIC_ARN}
-    - Effect: Allow
-      Action:
-        - sqs:ReceiveMessage
-        - sqs:DeleteMessage
-        - sqs:GetQueueAttributes
-        - sqs:ChangeMessageVisibility
-        - sqs:SendMessage
-      Resource:
-        Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
-    - Effect: Allow
-      Action:
-        - s3:PutObject
-      Resource:
-        - arn:aws:s3:::uri-scoring
-        - arn:aws:s3:::uri-scoring/*
-  environment: ${file(serverless/environment.js)}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - SNS:Publish
+            - SNS:Subscribe
+          Resource:
+            - ${env:SNS_TOPIC_ARN}
+            - ${env:AEM_SNS_TOPIC_ARN}
+        - Effect: Allow
+          Action:
+            - sqs:ReceiveMessage
+            - sqs:DeleteMessage
+            - sqs:GetQueueAttributes
+            - sqs:ChangeMessageVisibility
+            - sqs:SendMessage
+          Resource:
+            Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+          Resource:
+            - arn:aws:s3:::uri-scoring
+            - arn:aws:s3:::uri-scoring/*
+  layers:
+    - arn:aws:lambda:us-east-1:072686360478:layer:node-16_14_2:1
+  environment: ${file(env.js)}
+
+package:
+  individually: true
+  patterns:
+    - '!.webpack/**'
+    - '!test/**'
+    - '!**/*.test.js'
+    - '!.deployment/**'
+    - '.serverless/**'
+
+custom:
+  scripts:
+    hooks:
+      # Run database migrations
+      'aws:deploy:finalize:cleanup': 'npx serverless invoke --stage $ENVIRONMENT --function migrate'
+  environmentMap:
+    production: prod
+    staging: stage
+    development: dev
+    lab: lab
 
 functions:
   api:
@@ -102,27 +123,28 @@ functions:
           batchSize: 10
           enabled: true
 
-package:
-  exclude:
-    - .git/**
-    - test/**
-    - '**/*.test.js'
-    - '**/*.sql'
-    - .deployment/**
-
-plugins:
-  - serverless-plugin-bind-deployment-id
-  - serverless-plugin-scripts
-  - serverless-offline
-
 resources:
-  Resources:
+  extensions:
     IamRoleLambdaExecution:
       Properties:
         ManagedPolicyArns:
           - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
           - arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess
 
+    ApiGatewayRestApi:
+      Properties:
+        Name:
+          Ref: AWS::StackName
+        BinaryMediaTypes:
+          - 'image/*'
+
+    __deployment__:
+      DependsOn:
+        - ApiGatewayMethodApiAnyVarAny
+        - ApiGatewayMethodAppGet
+        - ApiGatewayMethodAppProxyAny
+
+  Resources:
     S3BucketAppPublic:
       Type: 'AWS::S3::Bucket'
       Properties:
@@ -131,13 +153,6 @@ resources:
           IndexDocument: index.html
         BucketName:
           Fn::Join: ['', [Ref: AWS::StackName, "-app-public"]]
-
-    ApiGatewayRestApi:
-      Properties:
-        Name:
-          Ref: AWS::StackName
-        BinaryMediaTypes:
-          - 'image/*'
 
     ApiGatewayMethodAppGet:
       Type: 'AWS::ApiGateway::Method'
@@ -203,12 +218,6 @@ resources:
         Stage: ${opt:stage}
       DependsOn:
         - __deployment__
-
-    __deployment__:
-      DependsOn:
-        - ApiGatewayMethodApiAnyVarAny
-        - ApiGatewayMethodAppGet
-        - ApiGatewayMethodAppProxyAny
 
     UDPEnrichedEventsDLQ:
       Type: AWS::SQS::Queue

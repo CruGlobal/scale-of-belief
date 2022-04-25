@@ -1,6 +1,6 @@
 'use strict'
 
-const {DataTypes} = require('sequelize')
+const { DataTypes } = require('sequelize')
 const sequelize = require('../config/sequelize')
 require('../config/papertrail')
 const Score = sequelize().define('Score', {
@@ -52,7 +52,7 @@ Score.toApiScore = (score) => {
 Score.retrieve = (uri) => {
   return Score.findOne({
     where: {
-      uri: uri
+      uri
     }
   })
 }
@@ -60,7 +60,7 @@ Score.retrieve = (uri) => {
 Score.save = (uri, score) => {
   return sequelize().transaction(function (t) {
     const upsertData = {
-      uri: uri,
+      uri,
       score: score.score,
       weight: score.weight
     }

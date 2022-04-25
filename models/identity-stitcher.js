@@ -4,7 +4,7 @@ const sequelize = require('../config/sequelize')
 const User = require('./user')
 const Event = require('./event')
 const UserAudit = require('./user-audit')
-const {Op} = require('sequelize')
+const { Op } = require('sequelize')
 const {
   filter,
   find,
@@ -46,10 +46,10 @@ const possibleMatches = (user, transaction) => {
     if (includes(['id', 'id_seq', 'user_fingerprint'], key) || isEmpty(value)) {
       return
     }
-    orClause.push({[key]: {[Op.contains]: value}})
+    orClause.push({ [key]: { [Op.contains]: value } })
   })
   return User.findAll({
-    transaction: transaction,
+    transaction,
     lock: transaction.LOCK.UPDATE,
     where: {
       [Op.or]: orClause
@@ -116,7 +116,7 @@ const rejectAmbiguous = (user, matches) => {
 const mergeMatches = (user, matches, transaction) => {
   if (isEmpty(matches)) {
     // No matches found, save new user
-    return user.save({transaction: transaction})
+    return user.save({ transaction })
   } else {
     // Add new user to matches
     matches = matches.concat(user)
@@ -136,20 +136,20 @@ const mergeMatches = (user, matches, transaction) => {
     // Delete losers or start with a resolved promise
     let query
     if (loserIds.length > 0) {
-      query = User.destroy({where: {id: {[Op.in]: loserIds}}, transaction: transaction})
-        .then(() => UserAudit.bulkCreate(map(loserIds, oldId => { return {id: winner.id, old_id: oldId} }), {transaction: transaction}))
+      query = User.destroy({ where: { id: { [Op.in]: loserIds } }, transaction })
+        .then(() => UserAudit.bulkCreate(map(loserIds, oldId => { return { id: winner.id, old_id: oldId } }), { transaction }))
     } else {
       query = Promise.resolve()
     }
 
     // Wait for query (if needed) before
     return query
-      .then(() => winner.save({transaction: transaction})) // save user
+      .then(() => winner.save({ transaction })) // save user
       .then(identity => {
         // update Events linked to merged matches (if we merged)
         if (loserIds.length > 0) {
           return Event
-            .update({user_id: identity.id}, {where: {user_id: {[Op.in]: loserIds}}, transaction: transaction})
+            .update({ user_id: identity.id }, { where: { user_id: { [Op.in]: loserIds } }, transaction })
             .then(() => Promise.resolve(identity)) // return final user
         } else {
           return Promise.resolve(identity)
@@ -167,7 +167,7 @@ const mergeMatches = (user, matches, transaction) => {
  */
 const performIdentityStitching = (event) => {
   return new Promise((resolve) => {
-    let user = User.fromEvent(event)
+    const user = User.fromEvent(event)
     if (!user.changed()) {
       throw new UnknownUserError('Event did not contain identity fields')
     }
@@ -227,19 +227,19 @@ const scoreMatch = (user, match) => {
 const isSameSame = (user, other) => {
   const matches = userIntersection(user, other)
   // If gr_master_person_id or sso_guid match, then it's the same user
-  if (matches['gr_master_person_id'].length > 0 || matches['sso_guid'].length > 0) return true
+  if (matches.gr_master_person_id.length > 0 || matches.sso_guid.length > 0) return true
 
   // If gr_master_person_id exists on both, and are different, it's not the same
-  if (user.has_gr_master_person_id && other.has_gr_master_person_id && matches['gr_master_person_id'].length === 0) return false
+  if (user.has_gr_master_person_id && other.has_gr_master_person_id && matches.gr_master_person_id.length === 0) return false
 
   // If sso_guid exists on both, and is different, it's not the same
-  if (user.has_sso_guid && other.has_sso_guid && matches['sso_guid'].length === 0) return false
+  if (user.has_sso_guid && other.has_sso_guid && matches.sso_guid.length === 0) return false
 
   // If device_idfa or mcid match, then it's the same user
-  if (matches['device_idfa'].length > 0 || matches['mcid'].length > 0) return true
+  if (matches.device_idfa.length > 0 || matches.mcid.length > 0) return true
 
   // If device_idfa exists on both and is different, it's not the same
-  if (user.has_device_idfa && other.has_device_idfa && matches['device_idfa'].length === 0) return false
+  if (user.has_device_idfa && other.has_device_idfa && matches.device_idfa.length === 0) return false
 
   // If at least 2 fields match, it's the same user
   if (sumBy(toPairs(matches), pair => { return pair[1].length > 0 ? 1 : 0 }) >= 2) return true
@@ -269,8 +269,8 @@ class KnownTestUserError extends Error {}
 
 module.exports = {
   IdentityStitcher: performIdentityStitching,
-  UnknownUserError: UnknownUserError,
-  KnownTestUserError: KnownTestUserError,
+  UnknownUserError,
+  KnownTestUserError,
   /**
    * @private
    */

@@ -8,14 +8,14 @@ const util = require('../util/util')
 /* istanbul ignore next */
 const get = (request, response) => {
   request.body = {
-    ticket: request.query['ticket']
+    ticket: request.query.ticket
   }
 
   post(request, response)
 }
 
 const post = (request, response) => {
-  var serviceTicket = request.body['ticket']
+  const serviceTicket = request.body.ticket
 
   if (!serviceTicket) {
     util.buildUnauthorizedResponse(response)
@@ -28,21 +28,21 @@ const post = (request, response) => {
       return
     }
 
-    var json = JSON.parse(data)
+    const json = JSON.parse(data)
     if (json.serviceResponse.authenticationFailure) {
       logger.debug('Login failure: ' + json.serviceResponse.authenticationFailure.description)
       util.buildUnauthorizedResponse(response)
       return
     }
-    var guid = json.serviceResponse.authenticationSuccess.attributes.ssoGuid[0].toLowerCase()
+    const guid = json.serviceResponse.authenticationSuccess.attributes.ssoGuid[0].toLowerCase()
     buildJwt(guid, response)
   })
 }
 
 const validateTicket = (serviceTicket, callback) => {
-  var path = '/cas/p3/serviceValidate'
-  var service = 'service=' + encodeURIComponent(process.env.THE_KEY_SERVICE_URL)
-  var ticket = 'ticket=' + encodeURIComponent(serviceTicket)
+  const path = '/cas/p3/serviceValidate'
+  const service = 'service=' + encodeURIComponent(process.env.THE_KEY_SERVICE_URL)
+  const ticket = 'ticket=' + encodeURIComponent(serviceTicket)
   const format = 'format=JSON'
   const options = {
     hostname: 'thekey.me',
@@ -50,7 +50,7 @@ const validateTicket = (serviceTicket, callback) => {
     method: 'GET'
   }
 
-  var request = https.request(options, (response) => {
+  const request = https.request(options, (response) => {
     response.setEncoding('utf8')
 
     response.on('data', (data) => {
@@ -67,7 +67,7 @@ const validateTicket = (serviceTicket, callback) => {
 }
 
 const buildJwt = (guid, response) => {
-  jwt.sign({ guid: guid }, process.env.JWT_SECRET, { expiresIn: '1h' }, (error, token) => {
+  jwt.sign({ guid }, process.env.JWT_SECRET, { expiresIn: '1h' }, (error, token) => {
     if (error) {
       logger.error(error)
       util.buildInternalErrorResponse(response)
@@ -77,4 +77,4 @@ const buildJwt = (guid, response) => {
   })
 }
 
-module.exports = { get: get, post: post }
+module.exports = { get, post }

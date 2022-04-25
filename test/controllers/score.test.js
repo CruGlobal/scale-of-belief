@@ -24,13 +24,13 @@ describe('ScoreController', () => {
 
   describe('has one match', () => {
     test('should return the score to the client', done => {
-      var request = {
+      const request = {
         query: {
           uri: score.uri
         }
       }
 
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual(Score.toApiScore(score))
@@ -44,13 +44,13 @@ describe('ScoreController', () => {
     })
 
     test('should return score even if the client sends query parameters', done => {
-      var request = {
+      const request = {
         query: {
           uri: score.uri + '?some=value'
         }
       }
 
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual(Score.toApiScore(score))
@@ -67,20 +67,20 @@ describe('ScoreController', () => {
 
   describe('has no matches', () => {
     test('should return not found to the client', done => {
-      var request = {
+      const request = {
         query: {
           uri: 'http://nowhere.com'
         }
       }
 
-      var response = {
+      const response = {
         status: (statusToSet) => {
           expect(statusToSet).toBeDefined()
           expect(statusToSet).toEqual(404)
         },
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
-          expect(jsonToSet).toEqual({message: 'Not Found'})
+          expect(jsonToSet).toEqual({ message: 'Not Found' })
           done()
         }
       }
@@ -104,7 +104,7 @@ describe('ScoreController', () => {
     })
 
     afterEach(() => {
-      return Score.destroy({truncate: true})
+      return Score.destroy({ truncate: true })
     })
 
     test('should create a new score', done => {
@@ -114,7 +114,7 @@ describe('ScoreController', () => {
         weight: 6
       }
       const request = {
-        body: Object.assign({uri: newUri}, newScore)
+        body: Object.assign({ uri: newUri }, newScore)
       }
 
       const response = {
@@ -136,7 +136,7 @@ describe('ScoreController', () => {
         weight: 1
       }
       const request = {
-        body: Object.assign({uri: score.uri}, newScore)
+        body: Object.assign({ uri: score.uri }, newScore)
       }
       const result = [2, [updatedScore, true]]
 
@@ -190,7 +190,7 @@ describe('ScoreController', () => {
         weight: 6
       }
       const request = {
-        body: Object.assign({uri: newUri}, newScore)
+        body: Object.assign({ uri: newUri }, newScore)
       }
 
       const payload = {
@@ -221,7 +221,7 @@ describe('ScoreController', () => {
         weight: 6
       }
       const request = {
-        body: Object.assign({uri: newUri}, newScore)
+        body: Object.assign({ uri: newUri }, newScore)
       }
 
       const response = {

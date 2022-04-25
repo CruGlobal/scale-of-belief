@@ -1,7 +1,7 @@
 'use strict'
 
 require('dotenv').config()
-const {assign} = require('lodash')
+const { assign } = require('lodash')
 const logger = require('./logger')
 const defaults = {
   dialect: 'postgres',
@@ -13,7 +13,7 @@ const defaults = {
   // Disable operator aliases, we don't use them (also disables deprecation warning).
   operatorsAliases: false,
   // Use logger for logging at debug level, only if DEBUG env is set
-  logging: (msg) => { if (process.env['DEBUG'] === '*') logger.debug(msg) },
+  logging: (msg) => { if (process.env.DEBUG === '*') logger.debug(msg) },
   pool: {
     max: 10,
     idle: 500,

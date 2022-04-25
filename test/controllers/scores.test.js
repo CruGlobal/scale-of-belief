@@ -26,13 +26,13 @@ describe('ScoresController', () => {
 
   describe('has one match', () => {
     test('should return the score to the client', done => {
-      var request = {
+      const request = {
         query: {
           uri: 'http://some.uri'
         }
       }
 
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual({
@@ -45,7 +45,7 @@ describe('ScoresController', () => {
         }
       }
 
-      jest.spyOn(Score, 'findAndCountAll').mockImplementation(() => Promise.resolve({rows: [score1], count: 1}))
+      jest.spyOn(Score, 'findAndCountAll').mockImplementation(() => Promise.resolve({ rows: [score1], count: 1 }))
 
       ScoresController.get(request, response)
     })
@@ -53,13 +53,13 @@ describe('ScoresController', () => {
 
   describe('has multiple matches', () => {
     test('should return the scores to the client', done => {
-      var request = {
+      const request = {
         query: {
           uri: 'http://some'
         }
       }
 
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual({
@@ -72,7 +72,7 @@ describe('ScoresController', () => {
         }
       }
 
-      jest.spyOn(Score, 'findAndCountAll').mockImplementation(() => Promise.resolve({rows: [score1, score2], count: 2}))
+      jest.spyOn(Score, 'findAndCountAll').mockImplementation(() => Promise.resolve({ rows: [score1, score2], count: 2 }))
 
       ScoresController.get(request, response)
     })
@@ -80,13 +80,13 @@ describe('ScoresController', () => {
 
   describe('has no matches', () => {
     test('should return an empty array to the client', done => {
-      var request = {
+      const request = {
         query: {
           uri: 'http://nowhere.com'
         }
       }
 
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual({
@@ -99,7 +99,7 @@ describe('ScoresController', () => {
         }
       }
 
-      jest.spyOn(Score, 'findAndCountAll').mockImplementation(() => Promise.resolve({rows: [], count: 0}))
+      jest.spyOn(Score, 'findAndCountAll').mockImplementation(() => Promise.resolve({ rows: [], count: 0 }))
 
       ScoresController.get(request, response)
     })
@@ -126,7 +126,7 @@ describe('ScoresController', () => {
         }
       }
 
-      jest.spyOn(Score, 'findAndCountAll').mockImplementation(() => Promise.resolve({rows: [score1], count: 2}))
+      jest.spyOn(Score, 'findAndCountAll').mockImplementation(() => Promise.resolve({ rows: [score1], count: 2 }))
       ScoresController.get(request, response)
     })
   })

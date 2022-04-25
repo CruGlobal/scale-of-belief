@@ -2,17 +2,17 @@
 
 const ApiKey = require('../../models/api-key')
 const Recommendation = require('../../models/recommendation')
-const {castArray, find} = require('lodash')
+const { castArray, find } = require('lodash')
 const util = require('../util/util')
 
 module.exports = async (request, response, next) => {
   try {
-    const key = request.query['apiKey']
+    const key = request.query.apiKey
     const id = request.query['entity.id']
     if (!key || !id) throw new Error('Unauthorized')
 
     const [apiKey, recommendation] = await Promise.all([
-      ApiKey.findOne({where: {api_key: key}}),
+      ApiKey.findOne({ where: { api_key: key } }),
       Recommendation.findById(id)
     ])
     if (apiKey == null || recommendation == null) throw new Error('Unauthorized')

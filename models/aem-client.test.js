@@ -26,7 +26,7 @@ describe('AemClient', () => {
 
   describe('updateScore', () => {
     const client = new AemClient(aemUrl, username, password)
-    const resourceUrl = url.parse('http://some-site.org/content/siteName/path/pageName.html')
+    const resourceUrl = new url.URL('http://some-site.org/content/siteName/path/pageName.html')
 
     it('Should successfully update the score in AEM', done => {
       const requestMock = jest.spyOn(request, 'post').mockImplementationOnce((options, callback) => {
@@ -37,10 +37,10 @@ describe('AemClient', () => {
         url: 'http://localhost:4502/bin/cru/content-scoring/sync',
         form: {
           score: 5,
-          resourceUri: url.parse(resourceUrl)
+          resourceUri: new url.URL(resourceUrl)
         },
         headers: {
-          'authorization': auth
+          authorization: auth
         }
       }
 

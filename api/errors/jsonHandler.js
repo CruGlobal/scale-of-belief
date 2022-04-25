@@ -10,7 +10,7 @@ const jsonErrorHandler = function (error, request, response, next) {
   logger.debug(error)
   response
     .status(error.status)
-    .send({message: error.message})
+    .send({ message: error.message })
 }
 
 module.exports = jsonErrorHandler

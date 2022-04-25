@@ -4,7 +4,7 @@ const ApiKey = require('../../models/api-key')
 const Authorizer = require('./api-key-authorize')
 
 describe('Api Key Authorizer', () => {
-  let response = {}
+  const response = {}
 
   test('is defined', () => {
     expect(Authorizer).toBeDefined()
@@ -102,10 +102,10 @@ describe('Api Key Authorizer', () => {
   })
 
   describe('has invalid API key', () => {
-    let invalidRequestHeaders = {}
+    const invalidRequestHeaders = {}
     invalidRequestHeaders['x-api-key'] = 'invalid-api-key'
 
-    let unauthorizedError = new Error('Unauthorized')
+    const unauthorizedError = new Error('Unauthorized')
     unauthorizedError.status = 401
 
     test('should return Unauthorized on GET request', done => {
@@ -148,7 +148,7 @@ describe('Api Key Authorizer', () => {
   })
 
   describe('has API key without access to resource', () => {
-    let unauthorizedError = new Error('You do not have access to this resource')
+    const unauthorizedError = new Error('You do not have access to this resource')
     unauthorizedError.status = 401
 
     test('should return Unauthorized on GET request', done => {
@@ -242,7 +242,7 @@ describe('Api Key Authorizer', () => {
   })
 
   describe('has no API key', () => {
-    let unauthorizedError = new Error('Unauthorized')
+    const unauthorizedError = new Error('Unauthorized')
     unauthorizedError.status = 401
 
     test('should return Unauthorized', done => {
@@ -265,10 +265,10 @@ describe('Api Key Authorizer', () => {
   })
 
   describe('fails database lookup', () => {
-    let requestHeaders = {}
+    const requestHeaders = {}
     requestHeaders['x-api-key'] = 'abc'
 
-    let unauthorizedError = new Error('Unauthorized')
+    const unauthorizedError = new Error('Unauthorized')
     unauthorizedError.status = 401
 
     test('should return Unauthorized', done => {

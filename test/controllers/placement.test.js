@@ -32,7 +32,7 @@ describe('Placement controller', () => {
         expect(status).toEqual(400)
       })
 
-      controller.get({query: []}, response)
+      controller.get({ query: [] }, response)
     })
   })
 
@@ -52,7 +52,7 @@ describe('Placement controller', () => {
 
       jest.spyOn(User, 'findAll').mockResolvedValue([])
 
-      controller.get({query: {mcid: '1234'}}, response)
+      controller.get({ query: { mcid: '1234' } }, response)
     })
   })
 
@@ -72,7 +72,7 @@ describe('Placement controller', () => {
 
       jest.spyOn(User, 'findAll').mockRejectedValue(new Error('error message'))
 
-      controller.get({query: {mcid: '1234'}}, response)
+      controller.get({ query: { mcid: '1234' } }, response)
     })
   })
 
@@ -82,19 +82,19 @@ describe('Placement controller', () => {
 
       response.json.mockImplementation(json => {
         expect(json).toBeDefined()
-        expect(json).toEqual({placement: null})
+        expect(json).toEqual({ placement: null })
         done()
       })
 
-      jest.spyOn(User, 'findAll').mockResolvedValue([{id: 2345}])
+      jest.spyOn(User, 'findAll').mockResolvedValue([{ id: 2345 }])
 
       Placement.mockImplementation(() => {
         return {
-          calculate: jest.fn().mockResolvedValue({placement: null})
+          calculate: jest.fn().mockResolvedValue({ placement: null })
         }
       })
 
-      controller.get({query: {mcid: '1234'}}, response)
+      controller.get({ query: { mcid: '1234' } }, response)
     })
   })
 
@@ -112,7 +112,7 @@ describe('Placement controller', () => {
         expect(status).toEqual(400)
       })
 
-      jest.spyOn(User, 'findAll').mockResolvedValue([{id: 2345}])
+      jest.spyOn(User, 'findAll').mockResolvedValue([{ id: 2345 }])
 
       Placement.mockImplementation(() => {
         return {
@@ -120,7 +120,7 @@ describe('Placement controller', () => {
         }
       })
 
-      controller.get({query: {mcid: '1234'}}, response)
+      controller.get({ query: { mcid: '1234' } }, response)
     })
   })
 
@@ -130,19 +130,19 @@ describe('Placement controller', () => {
 
       response.json.mockImplementation(json => {
         expect(json).toBeDefined()
-        expect(json).toEqual({placement: 7})
+        expect(json).toEqual({ placement: 7 })
         done()
       })
 
-      jest.spyOn(User, 'findAll').mockResolvedValue([{id: 2345}])
+      jest.spyOn(User, 'findAll').mockResolvedValue([{ id: 2345 }])
 
       Placement.mockImplementation(() => {
         return {
-          calculate: jest.fn().mockResolvedValue({placement: 7})
+          calculate: jest.fn().mockResolvedValue({ placement: 7 })
         }
       })
 
-      controller.get({query: {mcid: '1234'}}, response)
+      controller.get({ query: { mcid: '1234' } }, response)
     })
   })
 })

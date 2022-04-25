@@ -30,13 +30,13 @@ describe('ContentController', () => {
 
   describe('has one match', () => {
     test('should return the content without a score to the client', done => {
-      var request = {
+      const request = {
         query: {
           uri: 'http://some.uri'
         }
       }
 
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual({
@@ -50,7 +50,7 @@ describe('ContentController', () => {
       }
 
       jest.spyOn(Unscored, 'findAndCountAll')
-        .mockImplementationOnce(() => Promise.resolve({rows: [unscored1], count: 1}))
+        .mockImplementationOnce(() => Promise.resolve({ rows: [unscored1], count: 1 }))
 
       ContentController.get(request, response)
     })
@@ -58,13 +58,13 @@ describe('ContentController', () => {
 
   describe('has multiple matches', () => {
     test('should return the content without scores to the client', done => {
-      var request = {
+      const request = {
         query: {
           uri: 'http://some'
         }
       }
 
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual({
@@ -78,7 +78,7 @@ describe('ContentController', () => {
       }
 
       jest.spyOn(Unscored, 'findAndCountAll')
-        .mockImplementationOnce(() => Promise.resolve({rows: [unscored1, unscored2], count: 2}))
+        .mockImplementationOnce(() => Promise.resolve({ rows: [unscored1, unscored2], count: 2 }))
 
       ContentController.get(request, response)
     })
@@ -86,13 +86,13 @@ describe('ContentController', () => {
 
   describe('has no matches', () => {
     test('should return an empty array to the client', done => {
-      var request = {
+      const request = {
         query: {
           uri: 'http://nowhere.com'
         }
       }
 
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual({
@@ -105,7 +105,7 @@ describe('ContentController', () => {
         }
       }
 
-      jest.spyOn(Unscored, 'findAndCountAll').mockImplementationOnce(() => Promise.resolve({rows: [], count: 0}))
+      jest.spyOn(Unscored, 'findAndCountAll').mockImplementationOnce(() => Promise.resolve({ rows: [], count: 0 }))
 
       ContentController.get(request, response)
     })
@@ -132,7 +132,7 @@ describe('ContentController', () => {
       }
 
       jest.spyOn(Unscored, 'findAndCountAll')
-        .mockImplementationOnce(() => Promise.resolve({rows: [unscored1], count: 2}))
+        .mockImplementationOnce(() => Promise.resolve({ rows: [unscored1], count: 2 }))
 
       ContentController.get(request, response)
     })

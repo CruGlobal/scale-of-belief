@@ -1,6 +1,6 @@
 'use strict'
 
-const {castArray, isEmpty, find, startsWith} = require('lodash')
+const { castArray, isEmpty, find, startsWith } = require('lodash')
 
 class Context {
   static get SCHEMA_WEB_PAGE () { return 'iglu:com.snowplowanalytics.snowplow/web_page/jsonschema' }

@@ -15,7 +15,7 @@ describe('Cru.org Recommendations Sync', () => {
 
   describe('no existing scores', () => {
     it('should succeed', async () => {
-      requestMock.mockResolvedValueOnce({hits: []})
+      requestMock.mockResolvedValueOnce({ hits: [] })
       expect.assertions(1)
       await expect(lambda.handler()).resolves.toEqual('Successfully synced 0 recommendations.')
     })
@@ -24,19 +24,19 @@ describe('Cru.org Recommendations Sync', () => {
   describe('existing scores', () => {
     beforeEach(async () => {
       await Promise.all([
-        factory.create('existing_score', {uri: 'https://www.cru.org/us/en/foo.html'}),
-        factory.create('existing_score', {uri: 'https://www.cru.org/fr/fr/bar.html'}),
-        factory.create('existing_score', {uri: 'missionhub://action/value'}),
-        factory.create('existing_score', {uri: 'https://example.com/foo'}),
-        factory.create('existing_score', {uri: 'https://www.cru.org/us/en/opportunities/mission-trips/summer/learn/why-cru-summer-missions.html'}),
-        factory.create('existing_score', {uri: 'https://www.cru.org/us/en/how-to-know-god/prayer-request-form/prayer.html'}),
-        factory.create('existing_score', {uri: 'https://www.cru.org/baz.js'}),
-        factory.create('existing_score', {uri: 'https://www.cru.org/unknown.html'})
+        factory.create('existing_score', { uri: 'https://www.cru.org/us/en/foo.html' }),
+        factory.create('existing_score', { uri: 'https://www.cru.org/fr/fr/bar.html' }),
+        factory.create('existing_score', { uri: 'missionhub://action/value' }),
+        factory.create('existing_score', { uri: 'https://example.com/foo' }),
+        factory.create('existing_score', { uri: 'https://www.cru.org/us/en/opportunities/mission-trips/summer/learn/why-cru-summer-missions.html' }),
+        factory.create('existing_score', { uri: 'https://www.cru.org/us/en/how-to-know-god/prayer-request-form/prayer.html' }),
+        factory.create('existing_score', { uri: 'https://www.cru.org/baz.js' }),
+        factory.create('existing_score', { uri: 'https://www.cru.org/unknown.html' })
       ])
     })
 
     it('should sync cru.org recommendations', async () => {
-      let data = fs.readFileSync(path.join(__fixturesDir, 'cru-org-json', 'builder.json'), 'utf-8')
+      const data = fs.readFileSync(path.join(__fixturesDir, 'cru-org-json', 'builder.json'), 'utf-8')
       requestMock.mockImplementation(() => Promise.resolve(JSON.parse(data)))
       expect.assertions(5)
       await expect(lambda.handler()).resolves.toEqual('Successfully synced 4 recommendations.')
@@ -87,7 +87,7 @@ describe('Cru.org Recommendations Sync', () => {
     })
 
     it('should sync cru.org recommendations if pub1 is down', async () => {
-      let data = fs.readFileSync(path.join(__fixturesDir, 'cru-org-json', 'builder.json'), 'utf-8')
+      const data = fs.readFileSync(path.join(__fixturesDir, 'cru-org-json', 'builder.json'), 'utf-8')
       requestMock
         .mockImplementationOnce(() => Promise.reject(new Error('502 Timeout')))
         .mockImplementationOnce(() => Promise.resolve(JSON.parse(data)))
@@ -103,7 +103,7 @@ describe('Cru.org Recommendations Sync', () => {
       rollback: jest.fn().mockImplementation(() => Promise.resolve())
     }
     jest.spyOn(sequelize, 'transaction').mockImplementation(() => Promise.resolve(transactionMock))
-    requestMock.mockResolvedValueOnce({hits: []})
+    requestMock.mockResolvedValueOnce({ hits: [] })
     jest.spyOn(Recommendation, 'truncate').mockImplementation(() => Promise.reject(new Error('Database Error')))
     expect.assertions(2)
     await expect(lambda.handler()).rejects.toThrow('Database Error')
