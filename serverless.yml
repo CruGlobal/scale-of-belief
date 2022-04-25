@@ -1,6 +1,6 @@
 service: scale-of-belief
 frameworkVersion: '3'
-configValidationMode: error
+configValidationMode: warn
 plugins:
   - serverless-plugin-bind-deployment-id
   - serverless-plugin-scripts
@@ -215,7 +215,7 @@ resources:
         RestApiId:
           Ref: ApiGatewayRestApi
         DomainName: 'content-scoring.cru.org'
-        Stage: ${opt:stage}
+        Stage: ${env:ENVIRONMENT}
       DependsOn:
         - __deployment__
 
@@ -257,4 +257,3 @@ resources:
     AppBucket:
       Value:
         Ref: S3BucketAppPublic
-
