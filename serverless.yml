@@ -62,10 +62,10 @@ package:
     - '.serverless/**'
 
 custom:
-#  scripts:
-#    hooks:
-#      # Run database migrations
-#      'aws:deploy:finalize:cleanup': 'npx serverless invoke --stage $ENVIRONMENT --function migrate'
+  scripts:
+    hooks:
+      # Run database migrations
+      'aws:deploy:finalize:cleanup': 'npx serverless invoke --stage $ENVIRONMENT --function migrate'
   environmentMap:
     production: prod
     staging: stage
@@ -83,34 +83,34 @@ functions:
           cors:
             origin: '*'
             maxAge: 86400
-#  migrate:
-#    handler: db/migrate.handler
-#    timeout: 120
+  migrate:
+    handler: db/migrate.handler
+    timeout: 120
 #  redshift:
 #    handler: scheduled/redshift.handler
 #    timeout: 300
 #    events:
 #      - schedule: rate(5 minutes)
-#  campaign:
-#    handler: sns/campaign.handler
-#    timeout: 60
-#    events:
-#      - sns: ${env:SNS_TOPIC_ARN}
-#  global-registry:
-#    handler: sns/global-registry.handler
-#    timeout: 30
-#    events:
-#      - sns: ${env:SNS_TOPIC_ARN}
-#  cru-org-sync:
-#    handler: scheduled/cru-org-sync.handler
-#    timeout: 300
-#    events:
-#      - schedule: rate(4 hours)
-#  sync-score:
-#    handler: sns/sync-score.handler
-#    timeout: 30
-#    events:
-#      - sns: ${env:AEM_SNS_TOPIC_ARN}
+  campaign:
+    handler: sns/campaign.handler
+    timeout: 60
+    events:
+      - sns: ${env:SNS_TOPIC_ARN}
+  global-registry:
+    handler: sns/global-registry.handler
+    timeout: 30
+    events:
+      - sns: ${env:SNS_TOPIC_ARN}
+  cru-org-sync:
+    handler: scheduled/cru-org-sync.handler
+    timeout: 300
+    events:
+      - schedule: rate(4 hours)
+  sync-score:
+    handler: sns/sync-score.handler
+    timeout: 30
+    events:
+      - sns: ${env:AEM_SNS_TOPIC_ARN}
 #  udp-event:
 #    handler: sqs/udp-event.handler
 #    reservedConcurrency: 1
