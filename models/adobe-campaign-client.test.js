@@ -310,6 +310,7 @@ describe('AdobeCampaignClient', () => {
       const grMasterPersonId = 'no-id'
       const mockResponse = { statusCode: 500 }
       const mockBody = {
+        content: "",
         error_code: '1',
         message: 'Internal Server Error'
       }
