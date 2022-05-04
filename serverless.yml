@@ -212,7 +212,7 @@ resources:
       Properties:
         RestApiId:
           Ref: ApiGatewayRestApi
-        DomainName: 'content-scoring-stage.cru.org'
+        DomainName: 'content-scoring.cru.org'
         Stage: ${env:ENVIRONMENT}
       DependsOn:
         - __deployment__
