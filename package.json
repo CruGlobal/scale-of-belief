@@ -47,7 +47,7 @@
     "hoek": "~> 4.2.1",
     "https": "^1.0.0",
     "jsonwebtoken": "^8.3.0",
-    "pg": "^7.4.3",
+    "pg": "8.7.3",
     "pg-copy-streams": "^1.2.0",
     "pg-hstore": "^2.3.4",
     "promise-retry": "^1.1.1",
@@ -56,7 +56,7 @@
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
     "rollbar": "^2.25.0",
-    "sequelize": "^4.38.1",
+    "sequelize": "^4.44.4",
     "sequelize-paper-trail": "^2.0.0",
     "serverless-http": "^3.0.1",
     "swaggerize-express": "^4.0.5",
@@ -79,7 +79,9 @@
     "testEnvironment": "node",
     "globalSetup": "./test/global-setup.js",
     "globalTeardown": "./test/global-teardown.js",
-    "setupTestFrameworkScriptFile": "./test/test-setup.js",
+    "setupFilesAfterEnv": [
+      "./test/test-setup.js"
+    ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/test/",

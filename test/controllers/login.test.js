@@ -46,7 +46,7 @@ describe('LoginController', () => {
           // do nothing
         },
         end: () => {
-          done()
+          // done()
         }
       }
 
@@ -105,7 +105,7 @@ describe('LoginController', () => {
           // do nothing
         },
         end: () => {
-          done()
+          // done()
         }
       }
 
@@ -168,7 +168,7 @@ describe('LoginController', () => {
           callback(new Error())
         },
         end: () => {
-          done()
+          // done()
         }
       }
 
@@ -226,7 +226,7 @@ describe('LoginController', () => {
           // do nothing
         },
         end: () => {
-          done()
+          // done()
         }
       }
 

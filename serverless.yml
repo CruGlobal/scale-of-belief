@@ -34,15 +34,15 @@ provider:
           Resource:
             - ${env:SNS_TOPIC_ARN}
             - ${env:AEM_SNS_TOPIC_ARN}
-        - Effect: Allow
-          Action:
-            - sqs:ReceiveMessage
-            - sqs:DeleteMessage
-            - sqs:GetQueueAttributes
-            - sqs:ChangeMessageVisibility
-            - sqs:SendMessage
-          Resource:
-            Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
+#        - Effect: Allow
+#          Action:
+#            - sqs:ReceiveMessage
+#            - sqs:DeleteMessage
+#            - sqs:GetQueueAttributes
+#            - sqs:ChangeMessageVisibility
+#            - sqs:SendMessage
+#          Resource:
+#            Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
         - Effect: Allow
           Action:
             - s3:PutObject
@@ -54,7 +54,6 @@ provider:
   environment: ${file(env.js)}
 
 package:
-  individually: true
   patterns:
     - '!.webpack/**'
     - '!test/**'
@@ -87,11 +86,11 @@ functions:
   migrate:
     handler: db/migrate.handler
     timeout: 120
-  redshift:
-    handler: scheduled/redshift.handler
-    timeout: 300
-    events:
-      - schedule: rate(5 minutes)
+#  redshift:
+#    handler: scheduled/redshift.handler
+#    timeout: 300
+#    events:
+#      - schedule: rate(5 minutes)
   campaign:
     handler: sns/campaign.handler
     timeout: 60
@@ -112,16 +111,16 @@ functions:
     timeout: 30
     events:
       - sns: ${env:AEM_SNS_TOPIC_ARN}
-  udp-event:
-    handler: sqs/udp-event.handler
-    reservedConcurrency: 1
-    timeout: 300
-    events:
-      - sqs:
-          arn:
-            Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
-          batchSize: 10
-          enabled: true
+#  udp-event:
+#    handler: sqs/udp-event.handler
+#    reservedConcurrency: 1
+#    timeout: 300
+#    events:
+#      - sqs:
+#          arn:
+#            Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
+#          batchSize: 10
+#          enabled: true
 
 resources:
   extensions:
@@ -140,7 +139,6 @@ resources:
 
     __deployment__:
       DependsOn:
-        - ApiGatewayMethodApiAnyVarAny
         - ApiGatewayMethodAppGet
         - ApiGatewayMethodAppProxyAny
 
@@ -214,44 +212,44 @@ resources:
       Properties:
         RestApiId:
           Ref: ApiGatewayRestApi
-        DomainName: 'content-scoring.cru.org'
+        DomainName: 'content-scoring-stage.cru.org'
         Stage: ${env:ENVIRONMENT}
       DependsOn:
         - __deployment__
 
-    UDPEnrichedEventsDLQ:
-      Type: AWS::SQS::Queue
-
-    UDPEnrichedEventsQueue:
-      Type: AWS::SQS::Queue
-      Properties:
-        # See https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-queueconfig
-        MessageRetentionPeriod: 604800 # 7 days
-        VisibilityTimeout: 2100 # 300s lambda timeout * 6
-        RedrivePolicy:
-          deadLetterTargetArn:
-            Fn::GetAtt: [ UDPEnrichedEventsDLQ, Arn ]
-          maxReceiveCount: 5
-
-    # This policy grants SQS:SendMessage to the snowplow sub-account
-    SnowplowEventsQueuePolicy:
-      Type: AWS::SQS::QueuePolicy
-      Properties:
-        PolicyDocument:
-          Id: SnowplowEventsQueuePolicy
-          Version: '2012-10-17'
-          Statement:
-            - Sid: Allow-Snowplow-SendMessage
-              Effect: Allow
-              Principal:
-                AWS:
-                  - 699385956789
-                  - 056154071827
-              Action:
-                - sqs:SendMessage
-              Resource: "*"
-        Queues:
-          - Ref: UDPEnrichedEventsQueue
+#    UDPEnrichedEventsDLQ:
+#      Type: AWS::SQS::Queue
+#
+#    UDPEnrichedEventsQueue:
+#      Type: AWS::SQS::Queue
+#      Properties:
+#        # See https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-queueconfig
+#        MessageRetentionPeriod: 604800 # 7 days
+#        VisibilityTimeout: 2100 # 300s lambda timeout * 6
+#        RedrivePolicy:
+#          deadLetterTargetArn:
+#            Fn::GetAtt: [ UDPEnrichedEventsDLQ, Arn ]
+#          maxReceiveCount: 5
+#
+#    # This policy grants SQS:SendMessage to the snowplow sub-account
+#    SnowplowEventsQueuePolicy:
+#      Type: AWS::SQS::QueuePolicy
+#      Properties:
+#        PolicyDocument:
+#          Id: SnowplowEventsQueuePolicy
+#          Version: '2012-10-17'
+#          Statement:
+#            - Sid: Allow-Snowplow-SendMessage
+#              Effect: Allow
+#              Principal:
+#                AWS:
+#                  - 699385956789
+#                  - 056154071827
+#              Action:
+#                - sqs:SendMessage
+#              Resource: "*"
+#        Queues:
+#          - Ref: UDPEnrichedEventsQueue
 
   Outputs:
     AppBucket:
