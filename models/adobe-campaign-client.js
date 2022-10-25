@@ -14,7 +14,7 @@ class AdobeCampaignClient {
   }
 
   retrieveAccessToken () {
-    let options = {
+    const options = {
       url: 'https://ims-na1.adobelogin.com/ims/exchange/jwt/',
       formData: this.accessTokenBody(),
       headers: {
@@ -63,10 +63,10 @@ class AdobeCampaignClient {
    * Returns all users with the given GR master person ID (cusGlobalID).
    */
   retrieveCampaignUser (grMasterPersonId, accessToken) {
-    let options = {
+    const options = {
       url: `${this.baseUrl}/profileAndServicesExt/profile/byGlobalid?globalId_parameter=${grMasterPersonId}`,
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         'X-Api-Key': this.apiKey,
         'Cache-Control': 'no-cache'
       }
@@ -77,7 +77,7 @@ class AdobeCampaignClient {
         if (err) {
           reject(err)
         } else if (response.statusCode === 401) {
-          let newAccessToken = await this.retrieveAccessToken()
+          const newAccessToken = await this.retrieveAccessToken()
           resolve(this.retrieveCampaignUser(grMasterPersonId, newAccessToken))
         } else if (response.statusCode >= 400) {
           reject(new Error('Something went wrong with your request: ' + body))
@@ -89,10 +89,10 @@ class AdobeCampaignClient {
   }
 
   updateCampaignUserPlacement (pkey, placement, accessToken) {
-    let options = {
+    const options = {
       url: `${this.baseUrl}/profileAndServicesExt/profile/${pkey}`,
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         'X-Api-Key': this.apiKey,
         'Cache-Control': 'no-cache',
         'Content-Type': 'application/json'
@@ -105,7 +105,7 @@ class AdobeCampaignClient {
         if (err) {
           reject(err)
         } else if (response.statusCode === 401) {
-          let newAccessToken = await this.retrieveAccessToken()
+          const newAccessToken = await this.retrieveAccessToken()
           resolve(this.updateCampaignUserPlacement(pkey, placement, newAccessToken))
         } else if (response.statusCode >= 400) {
           reject(new Error('Something went wrong with your request: ' + body))

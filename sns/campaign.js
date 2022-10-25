@@ -2,13 +2,17 @@
 
 const rollbar = require('../config/rollbar')
 const AdobeCampaign = require('../config/adobe-campaign')
-const {forEach} = require('lodash')
+const { forEach } = require('lodash')
 const ACCESS_TOKEN = 'scale-of-belief-lambda-campaign-access-token'
 
 const retrieveAccessToken = () => {
   return new Promise((resolve, reject) => {
     const redis = require('redis')
-    const redisClient = redis.createClient(process.env.REDIS_PORT_6379_TCP_ADDR_PORT, process.env.REDIS_PORT_6379_TCP_ADDR)
+    const redisClient = redis.createClient({
+      host: process.env.STORAGE_REDIS_HOST,
+      port: process.env.STORAGE_REDIS_PORT,
+      db: process.env.STORAGE_REDIS_DB_INDEX
+    })
 
     redisClient.on('error', (error) => {
       rollbar.warn(`Error connecting to Redis: ${error}`)
@@ -51,17 +55,17 @@ const asyncHandler = async (message) => {
   const placement = message.placement
   const grMasterPersonIds = message.grMasterPersonIds
 
-  let accessToken = await retrieveAccessToken()
+  const accessToken = await retrieveAccessToken()
 
-  let promises = []
+  const promises = []
   let matchedUsers = []
-  for (let grMasterPersonId of grMasterPersonIds) {
+  for (const grMasterPersonId of grMasterPersonIds) {
     const campaignUsers = await AdobeCampaign.retrieveCampaignUser(grMasterPersonId, accessToken)
     matchedUsers = matchedUsers.concat(campaignUsers)
   }
 
   forEach(matchedUsers, (user) => {
-    promises.push(AdobeCampaign.updateCampaignUserPlacement(user['PKey'], placement, accessToken))
+    promises.push(AdobeCampaign.updateCampaignUserPlacement(user.PKey, placement, accessToken))
   })
 
   return Promise.all(promises).then((results) => {
@@ -73,7 +77,7 @@ const asyncHandler = async (message) => {
 
 module.exports = {
   handler: rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
-    let snsMessage = lambdaEvent.Records[0].Sns.Message
+    const snsMessage = lambdaEvent.Records[0].Sns.Message
 
     asyncHandler(JSON.parse(snsMessage)).then((message) => {
       lambdaCallback(null, message)
@@ -82,6 +86,6 @@ module.exports = {
       lambdaCallback('Failed to send placement to Campaign: ' + error)
     })
   }),
-  retrieveAccessToken: retrieveAccessToken,
-  disconnectClient: disconnectClient
+  retrieveAccessToken,
+  disconnectClient
 }

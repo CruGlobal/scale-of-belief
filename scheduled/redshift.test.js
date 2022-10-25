@@ -2,7 +2,7 @@
 
 const redshift = require('./redshift')
 const redis = require('redis')
-const {Client} = require('pg')
+const { Client } = require('pg')
 const fs = require('fs')
 const path = require('path')
 const Readable = require('stream').Readable

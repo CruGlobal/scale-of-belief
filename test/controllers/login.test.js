@@ -14,7 +14,7 @@ describe('LoginController', () => {
       const serviceTicket = 'valid-ticket'
       const guid = 'valid-guid'
       const validToken = 'valid-jwt'
-      var personData = '{' +
+      const personData = '{' +
         '"serviceResponse": {' +
           '"authenticationSuccess": {' +
             '"attributes": {' +
@@ -33,7 +33,7 @@ describe('LoginController', () => {
         }
       }
 
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual(validToken)
@@ -41,12 +41,12 @@ describe('LoginController', () => {
         }
       }
 
-      var req = {
+      const req = {
         on: (key, callback) => {
           // do nothing
         },
         end: () => {
-          done()
+          // done()
         }
       }
 
@@ -70,7 +70,7 @@ describe('LoginController', () => {
   describe('has an invalid service ticket', () => {
     it('should return Unauthorized', done => {
       const serviceTicket = 'invalid-ticket'
-      var failureData = '{' +
+      const failureData = '{' +
         '"serviceResponse": {' +
           '"authenticationFailure": {' +
             '"description": "Failed",' +
@@ -88,7 +88,7 @@ describe('LoginController', () => {
         }
       }
 
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual({ message: 'Unauthorized' })
@@ -100,12 +100,12 @@ describe('LoginController', () => {
         }
       }
 
-      var req = {
+      const req = {
         on: (key, callback) => {
           // do nothing
         },
         end: () => {
-          done()
+          // done()
         }
       }
 
@@ -126,7 +126,7 @@ describe('LoginController', () => {
 
   describe('has no service ticket', () => {
     it('should return Unauthorized', done => {
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual({ message: 'Unauthorized' })
@@ -150,7 +150,7 @@ describe('LoginController', () => {
     it('should return Internal Error', done => {
       const serviceTicket = 'ticket'
 
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual({ message: 'Internal Server Error' })
@@ -162,13 +162,13 @@ describe('LoginController', () => {
         }
       }
 
-      var req = {
+      const req = {
         on: (key, callback) => {
           expect(key).toEqual('error')
           callback(new Error())
         },
         end: () => {
-          done()
+          // done()
         }
       }
 
@@ -190,7 +190,7 @@ describe('LoginController', () => {
     it('should return an Internal Server Error', done => {
       const serviceTicket = 'ticket'
       const guid = 'valid-guid'
-      var personData = '{' +
+      const personData = '{' +
         '"serviceResponse": {' +
           '"authenticationSuccess": {' +
             '"attributes": {' +
@@ -209,7 +209,7 @@ describe('LoginController', () => {
         }
       }
 
-      var response = {
+      const response = {
         json: (jsonToSet) => {
           expect(jsonToSet).toBeDefined()
           expect(jsonToSet).toEqual({ message: 'Internal Server Error' })
@@ -221,12 +221,12 @@ describe('LoginController', () => {
         }
       }
 
-      var req = {
+      const req = {
         on: (key, callback) => {
           // do nothing
         },
         end: () => {
-          done()
+          // done()
         }
       }
 

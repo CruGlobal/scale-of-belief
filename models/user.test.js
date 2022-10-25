@@ -108,7 +108,7 @@ describe('User', () => {
     })
 
     it('should clone the user', () => {
-      let clone = user.clone()
+      const clone = user.clone()
       expect(clone).toBeInstanceOf(User)
       expect(clone.dataValues).toEqual(user.dataValues)
       expect(clone).not.toBe(user)

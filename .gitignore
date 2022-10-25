@@ -1,11 +1,14 @@
 coverage
 node_modules/
+.webpack
 
 # dotenv environment variables file
-.env
+!.env
+.env.*
 
 # Serverless directories
 .serverless
+.serverless*
 dist
 
 # IntelliJ

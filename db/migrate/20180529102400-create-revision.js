@@ -14,7 +14,7 @@ module.exports = {
     }
 
     // Revision model
-    var attributes = {
+    const attributes = {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -95,7 +95,7 @@ module.exports = {
   down: function (queryInterface, Sequelize) {
     return Promise.all([
       queryInterface.dropTable(sequelizePaperTrailOptions.revisionModel)
-//      queryInterface.dropTable(sequelizePaperTrailOptions.revisionChangeModel)
+      //      queryInterface.dropTable(sequelizePaperTrailOptions.revisionChangeModel)
     ])
   }
 }

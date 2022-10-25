@@ -1,25 +1,22 @@
 service: scale-of-belief
-
-custom:
-  scripts:
-    hooks:
-      # Run database migrations
-      'aws:deploy:finalize:cleanup': 'npx serverless --stage $ENVIRONMENT invoke --function migrate --aws-profile serverless'
-  environmentMap:
-    production: prod
-    staging: stage
-    development: dev
-    lab: lab
+frameworkVersion: '3'
+configValidationMode: warn
+plugins:
+  - serverless-plugin-bind-deployment-id
+  - serverless-plugin-scripts
+  - serverless-offline
 
 provider:
   name: aws
-  runtime: nodejs10.x
   stage: ${env:ENVIRONMENT}
   region: us-east-1
   vpc:
     securityGroupIds:
-      - ${file(${env:ECS_CONFIG}/bin/vars.yml):us-east-1.webapp_elb_sg}
-    subnetIds: ${file(${env:ECS_CONFIG}/bin/vars.yml):us-east-1.prod_apps_1_all}
+      - sg-888294ed
+    subnetIds:
+      - subnet-f2c2dfda # us-east-1a
+      - subnet-1508db62 # us-east-1b
+      - subnet-3fd94266 # us-east-1c
   stackTags:
     Name: ${env:PROJECT_NAME}-${self:custom.environmentMap.${env:ENVIRONMENT}}
     owner: udp-support@cru.org
@@ -27,30 +24,53 @@ provider:
     env: ${self:custom.environmentMap.${env:ENVIRONMENT}}
     managed_by: serverless-framework
     function: lambda
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - SNS:Publish
-        - SNS:Subscribe
-      Resource:
-        - ${env:SNS_TOPIC_ARN}
-        - ${env:AEM_SNS_TOPIC_ARN}
-    - Effect: Allow
-      Action:
-        - sqs:ReceiveMessage
-        - sqs:DeleteMessage
-        - sqs:GetQueueAttributes
-        - sqs:ChangeMessageVisibility
-        - sqs:SendMessage
-      Resource:
-        Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
-    - Effect: Allow
-      Action:
-        - s3:PutObject
-      Resource:
-        - arn:aws:s3:::uri-scoring
-        - arn:aws:s3:::uri-scoring/*
-  environment: ${file(serverless/environment.js)}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - SNS:Publish
+            - SNS:Subscribe
+          Resource:
+            - ${env:SNS_TOPIC_ARN}
+            - ${env:AEM_SNS_TOPIC_ARN}
+#        - Effect: Allow
+#          Action:
+#            - sqs:ReceiveMessage
+#            - sqs:DeleteMessage
+#            - sqs:GetQueueAttributes
+#            - sqs:ChangeMessageVisibility
+#            - sqs:SendMessage
+#          Resource:
+#            Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+          Resource:
+            - arn:aws:s3:::uri-scoring
+            - arn:aws:s3:::uri-scoring/*
+  layers:
+    - arn:aws:lambda:us-east-1:072686360478:layer:node-16_14_2:1
+  environment: ${file(env.js)}
+
+package:
+  patterns:
+    - '!.webpack/**'
+    - '!test/**'
+    - '!**/*.test.js'
+    - '!.deployment/**'
+    - '.serverless/**'
+
+custom:
+  scripts:
+    hooks:
+      # Run database migrations
+      'aws:deploy:finalize:cleanup': 'npx serverless invoke --stage $ENVIRONMENT --function migrate'
+  environmentMap:
+    production: prod
+    staging: stage
+    development: dev
+    lab: lab
 
 functions:
   api:
@@ -66,11 +86,11 @@ functions:
   migrate:
     handler: db/migrate.handler
     timeout: 120
-  redshift:
-    handler: scheduled/redshift.handler
-    timeout: 300
-    events:
-      - schedule: rate(5 minutes)
+#  redshift:
+#    handler: scheduled/redshift.handler
+#    timeout: 300
+#    events:
+#      - schedule: rate(5 minutes)
   campaign:
     handler: sns/campaign.handler
     timeout: 60
@@ -91,38 +111,38 @@ functions:
     timeout: 30
     events:
       - sns: ${env:AEM_SNS_TOPIC_ARN}
-  udp-event:
-    handler: sqs/udp-event.handler
-    reservedConcurrency: 1
-    timeout: 300
-    events:
-      - sqs:
-          arn:
-            Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
-          batchSize: 10
-          enabled: true
-
-package:
-  exclude:
-    - .git/**
-    - test/**
-    - '**/*.test.js'
-    - '**/*.sql'
-    - .deployment/**
-
-plugins:
-  - serverless-plugin-bind-deployment-id
-  - serverless-plugin-scripts
-  - serverless-offline
+#  udp-event:
+#    handler: sqs/udp-event.handler
+#    reservedConcurrency: 1
+#    timeout: 300
+#    events:
+#      - sqs:
+#          arn:
+#            Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
+#          batchSize: 10
+#          enabled: true
 
 resources:
-  Resources:
+  extensions:
     IamRoleLambdaExecution:
       Properties:
         ManagedPolicyArns:
           - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
           - arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess
 
+    ApiGatewayRestApi:
+      Properties:
+        Name:
+          Ref: AWS::StackName
+        BinaryMediaTypes:
+          - 'image/*'
+
+    __deployment__:
+      DependsOn:
+        - ApiGatewayMethodAppGet
+        - ApiGatewayMethodAppProxyAny
+
+  Resources:
     S3BucketAppPublic:
       Type: 'AWS::S3::Bucket'
       Properties:
@@ -131,13 +151,6 @@ resources:
           IndexDocument: index.html
         BucketName:
           Fn::Join: ['', [Ref: AWS::StackName, "-app-public"]]
-
-    ApiGatewayRestApi:
-      Properties:
-        Name:
-          Ref: AWS::StackName
-        BinaryMediaTypes:
-          - 'image/*'
 
     ApiGatewayMethodAppGet:
       Type: 'AWS::ApiGateway::Method'
@@ -200,52 +213,45 @@ resources:
         RestApiId:
           Ref: ApiGatewayRestApi
         DomainName: 'content-scoring.cru.org'
-        Stage: ${opt:stage}
+        Stage: ${env:ENVIRONMENT}
       DependsOn:
         - __deployment__
 
-    __deployment__:
-      DependsOn:
-        - ApiGatewayMethodApiAnyVarAny
-        - ApiGatewayMethodAppGet
-        - ApiGatewayMethodAppProxyAny
-
-    UDPEnrichedEventsDLQ:
-      Type: AWS::SQS::Queue
-
-    UDPEnrichedEventsQueue:
-      Type: AWS::SQS::Queue
-      Properties:
-        # See https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-queueconfig
-        MessageRetentionPeriod: 604800 # 7 days
-        VisibilityTimeout: 2100 # 300s lambda timeout * 6
-        RedrivePolicy:
-          deadLetterTargetArn:
-            Fn::GetAtt: [ UDPEnrichedEventsDLQ, Arn ]
-          maxReceiveCount: 5
-
-    # This policy grants SQS:SendMessage to the snowplow sub-account
-    SnowplowEventsQueuePolicy:
-      Type: AWS::SQS::QueuePolicy
-      Properties:
-        PolicyDocument:
-          Id: SnowplowEventsQueuePolicy
-          Version: '2012-10-17'
-          Statement:
-            - Sid: Allow-Snowplow-SendMessage
-              Effect: Allow
-              Principal:
-                AWS:
-                  - 699385956789
-                  - 056154071827
-              Action:
-                - sqs:SendMessage
-              Resource: "*"
-        Queues:
-          - Ref: UDPEnrichedEventsQueue
+#    UDPEnrichedEventsDLQ:
+#      Type: AWS::SQS::Queue
+#
+#    UDPEnrichedEventsQueue:
+#      Type: AWS::SQS::Queue
+#      Properties:
+#        # See https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-queueconfig
+#        MessageRetentionPeriod: 604800 # 7 days
+#        VisibilityTimeout: 2100 # 300s lambda timeout * 6
+#        RedrivePolicy:
+#          deadLetterTargetArn:
+#            Fn::GetAtt: [ UDPEnrichedEventsDLQ, Arn ]
+#          maxReceiveCount: 5
+#
+#    # This policy grants SQS:SendMessage to the snowplow sub-account
+#    SnowplowEventsQueuePolicy:
+#      Type: AWS::SQS::QueuePolicy
+#      Properties:
+#        PolicyDocument:
+#          Id: SnowplowEventsQueuePolicy
+#          Version: '2012-10-17'
+#          Statement:
+#            - Sid: Allow-Snowplow-SendMessage
+#              Effect: Allow
+#              Principal:
+#                AWS:
+#                  - 699385956789
+#                  - 056154071827
+#              Action:
+#                - sqs:SendMessage
+#              Resource: "*"
+#        Queues:
+#          - Ref: UDPEnrichedEventsQueue
 
   Outputs:
     AppBucket:
       Value:
         Ref: S3BucketAppPublic
-

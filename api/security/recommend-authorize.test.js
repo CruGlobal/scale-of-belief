@@ -15,7 +15,7 @@ describe('Recommendation Authorize', () => {
         const nextMock = jest.fn()
 
         expect.assertions(2)
-        await Authorizer({query: {}}, {}, nextMock)
+        await Authorizer({ query: {} }, {}, nextMock)
         expect(nextMock).toHaveBeenCalledWith(expect.any(Error))
         expect(nextMock.mock.calls[0][0].message).toEqual('Unauthorized')
       })
@@ -26,7 +26,7 @@ describe('Recommendation Authorize', () => {
         const nextMock = jest.fn()
 
         expect.assertions(2)
-        await Authorizer({query: {'entity.id': 'abc123'}}, {}, nextMock)
+        await Authorizer({ query: { 'entity.id': 'abc123' } }, {}, nextMock)
         expect(nextMock).toHaveBeenCalledWith(expect.any(Error))
         expect(nextMock.mock.calls[0][0].message).toEqual('Unauthorized')
       })
@@ -37,7 +37,7 @@ describe('Recommendation Authorize', () => {
         const nextMock = jest.fn()
 
         expect.assertions(2)
-        await Authorizer({query: {apiKey: 'a1b2c3'}}, {}, nextMock)
+        await Authorizer({ query: { apiKey: 'a1b2c3' } }, {}, nextMock)
         expect(nextMock).toHaveBeenCalledWith(expect.any(Error))
         expect(nextMock.mock.calls[0][0].message).toEqual('Unauthorized')
       })
@@ -52,7 +52,7 @@ describe('Recommendation Authorize', () => {
         const nextMock = jest.fn()
 
         expect.assertions(2)
-        await Authorizer({query: {apiKey: 'a1b2c3', 'entity.id': 'abc123'}}, {}, nextMock)
+        await Authorizer({ query: { apiKey: 'a1b2c3', 'entity.id': 'abc123' } }, {}, nextMock)
         expect(nextMock).toHaveBeenCalledWith(expect.any(Error))
         expect(nextMock.mock.calls[0][0].message).toEqual('Unauthorized')
       })
@@ -65,7 +65,7 @@ describe('Recommendation Authorize', () => {
         const nextMock = jest.fn()
 
         expect.assertions(2)
-        await Authorizer({query: {apiKey: 'a1b2c3', 'entity.id': 'abc123'}}, {}, nextMock)
+        await Authorizer({ query: { apiKey: 'a1b2c3', 'entity.id': 'abc123' } }, {}, nextMock)
         expect(nextMock).toHaveBeenCalledWith(expect.any(Error))
         expect(nextMock.mock.calls[0][0].message).toEqual('Unauthorized')
       })
@@ -75,24 +75,24 @@ describe('Recommendation Authorize', () => {
   describe('valid \'apiKey\' and \'entity.id\'', () => {
     describe('super user \'apiKey\'', () => {
       it('should succeed', async () => {
-        jest.spyOn(ApiKey, 'findOne').mockImplementation(() => Promise.resolve({type: 'super'}))
+        jest.spyOn(ApiKey, 'findOne').mockImplementation(() => Promise.resolve({ type: 'super' }))
         jest.spyOn(Recommendation, 'findOne').mockImplementation(() => Promise.resolve({}))
         const nextMock = jest.fn()
 
         expect.assertions(1)
-        await Authorizer({query: {apiKey: 'a1b2c3', 'entity.id': 'abc123'}}, {}, nextMock)
+        await Authorizer({ query: { apiKey: 'a1b2c3', 'entity.id': 'abc123' } }, {}, nextMock)
         expect(nextMock).toHaveBeenCalledWith()
       })
     })
 
     describe('recommendation url doesn\'t match apiKey', () => {
       it('should fail with Unauthorized', async () => {
-        jest.spyOn(ApiKey, 'findOne').mockImplementation(() => Promise.resolve({type: '', api_pattern: ['^x.*']}))
-        jest.spyOn(Recommendation, 'findOne').mockImplementation(() => Promise.resolve({url: 'abc123'}))
+        jest.spyOn(ApiKey, 'findOne').mockImplementation(() => Promise.resolve({ type: '', api_pattern: ['^x.*'] }))
+        jest.spyOn(Recommendation, 'findOne').mockImplementation(() => Promise.resolve({ url: 'abc123' }))
         const nextMock = jest.fn()
 
         expect.assertions(2)
-        await Authorizer({query: {apiKey: 'a1b2c3', 'entity.id': 'abc123'}}, {}, nextMock)
+        await Authorizer({ query: { apiKey: 'a1b2c3', 'entity.id': 'abc123' } }, {}, nextMock)
         expect(nextMock).toHaveBeenCalledWith(expect.any(Error))
         expect(nextMock.mock.calls[0][0].message).toEqual('Unauthorized')
       })
@@ -104,11 +104,11 @@ describe('Recommendation Authorize', () => {
           type: '',
           api_pattern: ['^x.*', '^a.*3$']
         }))
-        jest.spyOn(Recommendation, 'findOne').mockImplementation(() => Promise.resolve({url: 'abc123'}))
+        jest.spyOn(Recommendation, 'findOne').mockImplementation(() => Promise.resolve({ url: 'abc123' }))
         const nextMock = jest.fn()
 
         expect.assertions(1)
-        await Authorizer({query: {apiKey: 'a1b2c3', 'entity.id': 'abc123'}}, {}, nextMock)
+        await Authorizer({ query: { apiKey: 'a1b2c3', 'entity.id': 'abc123' } }, {}, nextMock)
         expect(nextMock).toHaveBeenCalledWith()
       })
     })
@@ -121,7 +121,7 @@ describe('Recommendation Authorize', () => {
       const nextMock = jest.fn()
 
       expect.assertions(2)
-      await Authorizer({query: {apiKey: 'a1b2c3', 'entity.id': 'abc123'}}, {}, nextMock)
+      await Authorizer({ query: { apiKey: 'a1b2c3', 'entity.id': 'abc123' } }, {}, nextMock)
       expect(nextMock).toHaveBeenCalledWith(expect.any(Error))
       expect(nextMock.mock.calls[0][0].message).toEqual('Database Error')
     })

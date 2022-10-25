@@ -10,7 +10,7 @@ describe('GlobalRegistryClient', () => {
 
   describe('constructor', () => {
     it('should set baseUrl and apiKey', () => {
-      let client = new GlobalRegistryClient('https://example.com', 'abc123')
+      const client = new GlobalRegistryClient('https://example.com', 'abc123')
 
       expect(client.baseUrl).toEqual('https://example.com')
       expect(client.apiKey).toEqual('abc123')
@@ -26,7 +26,7 @@ describe('GlobalRegistryClient', () => {
 
     describe('user with multiple \'gr_master_person_id\'', () => {
       it('should POST both to Global Registry', () => {
-        let promise = client.updatePlacement(['abc123', 'zyx987'], 6)
+        const promise = client.updatePlacement(['abc123', 'zyx987'], 6)
         expect(requestMock.post).toHaveBeenCalledTimes(2)
         expect(requestMock.post.mock.calls[0]).toEqual(
           ['/entities/', { body: { entity: GlobalRegistryClient.placementBody('abc123', 6) }, qs: {} }])
@@ -38,7 +38,7 @@ describe('GlobalRegistryClient', () => {
 
     describe('user with a \'gr_master_person_id\'', () => {
       it('should POST to Global Registry', () => {
-        let promise = client.updatePlacement(['def456'], 3)
+        const promise = client.updatePlacement(['def456'], 3)
         expect(requestMock.post).toHaveBeenCalledTimes(1)
         expect(requestMock.post.mock.calls[0]).toEqual(
           ['/entities/', { body: { entity: GlobalRegistryClient.placementBody('def456', 3) }, qs: {} }])
@@ -50,7 +50,7 @@ describe('GlobalRegistryClient', () => {
   describe('placementBody', () => {
     describe('placement with value', () => {
       it('build the correct POST body', () => {
-        let placement = 6
+        const placement = 6
 
         expect(GlobalRegistryClient.placementBody('1234567890', placement)).toMatchObject({
           scale_of_belief: {

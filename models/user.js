@@ -11,7 +11,7 @@ const {
   without
 } = require('lodash')
 const Context = require('./context')
-const {DataTypes} = require('sequelize')
+const { DataTypes } = require('sequelize')
 const sequelize = require('../config/sequelize')
 const browserFields = ['domain_userid', 'network_userid', 'user_fingerprint']
 const idFields = ['sso_guid', 'gr_master_person_id', 'mcid']

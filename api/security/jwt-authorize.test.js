@@ -8,16 +8,16 @@ const JwtAuthorizer = require('./jwt-authorize')
  * the request will have a user object with the values from the JWT inside.
  */
 describe('JWT Authorizer', () => {
-  let response = {}
-  let guid = 'some-guid'
+  const response = {}
+  const guid = 'some-guid'
 
   test('is defined', () => {
     expect(JwtAuthorizer).toBeDefined()
   })
 
   describe('has valid JWT', () => {
-    let apiUser = {
-      guid: guid,
+    const apiUser = {
+      guid,
       api_pattern: [
         '.*'
       ]
@@ -30,7 +30,7 @@ describe('JWT Authorizer', () => {
           uri: 'http://some.uri.com'
         },
         user: {
-          guid: guid
+          guid
         }
       }
 
@@ -50,7 +50,7 @@ describe('JWT Authorizer', () => {
           uri: 'http://some.uri.com'
         },
         user: {
-          guid: guid
+          guid
         }
       }
 
@@ -71,7 +71,7 @@ describe('JWT Authorizer', () => {
           uri: 'http://some.uri.com'
         },
         user: {
-          guid: guid
+          guid
         }
       }
 
@@ -87,7 +87,7 @@ describe('JWT Authorizer', () => {
 
   // Note: express-jwt should catch the issue with its own handling before our application logic ever gets called
   describe('has invalid JWT', () => {
-    let unauthorizedError = new Error('Unauthorized')
+    const unauthorizedError = new Error('Unauthorized')
     unauthorizedError.status = 401
 
     test('should return Unauthorized on GET request', done => {
@@ -128,14 +128,14 @@ describe('JWT Authorizer', () => {
   })
 
   describe('has JWT without access to resource', () => {
-    let apiUser = {
-      guid: guid,
+    const apiUser = {
+      guid,
       api_pattern: [
         '.*nowhere.*'
       ]
     }
 
-    let unauthorizedError = new Error('You do not have access to this resource')
+    const unauthorizedError = new Error('You do not have access to this resource')
     unauthorizedError.status = 401
 
     test('should return Unauthorized on GET request', done => {
@@ -145,7 +145,7 @@ describe('JWT Authorizer', () => {
           uri: 'http://some.uri.com'
         },
         user: {
-          guid: guid
+          guid
         }
       }
 
@@ -166,7 +166,7 @@ describe('JWT Authorizer', () => {
           uri: 'http://some.uri.com'
         },
         user: {
-          guid: guid
+          guid
         }
       }
 
@@ -189,7 +189,7 @@ describe('JWT Authorizer', () => {
           uri: 'http://some.uri.com'
         },
         user: {
-          guid: guid
+          guid
         }
       }
 
@@ -212,7 +212,7 @@ describe('JWT Authorizer', () => {
           uri: 'http://some.uri.com'
         },
         user: {
-          guid: guid
+          guid
         }
       }
 
@@ -228,7 +228,7 @@ describe('JWT Authorizer', () => {
   })
 
   describe('fails database lookup', () => {
-    let unauthorizedError = new Error('Unauthorized')
+    const unauthorizedError = new Error('Unauthorized')
     unauthorizedError.status = 401
 
     test('should return Unauthorized', done => {
@@ -254,7 +254,7 @@ describe('JWT Authorizer', () => {
   })
 
   describe('has JWT with non-existing user in local database', () => {
-    let unauthorizedError = new Error('Unauthorized')
+    const unauthorizedError = new Error('Unauthorized')
     unauthorizedError.status = 401
 
     test('should return Unauthorized on GET request', done => {
@@ -303,7 +303,7 @@ describe('JWT Authorizer', () => {
   describe('has super JWT token', () => {
     test('should succeed on GET request', done => {
       const apiUser = {
-        guid: guid,
+        guid,
         api_pattern: [],
         type: 'super'
       }
@@ -311,7 +311,7 @@ describe('JWT Authorizer', () => {
       const request = {
         method: 'GET',
         user: {
-          guid: guid
+          guid
         }
       }
 

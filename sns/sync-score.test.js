@@ -27,7 +27,7 @@ describe('Sync-Score SNS Lambda', () => {
     jest.spyOn(AemClient, 'updateScore').mockResolvedValue()
 
     SyncScore.handler(snsMessage).then(() => {
-      expect(AemClient.updateScore).toHaveBeenCalledWith(url.parse(payload.uri), payload.score)
+      expect(AemClient.updateScore).toHaveBeenCalledWith(new url.URL(payload.uri), payload.score)
       done()
     }).catch((err) => {
       done.fail(err)

@@ -1,7 +1,7 @@
 'use strict'
 
 const ApiUser = require('../../models/api-user')
-const {find} = require('lodash')
+const { find } = require('lodash')
 const logger = require('../../config/logger')
 const util = require('../util/util')
 
@@ -16,12 +16,12 @@ module.exports = function authorize (request, response, next) {
       if (!availableScopes || !availableScopes.length) {
         next(util.buildUnauthorizedError(error))
       } else {
-        var requestedResource
+        let requestedResource
 
         if (request.method === 'GET') {
-          requestedResource = request.query['uri']
+          requestedResource = request.query.uri
         } else {
-          requestedResource = request.body['uri']
+          requestedResource = request.body.uri
         }
         if (isAuthorized(availableScopes, requestedResource)) {
           next()
@@ -37,7 +37,7 @@ module.exports = function authorize (request, response, next) {
 
 function isAuthorized (availableScopes, requestedResource) {
   requestedResource = requestedResource.toLowerCase()
-  var authorized = false
+  let authorized = false
 
   if (Array.isArray(availableScopes)) {
     authorized = find(availableScopes, function (scope) {
@@ -72,17 +72,17 @@ function determineScopesAndType (auth) {
           guid: auth
         }
       }).then((dbApiKey) => {
-        if (dbApiKey) {
-          resolve({
-            apiPatterns: dbApiKey.api_pattern,
-            isSuperAdmin: dbApiKey.type === 'super'
-          })
-        } else {
-          reject(new Error('User GUID not found'))
-        }
-      }).catch(function (error) {
-        logger.error(error)
-        reject(error)
-      })
+      if (dbApiKey) {
+        resolve({
+          apiPatterns: dbApiKey.api_pattern,
+          isSuperAdmin: dbApiKey.type === 'super'
+        })
+      } else {
+        reject(new Error('User GUID not found'))
+      }
+    }).catch(function (error) {
+      logger.error(error)
+      reject(error)
+    })
   })
 }

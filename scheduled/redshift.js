@@ -4,13 +4,13 @@
  * Lambda handler to move data into Redshift.
  */
 
-const {Client} = require('pg')
+const { Client } = require('pg')
 const copyToSteam = require('pg-copy-streams').to
 const rollbar = require('../config/rollbar')
 const AWS = require('aws-sdk')
 const redis = require('redis')
 const zlib = require('zlib')
-const {castArray, map} = require('lodash')
+const { castArray, map } = require('lodash')
 
 const LAST_SUCCESS_PREFIX = 'scale-of-belief-lambda:redshift-last-success:'
 const STAGING_PREFIX = 'staging_'
@@ -30,8 +30,8 @@ const getZeroPaddedValue = (original) => {
 
 module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lambdaCallback) => {
   // Configure AWS and S3
-  AWS.config.update({region: 'us-east-1'})
-  const s3 = new AWS.S3({apiVersion: '2006-03-01'})
+  AWS.config.update({ region: 'us-east-1' })
+  const s3 = new AWS.S3({ apiVersion: '2006-03-01' })
 
   // Configure redis client
   const redisClient = redis.createClient(
@@ -99,7 +99,7 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
     })
     await postgresClient.connect()
     try {
-      let body = (await postgresClient.query(copyToSteam(QUERY))).pipe(zlib.createGzip())
+      const body = (await postgresClient.query(copyToSteam(QUERY))).pipe(zlib.createGzip())
       await s3.upload({
         Bucket: process.env.REDSHIFT_S3_BUCKET,
         Key: s3Key,
@@ -169,8 +169,8 @@ module.exports.handler = rollbar.lambdaHandler((lambdaEvent, lambdaContext, lamb
    */
   const redshiftDelta = async (table, idColumn) => {
     const now = new Date()
-    let s3Key = `${table}/${buildFormattedDate(now)}.csv.gz`
-    let result = await copyToS3(table, s3Key)
+    const s3Key = `${table}/${buildFormattedDate(now)}.csv.gz`
+    const result = await copyToS3(table, s3Key)
     if (result) {
       await copyToRedshift(table, idColumn, s3Key)
     }

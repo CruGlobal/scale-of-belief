@@ -5,10 +5,10 @@ const util = require('../util/util')
 
 module.exports = {
   get: (request, response) => {
-    let page = request.query['page']
-    let perPage = request.query['per_page']
-    let orderBy = request.query['order_by']
-    let order = request.query['order']
+    let page = request.query.page
+    let perPage = request.query.per_page
+    let orderBy = request.query.order_by
+    let order = request.query.order
 
     if (!util.isInt(page) || !util.isInt(perPage)) {
       page = 1
@@ -27,7 +27,7 @@ module.exports = {
 
     ApiUser.findAndCountAll({
       limit: perPage,
-      offset: offset,
+      offset,
       order: [[orderBy, order]]
     }).then((users) => {
       response.json({
