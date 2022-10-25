@@ -12,7 +12,8 @@ provider:
   region: us-east-1
   vpc:
     securityGroupIds:
-      - sg-888294ed
+      - sg-888294ed # AWS-OpsWorks-LB-Server
+      - sg-0dfdbaf54480d2e65 # scale-of-belief-stage
     subnetIds:
       - subnet-f2c2dfda # us-east-1a
       - subnet-1508db62 # us-east-1b
@@ -24,16 +25,16 @@ provider:
     env: ${self:custom.environmentMap.${env:ENVIRONMENT}}
     managed_by: serverless-framework
     function: lambda
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action:
-            - SNS:Publish
-            - SNS:Subscribe
-          Resource:
-            - ${env:SNS_TOPIC_ARN}
-            - ${env:AEM_SNS_TOPIC_ARN}
+#  iam:
+#    role:
+#      statements:
+#        - Effect: Allow
+#          Action:
+#            - SNS:Publish
+#            - SNS:Subscribe
+#          Resource:
+#            - ${env:SNS_TOPIC_ARN}
+#            - ${env:AEM_SNS_TOPIC_ARN}
 #        - Effect: Allow
 #          Action:
 #            - sqs:ReceiveMessage
@@ -43,12 +44,12 @@ provider:
 #            - sqs:SendMessage
 #          Resource:
 #            Fn::GetAtt: [ UDPEnrichedEventsQueue, Arn ]
-        - Effect: Allow
-          Action:
-            - s3:PutObject
-          Resource:
-            - arn:aws:s3:::uri-scoring
-            - arn:aws:s3:::uri-scoring/*
+#        - Effect: Allow
+#          Action:
+#            - s3:PutObject
+#          Resource:
+#            - arn:aws:s3:::uri-scoring
+#            - arn:aws:s3:::uri-scoring/*
   layers:
     - arn:aws:lambda:us-east-1:072686360478:layer:node-16_14_2:1
   environment: ${file(env.js)}
@@ -91,26 +92,26 @@ functions:
 #    timeout: 300
 #    events:
 #      - schedule: rate(5 minutes)
-  campaign:
-    handler: sns/campaign.handler
-    timeout: 60
-    events:
-      - sns: ${env:SNS_TOPIC_ARN}
-  global-registry:
-    handler: sns/global-registry.handler
-    timeout: 30
-    events:
-      - sns: ${env:SNS_TOPIC_ARN}
-  cru-org-sync:
-    handler: scheduled/cru-org-sync.handler
-    timeout: 300
-    events:
-      - schedule: rate(4 hours)
-  sync-score:
-    handler: sns/sync-score.handler
-    timeout: 30
-    events:
-      - sns: ${env:AEM_SNS_TOPIC_ARN}
+#  campaign:
+#    handler: sns/campaign.handler
+#    timeout: 60
+#    events:
+#      - sns: ${env:SNS_TOPIC_ARN}
+#  global-registry:
+#    handler: sns/global-registry.handler
+#    timeout: 30
+#    events:
+#      - sns: ${env:SNS_TOPIC_ARN}
+#  cru-org-sync:
+#    handler: scheduled/cru-org-sync.handler
+#    timeout: 300
+#    events:
+#      - schedule: rate(4 hours)
+#  sync-score:
+#    handler: sns/sync-score.handler
+#    timeout: 30
+#    events:
+#      - sns: ${env:AEM_SNS_TOPIC_ARN}
 #  udp-event:
 #    handler: sqs/udp-event.handler
 #    reservedConcurrency: 1
@@ -212,7 +213,7 @@ resources:
       Properties:
         RestApiId:
           Ref: ApiGatewayRestApi
-        DomainName: 'content-scoring.cru.org'
+        DomainName: 'content-scoring-stage.cru.org'
         Stage: ${env:ENVIRONMENT}
       DependsOn:
         - __deployment__
