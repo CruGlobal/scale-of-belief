@@ -8,7 +8,7 @@ describe('LoginController', () => {
     expect(LoginController).toBeDefined()
   })
 
-  describe('has a valid service ticket', () => {
+  describe('has a valid access token', () => {
     it('should return a JWT', done => {
       const accessToken = 'valid-token'
       const validToken = 'valid-jwt'
@@ -73,7 +73,7 @@ describe('LoginController', () => {
     })
   })
 
-  describe('has no service ticket', () => {
+  describe('has no access token', () => {
     it('should return Unauthorized', done => {
       const response = {
         json: (jsonToSet) => {
