@@ -264,8 +264,8 @@ paths:
       tags:
         - login
       parameters:
-        - name: ticket
-          description: Service ticket
+        - name: access_token
+          description: Access token
           in: query
           type: string
       security: []

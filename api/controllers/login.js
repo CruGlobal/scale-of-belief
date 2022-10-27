@@ -8,7 +8,7 @@ const util = require('../util/util')
 /* istanbul ignore next */
 const get = (request, response) => {
   request.body = {
-    ticket: request.query.ticket
+    access_token: request.query.access_token
   }
 
   post(request, response)
