@@ -51,7 +51,7 @@ provider:
 #            - arn:aws:s3:::uri-scoring
 #            - arn:aws:s3:::uri-scoring/*
   layers:
-    - arn:aws:lambda:us-east-1:072686360478:layer:node-16_14_2:1
+    - arn:aws:lambda:us-east-1:072686360478:layer:node-16_15_1:1
   environment: ${file(env.js)}
 
 package:
