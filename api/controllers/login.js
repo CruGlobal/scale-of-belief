@@ -15,6 +15,8 @@ const get = (request, response) => {
 }
 
 const post = (request, response) => {
+  console.log(`Using Node ${process.version}`)
+
   const accessToken = request.body.access_token
 
   if (!accessToken) {
