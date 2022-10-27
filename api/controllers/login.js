@@ -1,6 +1,6 @@
 'use strict'
 
-const https = require('https')
+/* global fetch */
 const jwt = require('jsonwebtoken')
 const logger = require('../../config/logger')
 const util = require('../util/util')
@@ -15,55 +15,50 @@ const get = (request, response) => {
 }
 
 const post = (request, response) => {
-  const serviceTicket = request.body.ticket
+  const accessToken = request.body.access_token
 
-  if (!serviceTicket) {
+  if (!accessToken) {
     util.buildUnauthorizedResponse(response)
     return
   }
 
-  validateTicket(serviceTicket, (data) => {
-    if (!data) {
-      util.buildInternalErrorResponse(response)
-      return
-    }
-
-    const json = JSON.parse(data)
-    if (json.serviceResponse.authenticationFailure) {
-      logger.debug('Login failure: ' + json.serviceResponse.authenticationFailure.description)
+  lookupProfile(accessToken).then(({ profile, error }) => {
+    if (error?.unauthorized) {
+      logger.debug('Login failure: unauthorized')
       util.buildUnauthorizedResponse(response)
       return
     }
-    const guid = json.serviceResponse.authenticationSuccess.attributes.ssoGuid[0].toLowerCase()
+
+    const guid = profile?.ssoguid
+    if (!guid) {
+      util.buildInternalErrorResponse(response)
+      return
+    }
     buildJwt(guid, response)
+  }).catch(() => {
+    util.buildInternalErrorResponse(response)
   })
 }
 
-const validateTicket = (serviceTicket, callback) => {
-  const path = '/cas/p3/serviceValidate'
-  const service = 'service=' + encodeURIComponent(process.env.THE_KEY_SERVICE_URL)
-  const ticket = 'ticket=' + encodeURIComponent(serviceTicket)
-  const format = 'format=JSON'
-  const options = {
-    hostname: 'thekey.me',
-    path: path + '?' + service + '&' + ticket + '&' + format,
-    method: 'GET'
+async function lookupProfile (accessToken) {
+  const res = await fetch(`${process.env.OKTA_ISSUER}/v1/userinfo`, {
+    headers: {
+      authorization: `Bearer ${accessToken}`
+    }
+  })
+  if (res.ok) {
+    return {
+      profile: await res.json()
+    }
+  } else if (res.status === 401) {
+    return {
+      error: {
+        unauthorized: true
+      }
+    }
   }
 
-  const request = https.request(options, (response) => {
-    response.setEncoding('utf8')
-
-    response.on('data', (data) => {
-      callback(data)
-    })
-  })
-
-  request.on('error', (error) => {
-    logger.error(error)
-    callback(null)
-  })
-
-  request.end()
+  throw new Error('Error looking up user profile')
 }
 
 const buildJwt = (guid, response) => {

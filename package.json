@@ -17,7 +17,7 @@
     "db:create:test": "sequelize --env test db:create"
   },
   "engines": {
-    "node": "> 10.0.0"
+    "node": ">= 16.15.0"
   },
   "keywords": [],
   "author": "",
@@ -62,8 +62,7 @@
     "swaggerize-express": "^4.0.5",
     "umzug": "^2.1.0",
     "url": "^0.11.0",
-    "winston": "^2.4.4",
-    "xml2js": "^0.4.23"
+    "winston": "^2.4.4"
   },
   "standard": {
     "globals": [
