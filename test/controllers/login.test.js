@@ -2,6 +2,9 @@
 
 const LoginController = require('../../api/controllers/login.js')
 const jwt = require('jsonwebtoken')
+const fetch = require('node-fetch')
+
+jest.mock('node-fetch')
 
 describe('LoginController', () => {
   it('should be defined', () => {
@@ -26,7 +29,7 @@ describe('LoginController', () => {
         status: 200,
         json: () => Promise.resolve({ ssoguid: validToken })
       }
-      global.fetch = jest.fn(() => Promise.resolve(mockedResponse))
+      fetch.mockImplementation(() => Promise.resolve(mockedResponse))
 
       jest.spyOn(jwt, 'sign').mockImplementation((guid, secret, expires, callback) => { callback(null, validToken) })
 
@@ -61,7 +64,7 @@ describe('LoginController', () => {
         status: 401,
         json: () => Promise.resolve({})
       }
-      global.fetch = jest.fn(() => Promise.resolve(mockedResponse))
+      fetch.mockImplementation(() => Promise.resolve(mockedResponse))
 
       const request = {
         body: {
@@ -116,7 +119,7 @@ describe('LoginController', () => {
         status: 500,
         json: () => Promise.resolve({})
       }
-      global.fetch = jest.fn(() => Promise.resolve(mockedResponse))
+      fetch.mockImplementation(() => Promise.resolve(mockedResponse))
 
       const request = {
         body: {
@@ -150,7 +153,7 @@ describe('LoginController', () => {
         status: 200,
         json: () => Promise.resolve({ ssoguid: guid })
       }
-      global.fetch = jest.fn(() => Promise.resolve(mockedResponse))
+      fetch.mockImplementation(() => Promise.resolve(mockedResponse))
 
       jest.spyOn(jwt, 'sign').mockImplementation((guid, secret, expires, callback) => { callback(new Error('Test'), null) })
 
