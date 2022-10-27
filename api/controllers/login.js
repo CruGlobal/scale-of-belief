@@ -20,6 +20,7 @@ const post = (request, response) => {
   const accessToken = request.body.access_token
 
   if (!accessToken) {
+    logger.debug('Missing access token')
     util.buildUnauthorizedResponse(response)
     return
   }
@@ -33,11 +34,13 @@ const post = (request, response) => {
 
     const guid = profile?.ssoguid
     if (!guid) {
+      logger.debug('Login failure: no ssoguid on profile')
       util.buildInternalErrorResponse(response)
       return
     }
     buildJwt(guid, response)
-  }).catch(() => {
+  }).catch((err) => {
+    logger.debug('Login failure: exception in lookupProfile ' + err.toString())
     util.buildInternalErrorResponse(response)
   })
 }
