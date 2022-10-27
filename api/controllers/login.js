@@ -1,9 +1,9 @@
 'use strict'
 
-/* global fetch */
 const jwt = require('jsonwebtoken')
 const logger = require('../../config/logger')
 const util = require('../util/util')
+const fetch = require('node-fetch')
 
 /* istanbul ignore next */
 const get = (request, response) => {

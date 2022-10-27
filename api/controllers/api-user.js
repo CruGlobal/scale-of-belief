@@ -1,7 +1,7 @@
 'use strict'
 
-/* global fetch */
 const ApiUser = require('../../models/api-user')
+const fetch = require('node-fetch')
 
 // Lookup up a user by the email address and return a promise that
 // resolves to their The Key guid if they exist, or rejects if they don't
