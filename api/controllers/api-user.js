@@ -15,14 +15,14 @@ async function lookupUser (emailAddress) {
   })
   if (!res.ok) {
     const error = new Error('Guid lookup error')
-    error.status = res.statusCode
+    error.status = res.status
     throw error
   }
   const data = await res.json()
   const guid = data[0]?.profile?.theKeyGuid
   if (!guid) {
     const error = new Error('The email used is not an existing Okta user account.')
-    error.status = res.statusCode === 200 ? 404 : res.statusCode
+    error.status = res.status === 200 ? 404 : res.status
     throw error
   }
   return guid
