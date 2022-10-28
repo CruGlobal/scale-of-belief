@@ -56,5 +56,6 @@ const post = async (request, response) => {
 
 module.exports = {
   get,
-  post
+  post,
+  lookupUser
 }
