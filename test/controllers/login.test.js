@@ -1,37 +1,20 @@
 'use strict'
 
 const LoginController = require('../../api/controllers/login.js')
-const https = require('https')
 const jwt = require('jsonwebtoken')
+const fetch = require('node-fetch')
+
+jest.mock('node-fetch')
 
 describe('LoginController', () => {
   it('should be defined', () => {
     expect(LoginController).toBeDefined()
   })
 
-  describe('has a valid service ticket', () => {
+  describe('has a valid access token', () => {
     it('should return a JWT', done => {
-      const serviceTicket = 'valid-ticket'
-      const guid = 'valid-guid'
+      const accessToken = 'valid-token'
       const validToken = 'valid-jwt'
-      const personData = '{' +
-        '"serviceResponse": {' +
-          '"authenticationSuccess": {' +
-            '"attributes": {' +
-              '"ssoGuid": ["' + guid + '"] ' +
-            '}' +
-          '}' +
-        '}' +
-      '}'
-      const httpsResponse = {
-        data: personData,
-        setEncoding: (encoding) => {
-          // do nothing
-        },
-        on: (key, callback) => {
-          callback(personData)
-        }
-      }
 
       const response = {
         json: (jsonToSet) => {
@@ -41,25 +24,18 @@ describe('LoginController', () => {
         }
       }
 
-      const req = {
-        on: (key, callback) => {
-          // do nothing
-        },
-        end: () => {
-          // done()
-        }
+      const mockedResponse = {
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ ssoguid: validToken })
       }
-
-      jest.spyOn(https, 'request').mockImplementation((options, callback) => {
-        callback(httpsResponse)
-        return req
-      })
+      fetch.mockImplementation(() => Promise.resolve(mockedResponse))
 
       jest.spyOn(jwt, 'sign').mockImplementation((guid, secret, expires, callback) => { callback(null, validToken) })
 
       const request = {
         body: {
-          ticket: serviceTicket
+          access_token: accessToken
         }
       }
 
@@ -67,26 +43,9 @@ describe('LoginController', () => {
     })
   })
 
-  describe('has an invalid service ticket', () => {
+  describe('has an invalid access token', () => {
     it('should return Unauthorized', done => {
-      const serviceTicket = 'invalid-ticket'
-      const failureData = '{' +
-        '"serviceResponse": {' +
-          '"authenticationFailure": {' +
-            '"description": "Failed",' +
-            '"code": "FAIL"' +
-          '}' +
-        '}' +
-      '}'
-      const httpsResponse = {
-        data: failureData,
-        setEncoding: (encoding) => {
-          // do nothing
-        },
-        on: (key, callback) => {
-          callback(failureData)
-        }
-      }
+      const accessToken = 'invalid-token'
 
       const response = {
         json: (jsonToSet) => {
@@ -100,23 +59,16 @@ describe('LoginController', () => {
         }
       }
 
-      const req = {
-        on: (key, callback) => {
-          // do nothing
-        },
-        end: () => {
-          // done()
-        }
+      const mockedResponse = {
+        ok: false,
+        status: 401,
+        json: () => Promise.resolve({})
       }
-
-      jest.spyOn(https, 'request').mockImplementation((options, callback) => {
-        callback(httpsResponse)
-        return req
-      })
+      fetch.mockImplementation(() => Promise.resolve(mockedResponse))
 
       const request = {
         body: {
-          ticket: serviceTicket
+          access_token: accessToken
         }
       }
 
@@ -124,7 +76,7 @@ describe('LoginController', () => {
     })
   })
 
-  describe('has no service ticket', () => {
+  describe('has no access token', () => {
     it('should return Unauthorized', done => {
       const response = {
         json: (jsonToSet) => {
@@ -146,9 +98,9 @@ describe('LoginController', () => {
     })
   })
 
-  describe('receives a failure from CAS', () => {
+  describe('receives a failure from Okta', () => {
     it('should return Internal Error', done => {
-      const serviceTicket = 'ticket'
+      const accessToken = 'token'
 
       const response = {
         json: (jsonToSet) => {
@@ -162,23 +114,16 @@ describe('LoginController', () => {
         }
       }
 
-      const req = {
-        on: (key, callback) => {
-          expect(key).toEqual('error')
-          callback(new Error())
-        },
-        end: () => {
-          // done()
-        }
+      const mockedResponse = {
+        ok: false,
+        status: 500,
+        json: () => Promise.resolve({})
       }
-
-      jest.spyOn(https, 'request').mockImplementation((options, callback) => {
-        return req
-      })
+      fetch.mockImplementation(() => Promise.resolve(mockedResponse))
 
       const request = {
         body: {
-          ticket: serviceTicket
+          access_token: accessToken
         }
       }
 
@@ -188,26 +133,8 @@ describe('LoginController', () => {
 
   describe('receives a failure when signing the JWT', () => {
     it('should return an Internal Server Error', done => {
-      const serviceTicket = 'ticket'
+      const accessToken = 'token'
       const guid = 'valid-guid'
-      const personData = '{' +
-        '"serviceResponse": {' +
-          '"authenticationSuccess": {' +
-            '"attributes": {' +
-              '"ssoGuid": ["' + guid + '"] ' +
-            '}' +
-          '}' +
-        '}' +
-      '}'
-      const httpsResponse = {
-        data: personData,
-        setEncoding: (encoding) => {
-          // do nothing
-        },
-        on: (key, callback) => {
-          callback(personData)
-        }
-      }
 
       const response = {
         json: (jsonToSet) => {
@@ -221,25 +148,18 @@ describe('LoginController', () => {
         }
       }
 
-      const req = {
-        on: (key, callback) => {
-          // do nothing
-        },
-        end: () => {
-          // done()
-        }
+      const mockedResponse = {
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ ssoguid: guid })
       }
-
-      jest.spyOn(https, 'request').mockImplementation((options, callback) => {
-        callback(httpsResponse)
-        return req
-      })
+      fetch.mockImplementation(() => Promise.resolve(mockedResponse))
 
       jest.spyOn(jwt, 'sign').mockImplementation((guid, secret, expires, callback) => { callback(new Error('Test'), null) })
 
       const request = {
         body: {
-          ticket: serviceTicket
+          access_token: accessToken
         }
       }
 

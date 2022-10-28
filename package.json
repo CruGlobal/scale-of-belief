@@ -17,7 +17,7 @@
     "db:create:test": "sequelize --env test db:create"
   },
   "engines": {
-    "node": "> 10.0.0"
+    "node": ">= 16.15.0"
   },
   "keywords": [],
   "author": "",
@@ -47,6 +47,7 @@
     "hoek": "~> 4.2.1",
     "https": "^1.0.0",
     "jsonwebtoken": "^8.3.0",
+    "node-fetch": "^2.6.7",
     "pg": "8.7.3",
     "pg-copy-streams": "^1.2.0",
     "pg-hstore": "^2.3.4",
@@ -62,8 +63,7 @@
     "swaggerize-express": "^4.0.5",
     "umzug": "^2.1.0",
     "url": "^0.11.0",
-    "winston": "^2.4.4",
-    "xml2js": "^0.4.23"
+    "winston": "^2.4.4"
   },
   "standard": {
     "globals": [
