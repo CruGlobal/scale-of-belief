@@ -53,7 +53,7 @@ describe('ApiUserController', () => {
       fetch.mockImplementation(() => Promise.resolve(mockedResponse))
 
       ApiUserController.lookupUser('bill.bright@cru.org').then(() => {
-        done.fail('Unexpected success')
+        done('Unexpected success')
       }).catch((err) => {
         expect(err.toString()).toMatch('Guid lookup error')
         expect(err.status).toBe(500)
@@ -70,7 +70,7 @@ describe('ApiUserController', () => {
       fetch.mockImplementation(() => Promise.resolve(mockedResponse))
 
       ApiUserController.lookupUser('bill.bright@cru.org').then(() => {
-        fail('Unexpected success')
+        done('Unexpected success')
       }).catch((err) => {
         expect(err.toString()).toMatch('The email used is not an existing Okta user account.')
         expect(err.status).toBe(404)
